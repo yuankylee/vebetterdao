@@ -52,6 +52,8 @@ import { EditVeWorldFeatureImage } from "./components/EditVeWorldFeatureImage"
 import { useIsFormChanged } from "./hooks/useIsFormChanged"
 import { useSocialUrls } from "./hooks/useSocialUrls"
 
+const normalizeXLink = (link: string) => (link.startsWith("https://") ? link : `https://x.com/i/web/status/${link}`)
+
 export type EditAppForm = {
   name: string
   external_url: string
@@ -132,7 +134,7 @@ export const EditAppPageContent = () => {
       appRoadmapImage: appMetadata?.more_details?.app_roadmap?.image ?? "",
       appRoadmapDescription: appMetadata?.more_details?.app_roadmap?.description ?? "",
       ecosystemPartners: appMetadata?.more_details?.ecosystem_partners ?? [],
-      tweetLinks: appMetadata?.tweets ?? [],
+      tweetLinks: (appMetadata?.tweets ?? []).map(normalizeXLink),
     },
   })
   const {
@@ -254,7 +256,7 @@ export const EditAppPageContent = () => {
         appRoadmapImage: appMetadata.more_details?.app_roadmap?.image ?? "",
         appRoadmapDescription: appMetadata.more_details?.app_roadmap?.description ?? "",
         ecosystemPartners: appMetadata.more_details?.ecosystem_partners ?? [],
-        tweetLinks: appMetadata.tweets ?? [],
+        tweetLinks: (appMetadata.tweets ?? []).map(normalizeXLink),
       })
     }
   }, [appMetadata, logo, banner, screenshots, veWorldBanner, veWorldFeaturedImage, form])

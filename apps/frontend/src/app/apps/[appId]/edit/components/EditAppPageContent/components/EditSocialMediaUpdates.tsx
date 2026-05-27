@@ -68,8 +68,8 @@ export const EditSocialMediaUpdates = ({ form }: Props) => {
           {tweetLinks.length > 0 && (
             <VStack align="stretch" gap={3}>
               {tweetLinks.map((link, index) => (
-                <Field.Root key={index} invalid={!!errors[index]}>
-                  <HStack gap={2} align="flex-start">
+                <Field.Root key={index} invalid={!!errors[index]} w="full">
+                  <HStack gap={2} align="flex-start" w="full">
                     <VStack align="stretch" flex={1} gap={1}>
                       <Input
                         value={link}

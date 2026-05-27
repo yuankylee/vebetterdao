@@ -71,7 +71,7 @@ export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
   return (
     <>
       <Card.Root variant="outline" w="full">
-        <Card.Body p={6}>
+        <Card.Body>
           <VStack align="stretch" gap={5}>
             <VStack align="stretch" gap={1}>
               <Text textStyle="xl" fontWeight="bold">
