@@ -37,11 +37,16 @@ import { useCurrentAppScreenshots } from "../../../hooks/useCurrentAppScreenshot
 import { useCurrentAppVeWorldBanner } from "../../../hooks/useCurrentAppVeWorldBanner"
 import { useCurrentAppVeWorldFeaturedImage } from "../../../hooks/useCurrentAppVeWorldFeaturedImage"
 
+import { AppVersionNotes } from "./components/AppVersionNotes/AppVersionNotes"
 import { EditAppBanner } from "./components/EditAppBanner"
 import { EditAppCategories } from "./components/EditAppCategories/EditAppCategories"
 import { EditAppLogo } from "./components/EditAppLogo"
 import { EditAppSocialUrls } from "./components/EditAppSocialUrls"
+import { EditAppTutorial } from "./components/EditAppTutorial"
+import { EditAppWhitepaper } from "./components/EditAppWhitepaper"
+import { EditMoreAppDetails } from "./components/EditMoreAppDetails"
 import { EditScreenshots } from "./components/EditScreenshots"
+import { EditSocialMediaUpdates } from "./components/EditSocialMediaUpdates"
 import { EditVeWorldBanner } from "./components/EditVeWorldBanner"
 import { EditVeWorldFeatureImage } from "./components/EditVeWorldFeatureImage"
 import { useIsFormChanged } from "./hooks/useIsFormChanged"
@@ -57,12 +62,23 @@ export type EditAppForm = {
   telegramUrl: string
   youtubeUrl: string
   mediumUrl: string
+  instagramUrl: string
   screenshots: string[]
   logoImage: string
   bannerImage: string
   ve_world_bannerImage: string
   ve_world_featured_image: string
   categories: string[]
+  tutorialMode: "video" | "image"
+  tutorialVideo: string
+  tutorialImages: string[]
+  whitepaperFile: string
+  moreDetailsEnabled: boolean
+  teamBackground: { photo: string; title: string; description: string }[]
+  appRoadmapImage: string
+  appRoadmapDescription: string
+  ecosystemPartners: string[]
+  tweetLinks: string[]
 }
 
 enum EditAppPageStep {
@@ -103,9 +119,20 @@ export const EditAppPageContent = () => {
       telegramUrl: findUrlByName(appMetadata?.social_urls, "Telegram"),
       youtubeUrl: findUrlByName(appMetadata?.social_urls, "Youtube"),
       mediumUrl: findUrlByName(appMetadata?.social_urls, "Medium"),
+      instagramUrl: findUrlByName(appMetadata?.social_urls, "Instagram"),
+      tutorialMode: appMetadata?.tutorial_video ? "video" : "image",
+      tutorialVideo: appMetadata?.tutorial_video ?? "",
+      tutorialImages: appMetadata?.tutorial_images ?? [],
       ve_world_bannerImage: veWorldBanner,
       ve_world_featured_image: veWorldFeaturedImage,
       categories: (appMetadata?.categories ?? []).filter(id => !DEPRECATED_IDS.includes(id)), // remove the deprecated categories
+      whitepaperFile: appMetadata?.whitepaper ?? "",
+      moreDetailsEnabled: !!appMetadata?.more_details,
+      teamBackground: appMetadata?.more_details?.team_background ?? [],
+      appRoadmapImage: appMetadata?.more_details?.app_roadmap?.image ?? "",
+      appRoadmapDescription: appMetadata?.more_details?.app_roadmap?.description ?? "",
+      ecosystemPartners: appMetadata?.more_details?.ecosystem_partners ?? [],
+      tweetLinks: appMetadata?.tweets ?? [],
     },
   })
   const {
@@ -154,16 +181,31 @@ export const EditAppPageContent = () => {
         screenshots: data.screenshots ?? [],
         app_urls: [],
         social_urls: socialUrls,
-        tweets: appMetadata?.tweets ?? [],
+        tweets: data.tweetLinks.filter(Boolean),
         categories: data.categories ?? [],
         ve_world: {
           banner: data.ve_world_bannerImage,
           featured_image: data.ve_world_featured_image,
         },
+        version_history: appMetadata?.version_history,
+        tutorial_video: data.tutorialMode === "video" ? data.tutorialVideo || undefined : undefined,
+        tutorial_images:
+          data.tutorialMode === "image" && data.tutorialImages.length > 0 ? data.tutorialImages : undefined,
+        whitepaper: data.whitepaperFile || undefined,
+        more_details: data.moreDetailsEnabled
+          ? {
+              team_background: data.teamBackground.length > 0 ? data.teamBackground : undefined,
+              app_roadmap:
+                data.appRoadmapImage || data.appRoadmapDescription
+                  ? { image: data.appRoadmapImage, description: data.appRoadmapDescription }
+                  : undefined,
+              ecosystem_partners: data.ecosystemPartners.length > 0 ? data.ecosystemPartners : undefined,
+            }
+          : undefined,
       })
       return metadataUri
     },
-    [uploadMetadataMutation, socialUrls, appMetadata?.tweets],
+    [uploadMetadataMutation, socialUrls, appMetadata?.version_history],
   )
 
   const onSubmit = useCallback(
@@ -196,12 +238,23 @@ export const EditAppPageContent = () => {
         telegramUrl: findUrlByName(appMetadata.social_urls, "Telegram"),
         youtubeUrl: findUrlByName(appMetadata.social_urls, "Youtube"),
         mediumUrl: findUrlByName(appMetadata.social_urls, "Medium"),
+        instagramUrl: findUrlByName(appMetadata.social_urls, "Instagram"),
+        tutorialMode: appMetadata.tutorial_video ? "video" : "image",
+        tutorialVideo: appMetadata.tutorial_video ?? "",
+        tutorialImages: appMetadata.tutorial_images ?? [],
         logoImage: logo || "",
         bannerImage: banner || "",
         screenshots: screenshots.filter(Boolean),
         ve_world_bannerImage: veWorldBanner || "",
         ve_world_featured_image: veWorldFeaturedImage || "",
         categories: (appMetadata.categories ?? []).filter(id => !DEPRECATED_IDS.includes(id)),
+        whitepaperFile: appMetadata.whitepaper ?? "",
+        moreDetailsEnabled: !!appMetadata.more_details,
+        teamBackground: appMetadata.more_details?.team_background ?? [],
+        appRoadmapImage: appMetadata.more_details?.app_roadmap?.image ?? "",
+        appRoadmapDescription: appMetadata.more_details?.app_roadmap?.description ?? "",
+        ecosystemPartners: appMetadata.more_details?.ecosystem_partners ?? [],
+        tweetLinks: appMetadata.tweets ?? [],
       })
     }
   }, [appMetadata, logo, banner, screenshots, veWorldBanner, veWorldFeaturedImage, form])
@@ -354,11 +407,21 @@ export const EditAppPageContent = () => {
               </Field.Root>
             </VStack>
             <EditAppCategories form={form} />
+            <EditAppSocialUrls form={form} />
           </VStack>
-          <EditAppSocialUrls form={form} />
+          <VStack flex={1.5} gap={6} align="stretch">
+            <EditSocialMediaUpdates form={form} />
+            <AppVersionNotes appId={appId} currentMetadata={appMetadata} />
+          </VStack>
         </Stack>
         <Separator />
         <EditScreenshots form={form} />
+        <Separator />
+        <EditAppTutorial form={form} />
+        <Separator />
+        <EditAppWhitepaper form={form} />
+        <Separator />
+        <EditMoreAppDetails form={form} />
         <Separator />
 
         <VStack align={"flex-start"} gap={4}>

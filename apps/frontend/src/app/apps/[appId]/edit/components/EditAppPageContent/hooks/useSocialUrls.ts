@@ -9,6 +9,7 @@ export const useSocialUrls = (form: UseFormReturn<EditAppForm, any, EditAppForm>
   const telegramUrl = form.watch("telegramUrl")
   const youtubeUrl = form.watch("youtubeUrl")
   const mediumUrl = form.watch("mediumUrl")
+  const instagramUrl = form.watch("instagramUrl")
   const socialUrls = useMemo(() => {
     const urls = []
     if (twitterUrl) {
@@ -41,7 +42,13 @@ export const useSocialUrls = (form: UseFormReturn<EditAppForm, any, EditAppForm>
         url: mediumUrl,
       })
     }
+    if (instagramUrl) {
+      urls.push({
+        name: "Instagram",
+        url: instagramUrl,
+      })
+    }
     return urls
-  }, [discordUrl, mediumUrl, telegramUrl, twitterUrl, youtubeUrl])
+  }, [discordUrl, instagramUrl, mediumUrl, telegramUrl, twitterUrl, youtubeUrl])
   return socialUrls
 }

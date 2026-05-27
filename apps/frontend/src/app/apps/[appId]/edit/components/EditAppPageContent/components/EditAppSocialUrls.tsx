@@ -2,7 +2,7 @@ import { Field, Icon, Input, InputGroup, Text, VStack } from "@chakra-ui/react"
 import { useMemo } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { FaDiscord, FaMedium, FaTelegram, FaYoutube } from "react-icons/fa6"
+import { FaDiscord, FaInstagram, FaMedium, FaTelegram, FaYoutube } from "react-icons/fa6"
 import { RiTwitterXFill } from "react-icons/ri"
 
 import { URL_REGEX } from "../../../../../../../constants/url"
@@ -27,6 +27,7 @@ export const EditAppSocialUrls = ({ form }: Props) => {
   const telegramUrl = findUrlByName(appMetadata?.social_urls, "Telegram")
   const youtubeUrl = findUrlByName(appMetadata?.social_urls, "Youtube")
   const mediumUrl = findUrlByName(appMetadata?.social_urls, "Medium")
+  const instagramUrl = findUrlByName(appMetadata?.social_urls, "Instagram")
   const inputData = useMemo(() => {
     return [
       {
@@ -64,14 +65,23 @@ export const EditAppSocialUrls = ({ form }: Props) => {
         placeholder: t(`Add your medium link`),
         icon: <Icon as={FaMedium} color="social.medium" />,
       },
+      {
+        inputKey: "instagramUrl",
+        url: instagramUrl,
+        error: errors.instagramUrl,
+        placeholder: t(`Add your instagram link`),
+        icon: <Icon as={FaInstagram} color="pink.500" />,
+      },
     ]
   }, [
     discordUrl,
     errors.discordUrl,
+    errors.instagramUrl,
     errors.mediumUrl,
     errors.telegramUrl,
     errors.twitterUrl,
     errors.youtubeUrl,
+    instagramUrl,
     mediumUrl,
     t,
     telegramUrl,
@@ -80,7 +90,7 @@ export const EditAppSocialUrls = ({ form }: Props) => {
   ])
 
   return (
-    <VStack align={"stretch"} flex={1.5} gap={4} w="full">
+    <VStack align={"stretch"} gap={4} w="full">
       <Text textStyle="md" fontWeight="semibold">
         {t("Social media links")}
       </Text>

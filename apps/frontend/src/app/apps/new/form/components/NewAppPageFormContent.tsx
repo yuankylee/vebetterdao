@@ -51,6 +51,7 @@ export const NewAppPageFormContent = () => {
         treasuryWalletAddress: "",
         adminWalletAddress: "",
         categories: [],
+        versionNotes: "",
       },
     })
   const { errors } = formState
@@ -99,6 +100,7 @@ export const NewAppPageFormContent = () => {
           banner: data.ve_world_banner,
           featured_image: data.ve_world_featured_image,
         },
+        version_history: [{ version: "V1.0", notes: data.versionNotes, timestamp: Date.now() }],
       })
       if (!metadataUri) return
 

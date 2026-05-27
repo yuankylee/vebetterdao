@@ -31,6 +31,21 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
   const isDistributionStrategyChanged =
     form.watch("distribution_strategy") !== appMetadata?.distribution_strategy && !!form.watch("distribution_strategy")
   const isCategoriesChanged = form.watch("categories") !== appMetadata?.categories && !!form.watch("categories")
+  const isTutorialVideoChanged = form.watch("tutorialVideo") !== (appMetadata?.tutorial_video ?? "")
+  const isTutorialImagesChanged =
+    JSON.stringify(form.watch("tutorialImages")) !== JSON.stringify(appMetadata?.tutorial_images ?? [])
+  const isWhitepaperChanged = form.watch("whitepaperFile") !== (appMetadata?.whitepaper ?? "")
+  const isMoreDetailsEnabledChanged = form.watch("moreDetailsEnabled") !== !!appMetadata?.more_details
+  const isTeamBackgroundChanged =
+    JSON.stringify(form.watch("teamBackground")) !== JSON.stringify(appMetadata?.more_details?.team_background ?? [])
+  const isAppRoadmapChanged =
+    form.watch("appRoadmapImage") !== (appMetadata?.more_details?.app_roadmap?.image ?? "") ||
+    form.watch("appRoadmapDescription") !== (appMetadata?.more_details?.app_roadmap?.description ?? "")
+  const isEcosystemPartnersChanged =
+    JSON.stringify(form.watch("ecosystemPartners")) !==
+    JSON.stringify(appMetadata?.more_details?.ecosystem_partners ?? [])
+  const isTweetLinksChanged =
+    JSON.stringify(form.watch("tweetLinks").filter(Boolean)) !== JSON.stringify(appMetadata?.tweets ?? [])
   return (
     isNameChanged ||
     isDescriptionChanged ||
@@ -41,6 +56,14 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     isSocialUrlsChanged ||
     isVeWorldBannerChanged ||
     isDistributionStrategyChanged ||
-    isCategoriesChanged
+    isCategoriesChanged ||
+    isTutorialVideoChanged ||
+    isTutorialImagesChanged ||
+    isWhitepaperChanged ||
+    isMoreDetailsEnabledChanged ||
+    isTeamBackgroundChanged ||
+    isAppRoadmapChanged ||
+    isEcosystemPartnersChanged ||
+    isTweetLinksChanged
   )
 }

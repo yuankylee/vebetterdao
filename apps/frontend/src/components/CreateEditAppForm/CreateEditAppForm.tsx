@@ -1,4 +1,4 @@
-import { Button, Card, Field, Heading, Image, InputGroup, Stack, Text, VStack } from "@chakra-ui/react"
+import { Button, Card, Field, Heading, Image, InputGroup, Stack, Text, Textarea, VStack } from "@chakra-ui/react"
 import { ChangeEvent, useCallback, useRef } from "react"
 import {
   Control,
@@ -68,6 +68,7 @@ export type CreateEditAppFormData = {
   adminWalletAddress: string
   ve_world_banner: string
   ve_world_featured_image: string
+  versionNotes: string
 }
 
 type Props = {
@@ -436,6 +437,35 @@ export const CreateEditAppForm = ({
               </Field.Root>
             )}
           />
+
+          {!isEdit && (
+            <Field.Root invalid={!!errors.versionNotes} w="full">
+              <Field.Label fontWeight="semibold">
+                <Text as="span" color="red.500" mr={1}>
+                  {"*"}
+                </Text>
+                {t("App Version Notes")}
+              </Field.Label>
+              <Text textStyle="xs" color="gray.500" mb={2}>
+                {t(
+                  "Add the app version number so users can stay informed about update content, resulting in a better user experience.",
+                )}
+              </Text>
+              <Text fontWeight="semibold" mb={2}>
+                {t("Version Number")}
+                {": V1.0"}
+              </Text>
+              <Textarea
+                placeholder={t("Please enter")}
+                rounded="xl"
+                {...register("versionNotes", {
+                  required: t("Please enter"),
+                  maxLength: { value: 1000, message: t("Maximum 1000") },
+                })}
+              />
+              <Field.ErrorText>{errors.versionNotes?.message}</Field.ErrorText>
+            </Field.Root>
+          )}
         </VStack>
       </Card.Body>
       <Card.Footer display={"flex"} flexDir={"column"} w="full" mt={4}>

@@ -35,6 +35,19 @@ export type XAppMetadata = {
     featured_image: string
   }
   categories: string[]
+  version_history?: {
+    version: string
+    notes: string
+    timestamp?: number
+  }[]
+  tutorial_video?: string
+  tutorial_images?: string[]
+  whitepaper?: string
+  more_details?: {
+    team_background?: { photo: string; title: string; description: string }[]
+    app_roadmap?: { image: string; description: string }
+    ecosystem_partners?: string[]
+  }
 }
 /**
   dapp-kit broke the pre-fetching
