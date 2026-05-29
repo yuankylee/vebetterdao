@@ -13,8 +13,12 @@ import { AppBalanceCard } from "./AppBalanceCard/AppBalanceCard"
 import { AppCreationSteps } from "./AppCreationSteps/AppCreationSteps"
 import { AppDetailOverview } from "./AppDetailOverview/AppDetailOverview"
 import { AppEndorsementInfoCard } from "./AppEndorsementInfoCard/AppEndorsementInfoCard"
+import { AppRatingsAndReviews } from "./AppRatingsAndReviews/AppRatingsAndReviews"
 import { AppRewardStatsCard } from "./AppRewardStatsCard"
 import { AppScreenshots } from "./AppScreenshots"
+import { AppSocialMediaUpdates } from "./AppSocialMediaUpdates/AppSocialMediaUpdates"
+import { AppTutorial } from "./AppTutorial/AppTutorial"
+import { AppVersionNotesCard } from "./AppVersionNotesCard/AppVersionNotesCard"
 import { ProofValidationAlert } from "./ProofValidationAlert/ProofValidationAlert"
 
 export const AppDetailPageContent = () => {
@@ -72,6 +76,14 @@ export const AppDetailPageContent = () => {
       <GridItem w="full" colSpan={[1, 1, 2]} order={[2, 2, 1]}>
         <Stack direction="column" gap={8}>
           {shouldRenderCreationSteps ? <AppCreationSteps /> : null}
+          <AppTutorial />
+          <AppSocialMediaUpdates />
+        </Stack>
+      </GridItem>
+      <GridItem w="full" colSpan={[1, 1, 1]} order={[1, 1, 2]}>
+        <Stack direction="column" gap={4}>
+          <AppRatingsAndReviews />
+          <AppVersionNotesCard />
         </Stack>
       </GridItem>
     </Grid>
