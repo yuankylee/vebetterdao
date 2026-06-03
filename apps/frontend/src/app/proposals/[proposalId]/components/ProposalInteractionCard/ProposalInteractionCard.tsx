@@ -4,7 +4,7 @@ import { humanNumber } from "@repo/utils/FormattingUtils"
 import { useWallet } from "@vechain/vechain-kit"
 import { ethers } from "ethers"
 import { Clock, InfoCircle, Reports } from "iconoir-react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAccountPermissions } from "@/api/contracts/account/hooks/useAccountPermissions"
@@ -12,16 +12,25 @@ import { useGetProposalDeposits } from "@/api/contracts/governance/hooks/useGetP
 import { useGovernorVotesOnBlock } from "@/api/contracts/governance/hooks/useGovernorVotesOnBlock"
 import { useHasVotedInProposals } from "@/api/contracts/governance/hooks/useHasVotedInProposals"
 import { useIsDepositReached } from "@/api/contracts/governance/hooks/useIsDepositReached"
+import { useIsProposalPaid } from "@/api/contracts/governance/hooks/useIsProposalPaid"
+import { useProposalBudget } from "@/api/contracts/governance/hooks/useProposalBudget"
+import { useProposalContributors } from "@/api/contracts/governance/hooks/useProposalContributors"
 import { useProposalDepositEvent } from "@/api/contracts/governance/hooks/useProposalDepositEvent"
 import { useProposalDepositThreshold } from "@/api/contracts/governance/hooks/useProposalDepositThreshold"
+import { useProposalDescription } from "@/api/contracts/governance/hooks/useProposalDescription"
+import { useProposalEta } from "@/api/contracts/governance/hooks/useProposalEta"
+import { useProposalImplementationDiscussion } from "@/api/contracts/governance/hooks/useProposalImplementationDiscussion"
+import { useProposalPayee } from "@/api/contracts/governance/hooks/useProposalPayee"
 import { useProposalQuorumByType } from "@/api/contracts/governance/hooks/useProposalQuorumByType"
 import { useProposalQuorumNumeratorByType } from "@/api/contracts/governance/hooks/useProposalQuorumNumeratorByType"
 import { useProposalSnapshot } from "@/api/contracts/governance/hooks/useProposalSnapshot"
 import { useProposalTotalVotes } from "@/api/contracts/governance/hooks/useProposalTotalVotes"
 import { useProposalUserDeposit } from "@/api/contracts/governance/hooks/useProposalUserDeposit"
+import { useSimulateExecuteProposal } from "@/api/contracts/governance/hooks/useSimulateExecuteProposal"
 import { useTotalVotesOnBlock } from "@/api/contracts/governance/hooks/useTotalVotesOnBlock"
 import { useUserSingleProposalVoteEvent } from "@/api/contracts/governance/hooks/useUserProposalsVoteEvents"
 import { useIsDelegatedAtSnapshot } from "@/api/contracts/navigatorRegistry/hooks/useIsDelegatedAtSnapshot"
+import { useTreasuryB3trTransferLimit } from "@/api/contracts/treasury/useTreasuryTransferLimit"
 import { useVot3PastSupply } from "@/api/contracts/vot3/hooks/useVot3PastTotalSupply"
 import { useProposalVotes } from "@/api/indexer/proposals/useProposalVotes"
 import { CountdownBoxes } from "@/components/CountdownBoxes/CountdownBoxes"
@@ -38,13 +47,14 @@ import {
   ProposalState,
   ProposalType,
 } from "@/hooks/proposals/grants/types"
+import { useClaimPayout } from "@/hooks/useClaimPayout"
 import { useExecuteProposal } from "@/hooks/useExecuteProposal"
 import { useGetVot3UnlockedBalance } from "@/hooks/useGetVot3UnlockedBalance"
 import { useMarkProposalCompleted } from "@/hooks/useMarkProposalCompleted"
-import { useMarkProposalInDevelopment } from "@/hooks/useMarkProposalInDevelopment"
 import { useQueueProposal } from "@/hooks/useQueueProposal"
 import { VotingSegment, votingSegmentToProgressBar } from "@/types/voting"
 
+import { MarkInDevelopmentModal } from "../MarkInDevelopmentModal/MarkInDevelopmentModal"
 import { ProposalCancelModal } from "../ProposalCancelModal/ProposalCancelModal"
 import { ProposalCastVoteModal } from "../ProposalCastVoteModal/ProposalCastVoteModal"
 import { ProposalResultsDetailsModal } from "../ProposalResultsDetailsModal/ProposalResultsDetailsModal"
@@ -73,6 +83,8 @@ export const ProposalInteractionCard = ({
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false)
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false)
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
+  const [isMarkInDevModalOpen, setIsMarkInDevModalOpen] = useState(false)
+  const [isEditCommunityExecutionOpen, setIsEditCommunityExecutionOpen] = useState(false)
   const proposalId = proposal?.id ?? ""
   // ===== HOOKS =====
   const { t } = useTranslation()
@@ -111,19 +123,60 @@ export const ProposalInteractionCard = ({
   // ===== CONTRACT TRANSACTION HOOKS =====
   const { sendTransaction: queueProposal } = useQueueProposal({ proposalId })
   const { sendTransaction: executeProposal } = useExecuteProposal({ proposalId })
-  const { sendTransaction: markProposalInDevelopment } = useMarkProposalInDevelopment({ proposalId })
   const { sendTransaction: markProposalCompleted } = useMarkProposalCompleted({ proposalId })
+  const [optimisticPaid, setOptimisticPaid] = useState(false)
+  const { sendTransaction: claimPayout } = useClaimPayout({
+    proposalId,
+    onSuccess: () => setOptimisticPaid(true),
+  })
+
+  // V11: per-proposal community-execution data
+  const { data: proposalMaxBudget } = useProposalBudget(proposalId)
+  const { data: proposalPayee } = useProposalPayee(proposalId)
+  const { data: isPaidOnChain } = useIsProposalPaid(proposalId)
+  // Treasury per-call B3TR cap: if maxBudget exceeds it, claimPayout would revert.
+  // Used below to disable Pay devs so the user doesn't burn gas on a guaranteed revert.
+  const { data: treasuryB3trLimit } = useTreasuryB3trTransferLimit()
+  const { data: proposalDescription } = useProposalDescription(proposalId)
+  const { data: proposalDiscussion } = useProposalImplementationDiscussion(proposalId)
+  const { data: proposalContributors } = useProposalContributors(proposalId)
+  const isPayeeMember = useMemo(
+    () => !!account?.address && !!proposalPayee && compareAddresses(proposalPayee, account.address ?? ""),
+    [account?.address, proposalPayee],
+  )
+  const isProposalPaid = optimisticPaid || !!isPaidOnChain
+
+  // Stable reference for the edit modal's initial values. Without useMemo, the literal object
+  // would get a new identity on every render — including every React Query refetch — and the
+  // modal's seeding effect would wipe whatever the user has typed.
+  const editInitialValues = useMemo(
+    () => ({
+      payee: proposalPayee ?? "",
+      description: proposalDescription ?? "",
+      implementationDiscussion: proposalDiscussion ?? "",
+      contributors: proposalContributors ?? [],
+    }),
+    [proposalPayee, proposalDescription, proposalDiscussion, proposalContributors],
+  )
 
   const handleQueueProposal = useCallback(() => queueProposal(), [queueProposal])
 
   const handleExecuteProposal = useCallback(() => executeProposal(), [executeProposal])
 
-  const handleMarkProposalInDevelopment = useCallback(() => markProposalInDevelopment(), [markProposalInDevelopment])
+  // V11: marking as InDevelopment always goes through the modal (which collects payees when budget > 0).
+  const handleMarkProposalInDevelopment = useCallback(() => {
+    setIsMarkInDevModalOpen(true)
+  }, [])
 
   const handleMarkProposalCompleted = useCallback(() => markProposalCompleted(), [markProposalCompleted])
 
+  const handlePayDevs = useCallback(() => claimPayout(), [claimPayout])
+
   // ===== COMPUTED VALUES =====
   const isProposer = compareAddresses(account?.address ?? "", proposal?.proposerAddress ?? "")
+  // Grant proposers cannot support their own grant — only applies to grant-type proposals in support phase.
+  const isGrantProposerInSupportPhase =
+    isProposer && proposal?.type !== GrantsProposalType.Standard && proposal?.state === ProposalState.Pending
   const currentDepositAmount = BigInt(currentDepositAmountQueryData ?? "0")
   const proposalDepositThreshold = BigInt(proposalDepositThresholdQueryData ?? "0")
   const proposalQuorumBigInt = BigInt(proposalQuorum ?? "0")
@@ -146,6 +199,39 @@ export const ProposalInteractionCard = ({
     return proposal?.state === ProposalState.Queued && proposalHasTargets
   }, [proposal?.state, proposalHasTargets])
 
+  // ===== TIMELOCK COUNTDOWN =====
+  const { data: proposalEta } = useProposalEta(proposalId, proposal?.state === ProposalState.Queued)
+  const [nowSeconds, setNowSeconds] = useState(() => Math.floor(Date.now() / 1000))
+  useEffect(() => {
+    if (proposal?.state !== ProposalState.Queued) return
+    const id = setInterval(() => setNowSeconds(Math.floor(Date.now() / 1000)), 1000)
+    return () => clearInterval(id)
+  }, [proposal?.state])
+  const secondsUntilExecutable = proposalEta ? Math.max(0, proposalEta - nowSeconds) : 0
+  const isAwaitingTimelock = isExecutable && !!proposalEta && secondsUntilExecutable > 0
+
+  // Dry-run the execute() once the timelock is clear — surfaces underlying reverts (e.g. Treasury
+  // transfer-limit, missing role on a sub-call) so the user doesn't pay gas just to see a revert.
+  const { data: simulatedExecution } = useSimulateExecuteProposal({
+    proposal,
+    caller: account?.address,
+    enabled: isExecutable && !isAwaitingTimelock,
+  })
+  const executeWouldRevert = Boolean(simulatedExecution?.wouldRevert)
+  const executeRevertReason = simulatedExecution?.revertReason
+
+  const formattedTimeUntilExecutable = useMemo(() => {
+    if (!isAwaitingTimelock) return ""
+    const days = Math.floor(secondsUntilExecutable / 86_400)
+    const hours = Math.floor((secondsUntilExecutable % 86_400) / 3_600)
+    const minutes = Math.floor((secondsUntilExecutable % 3_600) / 60)
+    const seconds = secondsUntilExecutable % 60
+    if (days > 0) return `${days}d ${hours}h ${minutes}m`
+    if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`
+    if (minutes > 0) return `${minutes}m ${seconds}s`
+    return `${seconds}s`
+  }, [isAwaitingTimelock, secondsUntilExecutable])
+
   const percentageSupported = useMemo(() => {
     if (currentDepositAmount === 0n) return "0"
     if (proposalDepositThreshold === 0n) return "0"
@@ -164,12 +250,11 @@ export const ProposalInteractionCard = ({
   }, [currentDepositAmount, proposalDepositThreshold])
 
   const canMarkInDevelopment = useMemo(() => {
-    if (proposal?.type === ProposalType.Grant || !hasProposalStateRole) {
-      return false
-    }
-
-    return proposal?.state === ProposalState.Executed || proposal?.state === ProposalState.Succeeded
-  }, [hasProposalStateRole, proposal?.state, proposal?.type])
+    if (proposal?.type === ProposalType.Grant) return false
+    if (proposal?.state !== ProposalState.Executed && proposal?.state !== ProposalState.Succeeded) return false
+    // V11: proposer can always mark their own proposal as InDevelopment; admins can also do it.
+    return isProposer || hasProposalStateRole
+  }, [hasProposalStateRole, isProposer, proposal?.state, proposal?.type])
 
   const canMarkCompleted = useMemo(() => {
     if (proposal?.type === ProposalType.Grant || !hasProposalStateRole) {
@@ -179,11 +264,47 @@ export const ProposalInteractionCard = ({
     return proposal?.state === ProposalState.InDevelopment
   }, [hasProposalStateRole, proposal?.state, proposal?.type])
 
+  // V11: editing payee/description/discussion/contributors is allowed for proposer + admin
+  // while the proposal is InDevelopment or Completed and the payout has not been claimed.
+  const canEditCommunityExecution = useMemo(() => {
+    if (proposal?.type === ProposalType.Grant) return false
+    if (proposal?.state !== ProposalState.InDevelopment && proposal?.state !== ProposalState.Completed) return false
+    if (isProposalPaid) return false
+    return isProposer || hasProposalStateRole
+  }, [proposal?.type, proposal?.state, isProposalPaid, isProposer, hasProposalStateRole])
+
+  // V11: Pay devs is visible to admin / proposer / payee when the proposal is Completed
+  // and the single payout hasn't been pulled yet.
+  const canPayDevs = useMemo(() => {
+    if (proposal?.type === ProposalType.Grant) return false
+    if (proposal?.state !== ProposalState.Completed) return false
+    if (!proposalPayee || proposalPayee.toLowerCase() === ethers.ZeroAddress.toLowerCase()) return false
+    if (isProposalPaid) return false
+    return hasProposalStateRole || isProposer || isPayeeMember
+  }, [hasProposalStateRole, isProposer, isPayeeMember, proposalPayee, isProposalPaid, proposal?.state, proposal?.type])
+
+  // maxBudget is set at proposal creation and cannot be lowered; if it exceeds Treasury's
+  // per-call B3TR limit, claimPayout will revert. Disable Pay devs and wait for admins to
+  // raise the global limit.
+  const payoutExceedsTreasuryLimit = useMemo(() => {
+    if (treasuryB3trLimit === undefined || proposalMaxBudget === undefined) return false
+    return (proposalMaxBudget as unknown as bigint) > (treasuryB3trLimit as unknown as bigint)
+  }, [treasuryB3trLimit, proposalMaxBudget])
+  const treasuryB3trLimitFormatted = useMemo(
+    () =>
+      treasuryB3trLimit !== undefined ? humanNumber(ethers.formatEther(treasuryB3trLimit as unknown as bigint)) : "",
+    [treasuryB3trLimit],
+  )
+
   // ===== BUSINESS LOGIC =====
   const canCancelProposal = useMemo(() => {
-    if (proposal?.state === undefined || !CANCELLABLE_STATES.includes(proposal.state)) return false
+    if (proposal?.state === undefined) return false
     const isAdmin = permissions?.isAdminOfB3TRGovernor
-    return isProposer || isAdmin
+    // Match the on-chain rule: the proposer can only cancel while still Pending (support phase).
+    // Admins can additionally cancel Succeeded or Queued proposals before execution.
+    if (isProposer && proposal.state === ProposalState.Pending) return true
+    if (isAdmin && CANCELLABLE_STATES.includes(proposal.state)) return true
+    return false
   }, [isProposer, permissions?.isAdminOfB3TRGovernor, proposal?.state])
 
   const shouldShowActionButton = useMemo(() => {
@@ -232,14 +353,16 @@ export const ProposalInteractionCard = ({
       return hasUserAlreadyVoted || userVotingPower === 0
     }
 
-    // If it's support phase AND: User has no balance OR Maximum support reached
+    // If it's support phase AND: User has no balance OR Maximum support reached OR user is the grant proposer
     if (proposal?.state === ProposalState.Pending) {
-      return userVot3Balance < 1 || proposalDepositReached
+      return userVot3Balance < 1 || proposalDepositReached || isGrantProposerInSupportPhase
     }
 
     //User has permissions to execute or queue
     if (isExecutable) {
-      return !currentUserCanExecute
+      // Gate the Execute button while the timelock delay hasn't elapsed, or when the simulation
+      // tells us the underlying call would revert anyway.
+      return !currentUserCanExecute || isAwaitingTimelock || executeWouldRevert
     }
 
     return false
@@ -251,6 +374,9 @@ export const ProposalInteractionCard = ({
     userVot3Balance,
     proposalDepositReached,
     currentUserCanExecute,
+    isGrantProposerInSupportPhase,
+    isAwaitingTimelock,
+    executeWouldRevert,
   ])
 
   // ===== VOTING DATA PROCESSING =====
@@ -389,9 +515,7 @@ export const ProposalInteractionCard = ({
               <>
                 <HStack>
                   <Icon as={Clock} boxSize={5} />
-                  <Card.Title p={0} gap={0}>
-                    <Heading>{t("Ends in")}</Heading>
-                  </Card.Title>
+                  <Heading>{t("Ends in")}</Heading>
                 </HStack>
                 {/* Countdown Display */}
                 <CountdownBoxes days={daysLeft} hours={hoursLeft} minutes={minutesLeft} />
@@ -451,6 +575,63 @@ export const ProposalInteractionCard = ({
               </Alert.Root>
             )}
 
+            {isGrantProposerInSupportPhase && (
+              <Alert.Root status="info" py="2" px="3">
+                <HStack alignItems="flex-start" gap="2" w="full">
+                  <Alert.Indicator boxSize="4" flexShrink={0} mt="0.5">
+                    <InfoCircle />
+                  </Alert.Indicator>
+                  <Text textStyle="sm" fontWeight="medium" color="status.info.strong">
+                    {t("You can't support your own grant proposal.")}
+                  </Text>
+                </HStack>
+              </Alert.Root>
+            )}
+
+            {isAwaitingTimelock && (
+              <Alert.Root status="info" py="2" px="3">
+                <HStack alignItems="flex-start" gap="2" w="full">
+                  <Alert.Indicator boxSize="4" flexShrink={0} mt="0.5">
+                    <InfoCircle />
+                  </Alert.Indicator>
+                  <Text textStyle="sm" fontWeight="medium" color="status.info.strong">
+                    {t("Available to execute in {{time}}", { time: formattedTimeUntilExecutable })}
+                  </Text>
+                </HStack>
+              </Alert.Root>
+            )}
+
+            {isExecutable && !isAwaitingTimelock && executeWouldRevert && (
+              <Alert.Root status="error" py="2" px="3">
+                <HStack alignItems="flex-start" gap="2" w="full">
+                  <Alert.Indicator boxSize="4" flexShrink={0} mt="0.5">
+                    <InfoCircle />
+                  </Alert.Indicator>
+                  <Text textStyle="sm" fontWeight="medium" color="status.negative.strong">
+                    {t("Execution would revert: {{reason}}", {
+                      reason: executeRevertReason ?? t("unknown error"),
+                    })}
+                  </Text>
+                </HStack>
+              </Alert.Root>
+            )}
+
+            {canPayDevs && payoutExceedsTreasuryLimit && (
+              <Alert.Root status="error" py="2" px="3">
+                <HStack alignItems="flex-start" gap="2" w="full">
+                  <Alert.Indicator boxSize="4" flexShrink={0} mt="0.5">
+                    <InfoCircle />
+                  </Alert.Indicator>
+                  <Text textStyle="sm" fontWeight="medium" color="status.negative.strong">
+                    {t(
+                      "Payout exceeds Treasury's per-transfer B3TR limit ({{limit}} B3TR). An admin must raise the Treasury limit before Pay devs can succeed.",
+                      { limit: treasuryB3trLimitFormatted },
+                    )}
+                  </Text>
+                </HStack>
+              </Alert.Root>
+            )}
+
             <HStack w="full" gap={4}>
               {/* Action Button */}
               {shouldShowActionButton && (
@@ -478,6 +659,21 @@ export const ProposalInteractionCard = ({
               {canMarkCompleted && (
                 <Button variant="secondary" w="full" flex={1} onClick={handleMarkProposalCompleted}>
                   {t("Mark as completed")}
+                </Button>
+              )}
+              {canEditCommunityExecution && (
+                <Button variant="secondary" w="full" flex={1} onClick={() => setIsEditCommunityExecutionOpen(true)}>
+                  {t("Edit details")}
+                </Button>
+              )}
+              {canPayDevs && (
+                <Button
+                  variant="primary"
+                  w="full"
+                  flex={1}
+                  onClick={handlePayDevs}
+                  disabled={payoutExceedsTreasuryLimit}>
+                  {t("Pay devs")}
                 </Button>
               )}
             </HStack>
@@ -527,6 +723,24 @@ export const ProposalInteractionCard = ({
         isOpen={isCancelModalOpen}
         proposalTypeText={proposalTypeText}
         onClose={() => setIsCancelModalOpen(false)}
+      />
+
+      {/* V11: Mark In Development modal — registers the V11 payee + metadata for the first time. */}
+      <MarkInDevelopmentModal
+        proposalId={proposalId}
+        maxBudget={proposalMaxBudget ?? 0n}
+        isOpen={isMarkInDevModalOpen}
+        onClose={() => setIsMarkInDevModalOpen(false)}
+      />
+
+      {/* V11: Edit development details modal — same form, but routes through updateCommunityExecution. */}
+      <MarkInDevelopmentModal
+        proposalId={proposalId}
+        maxBudget={proposalMaxBudget ?? 0n}
+        isOpen={isEditCommunityExecutionOpen}
+        onClose={() => setIsEditCommunityExecutionOpen(false)}
+        isEdit
+        initialValues={editInitialValues}
       />
     </>
   )

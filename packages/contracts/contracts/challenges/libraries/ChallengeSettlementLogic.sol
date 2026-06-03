@@ -66,9 +66,37 @@ library ChallengeSettlementLogic {
       revert IChallenges.ChallengeAlreadyCompleted(challengeId);
     }
 
-    for (uint256 i; i < challenge.participants.length; i++) {
-      uint256 actions = _getParticipantActions(challenge, challenge.participants[i]);
+    // Pass 1: compute bestScore/bestCount only over participants NOT flagged as sybils. We use the soft
+    // VeBetterPassport check (blacklist + signaling threshold) instead of `isPerson` so honest veDelegate
+    // delegators are not excluded from competing for the prize. Cache per-participant results so the second
+    // pass does not re-run the (potentially expensive) action sum.
+    uint256 participantsLen = challenge.participants.length;
+    uint256[] memory cachedActions = new uint256[](participantsLen);
+    bool[] memory eligibleCache = new bool[](participantsLen);
+    for (uint256 i; i < participantsLen; i++) {
+      address participant = challenge.participants[i];
+      if (_isFlaggedSybil($, participant)) continue;
+      eligibleCache[i] = true;
+      uint256 actions = _getParticipantActions(challenge, participant);
+      cachedActions[i] = actions;
       _updateBestScore(challenge, actions);
+    }
+
+    // Pass 2: snapshot the eligible-winner set AND the count used as the payout divisor. Both are frozen
+    // at completion so neither the membership nor the share size can drift after the fact. Without the
+    // explicit `eligibleWinnerCount`, `_payoutRecipientCount` would have to fall back to `bestCount` —
+    // safe today only because the two are derived from the same filter, but a fragile coupling that
+    // historically stranded a per-winner share when a live personhood re-check blocked a counted winner.
+    if (challenge.bestCount > 0) {
+      uint256 bestScore = challenge.bestScore;
+      uint256 eligibleCount;
+      for (uint256 i; i < participantsLen; i++) {
+        if (eligibleCache[i] && cachedActions[i] == bestScore) {
+          $.isEligibleWinner[challengeId][challenge.participants[i]] = true;
+          eligibleCount++;
+        }
+      }
+      $.eligibleWinnerCount[challengeId] = eligibleCount;
     }
 
     challenge.settlementMode = challenge.bestCount == 0
@@ -101,11 +129,15 @@ library ChallengeSettlementLogic {
 
     if ($.hasClaimed[challengeId][msg.sender]) revert IChallenges.AlreadyClaimed(challengeId, msg.sender);
 
+    // The TopWinners branch reads `isEligibleWinner`, a snapshot frozen at completeChallenge time.
+    // It already encodes the personhood filter — no additional live `isPerson` check is needed (and adding
+    // one would re-open the bug where a snapshot-excluded account could later regain personhood and steal a
+    // slot that `bestCount` never accounted for).
     if (!_isEligibleForPayout(challengeId, challenge, msg.sender)) {
       revert IChallenges.NothingToClaim(challengeId, msg.sender);
     }
 
-    uint256 recipientCount = _payoutRecipientCount(challenge);
+    uint256 recipientCount = _payoutRecipientCount(challengeId, challenge);
     amount = _payoutAmount(challenge.totalPrize, recipientCount, challenge.payoutsClaimed);
 
     $.hasClaimed[challengeId][msg.sender] = true;
@@ -155,6 +187,9 @@ library ChallengeSettlementLogic {
     if (challenge.winners.length >= challenge.numWinners) {
       revert IChallenges.SplitWinSlotsExhausted(challengeId);
     }
+
+    // Block sybils/blacklisted accounts from grabbing Split Win slots.
+    _requirePerson($, msg.sender);
 
     uint256 actions = _getParticipantActionsUpTo(challenge, msg.sender, currentRound);
     if (actions < challenge.threshold) {
@@ -265,6 +300,28 @@ library ChallengeSettlementLogic {
     return _getParticipantActions(challenge, participant);
   }
 
+  /// @dev Rejects only sybils explicitly flagged in VeBetterPassport (blacklist or over the signaling threshold).
+  /// `isPerson` is intentionally NOT used: it returns false for users that delegated their passport via
+  /// veDelegate, which would lock honest delegators out of joining/claiming.
+  function _requirePerson(ChallengeStorageTypes.ChallengesStorage storage $, address account) private view {
+    if (_isFlaggedSybil($, account)) {
+      revert IChallenges.NotVerifiedPerson(account, _flagReason($, account));
+    }
+  }
+
+  /// @dev Returns true when an account is flagged as a sybil by VeBetterPassport.
+  /// Single source of truth so the completeChallenge skip predicate stays in lockstep with `_requirePerson`.
+  function _isFlaggedSybil(ChallengeStorageTypes.ChallengesStorage storage $, address account) private view returns (bool) {
+    if ($.veBetterPassport.isBlacklisted(account)) return true;
+    uint256 threshold = $.veBetterPassport.signalingThreshold();
+    return threshold != 0 && $.veBetterPassport.signaledCounter(account) >= threshold;
+  }
+
+  function _flagReason(ChallengeStorageTypes.ChallengesStorage storage $, address account) private view returns (string memory) {
+    if ($.veBetterPassport.isBlacklisted(account)) return "User is blacklisted";
+    return "User has been signaled too many times";
+  }
+
   function _updateBestScore(ChallengeTypes.Challenge storage challenge, uint256 actions) private {
     if (challenge.bestCount == 0 || actions > challenge.bestScore) {
       challenge.bestScore = actions;
@@ -288,12 +345,10 @@ library ChallengeSettlementLogic {
       return account == challenge.creator;
     }
 
-    if ($.participantStatus[challengeId][account] != ChallengeTypes.ParticipantStatus.Joined) {
-      return false;
-    }
-
-    uint256 actions = _getParticipantActions(challenge, account);
-    return actions == challenge.bestScore;
+    // Read the snapshot taken at completeChallenge time. The actions == bestScore comparison and the
+    // personhood filter were both applied then; re-evaluating either one live would let the claimable
+    // set drift away from `bestCount` (see `completeChallenge` for the rationale).
+    return $.isEligibleWinner[challengeId][account];
   }
 
   function _refundAmount(
@@ -310,11 +365,17 @@ library ChallengeSettlementLogic {
     return account == challenge.creator ? challenge.totalPrize : 0;
   }
 
-  function _payoutRecipientCount(ChallengeTypes.Challenge storage challenge) private view returns (uint256) {
+  function _payoutRecipientCount(
+    uint256 challengeId,
+    ChallengeTypes.Challenge storage challenge
+  ) private view returns (uint256) {
     if (challenge.settlementMode == ChallengeTypes.SettlementMode.CreatorRefund) {
       return 1;
     }
-    return challenge.bestCount;
+    // Bind the divisor to the snapshot: anything else (including `bestCount`) re-opens the door to
+    // diverging from the claimable membership and stranding a per-winner share in the contract.
+    ChallengeStorageTypes.ChallengesStorage storage $ = ChallengeStorageTypes.getChallengesStorage();
+    return $.eligibleWinnerCount[challengeId];
   }
 
   function _payoutAmount(

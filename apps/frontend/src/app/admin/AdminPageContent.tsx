@@ -13,6 +13,7 @@ import { ClaimXAppAllocations } from "./components/ClaimXAppAllocations"
 import { ContractsDetails } from "./components/ContractsDetails"
 import { GMSetMaxLevel } from "./components/GMSetMaxLevel"
 import { ManageCreatorsNFT } from "./components/ManageCreatorsNFT"
+import { MigrationTab } from "./components/Migration/MigrationTab"
 import { Pause } from "./components/Pause"
 import { StartRoundCard } from "./components/StartRoundCard/StartRoundCard"
 import { UpdateAppsEligibility } from "./components/UpdateAppsEligibility"
@@ -72,6 +73,7 @@ export const AdminPageContent = () => {
             {canSeePauseTab && <option value="pausing">{"Pausing"}</option>}
             {canSeeVeBetterPassportTab && <option value="vebetter-passport">{"VeBetter Passport"}</option>}
             {canSeeGalaxyMemberTab && <option value="galaxy-member">{"Galaxy Member"}</option>}
+            <option value="roles-migration">{"Roles Migration"}</option>
           </NativeSelect.Field>
           <NativeSelect.Indicator />
         </NativeSelect.Root>
@@ -97,6 +99,7 @@ export const AdminPageContent = () => {
         {canSeePauseTab && <Tabs.Trigger value="pausing">{"Pausing"}</Tabs.Trigger>}
         {canSeeVeBetterPassportTab && <Tabs.Trigger value="vebetter-passport">{"VeBetter Passport"}</Tabs.Trigger>}
         {canSeeGalaxyMemberTab && <Tabs.Trigger value="galaxy-member">{"Galaxy Member"}</Tabs.Trigger>}
+        <Tabs.Trigger value="roles-migration">{"Roles Migration"}</Tabs.Trigger>
       </Tabs.List>
 
       <Tabs.Content value="emissions">
@@ -159,6 +162,10 @@ export const AdminPageContent = () => {
           </Grid>
         </Tabs.Content>
       )}
+
+      <Tabs.Content value="roles-migration">
+        <MigrationTab />
+      </Tabs.Content>
     </Tabs.Root>
   )
 }

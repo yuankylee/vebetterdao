@@ -131,7 +131,9 @@ library ChallengeCoreLogic {
     if (!$.b3tr.transferFrom(msg.sender, address(this), params.stakeAmount)) revert IChallenges.TransferFailed();
 
     // In stake challenges the creator escrows the first stake and counts as the first participant.
+    // The creator effectively joins the quest, so they must satisfy the same passport check applied in joinChallenge.
     if (params.kind == ChallengeTypes.ChallengeKind.Stake) {
+      _requirePerson($, msg.sender);
       _addParticipant(challengeId, msg.sender);
     }
 
@@ -174,6 +176,9 @@ library ChallengeCoreLogic {
     if ($.participantStatus[challengeId][msg.sender] == ChallengeTypes.ParticipantStatus.Joined) {
       revert IChallenges.AlreadyParticipating(challengeId, msg.sender);
     }
+
+    // Block sybils and blacklisted accounts from earning quest rewards. Refund paths intentionally remain open.
+    _requirePerson($, msg.sender);
 
     // Split Win has no participant cap by design — the cap only applies to Max Actions challenges.
     if (
@@ -550,6 +555,20 @@ library ChallengeCoreLogic {
 
     challenge.declined.pop();
     delete $.declinedIndexPlusOne[challengeId][invitee];
+  }
+
+  /// @dev Rejects only sybils explicitly flagged in VeBetterPassport (blacklist or over the signaling threshold).
+  /// `isPerson` is intentionally NOT used: it returns false for users that delegated their passport via
+  /// veDelegate, which would lock honest delegators out of joining/claiming. The soft check below preserves
+  /// the sybil-resistance goal without punishing legitimate delegators.
+  function _requirePerson(ChallengeStorageTypes.ChallengesStorage storage $, address account) private view {
+    if ($.veBetterPassport.isBlacklisted(account)) {
+      revert IChallenges.NotVerifiedPerson(account, "User is blacklisted");
+    }
+    uint256 threshold = $.veBetterPassport.signalingThreshold();
+    if (threshold != 0 && $.veBetterPassport.signaledCounter(account) >= threshold) {
+      revert IChallenges.NotVerifiedPerson(account, "User has been signaled too many times");
+    }
   }
 
   function _isChallengeValid(ChallengeTypes.Challenge storage challenge) private view returns (bool) {

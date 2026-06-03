@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next"
 
 import { type ChallengeDetail, ChallengeKind, ChallengeStatus, ChallengeType } from "@/api/challenges/types"
 import { useChallengeParticipantActions } from "@/api/challenges/useChallengeParticipantActions"
+import { useChallengePersonhoodBatch } from "@/api/challenges/useChallengePersonhood"
 
 import { AddChallengeInvitesModal } from "../../shared/AddChallengeInvitesModal"
 
@@ -90,14 +91,32 @@ export const ChallengeParticipantsCard = ({ challenge }: ChallengeParticipantsCa
       isSplitWin ? challenge.winners : undefined,
     )
 
+  // Personhood lookup for the entire loaded leaderboard + viewer so we can hide ineligible
+  // accounts from the main card (they still surface inside the leaderboard modal's collapsible).
+  const leaderboardAddresses = useMemo(
+    () => [
+      ...leaderboard.map(e => e.participant.toLowerCase()),
+      ...(account?.address ? [account.address.toLowerCase()] : []),
+    ],
+    [leaderboard, account?.address],
+  )
+  const { data: personhoodMap } = useChallengePersonhoodBatch(leaderboardAddresses)
+
+  // Drop non-persons before slicing to the top-N display. While personhood is still loading we
+  // treat everyone as eligible to avoid a blank card flash.
+  const eligibleLeaderboard = useMemo(
+    () => leaderboard.filter(e => personhoodMap?.[e.participant.toLowerCase()]?.isPerson !== false),
+    [leaderboard, personhoodMap],
+  )
+
   const rankings = useMemo(
     () =>
-      leaderboard.slice(0, LEADERBOARD_SIZE).map(entry => ({
+      eligibleLeaderboard.slice(0, LEADERBOARD_SIZE).map(entry => ({
         position: entry.position,
         address: entry.participant,
         score: entry.actions,
       })),
-    [leaderboard],
+    [eligibleLeaderboard],
   )
 
   const viewerRanking = useMemo(() => {
@@ -196,18 +215,23 @@ export const ChallengeParticipantsCard = ({ challenge }: ChallengeParticipantsCa
 
     return (
       <>
-        {rankings.map(ranking => (
-          <ChallengeActionsRow
-            key={ranking.address}
-            {...ranking}
-            position={isPending || isSplitWin ? 0 : ranking.position}
-            tag={isPending ? t("Joined") : undefined}
-            isWinner={isWinnerAddress(ranking.address, ranking.position)}
-            hideScore={isPending}
-            isYou={AddressUtils.compareAddresses(ranking.address, account?.address ?? "")}
-            onClick={() => setSelectedParticipant(ranking)}
-          />
-        ))}
+        {rankings.map(ranking => {
+          const personhood = personhoodMap?.[ranking.address.toLowerCase()]
+          return (
+            <ChallengeActionsRow
+              key={ranking.address}
+              {...ranking}
+              position={isPending || isSplitWin ? 0 : ranking.position}
+              tag={isPending ? t("Joined") : undefined}
+              isWinner={isWinnerAddress(ranking.address, ranking.position)}
+              hideScore={isPending}
+              isYou={AddressUtils.compareAddresses(ranking.address, account?.address ?? "")}
+              isPerson={personhood?.isPerson ?? true}
+              personhoodReason={personhood?.reason}
+              onClick={() => setSelectedParticipant(ranking)}
+            />
+          )
+        })}
         {pendingInviteeRows.length > 0 && (
           <>
             <Separator w="full" h={1} color="border.secondary" />
@@ -279,6 +303,8 @@ export const ChallengeParticipantsCard = ({ challenge }: ChallengeParticipantsCa
                   isYou
                   isWinner={isWinnerAddress(viewerRanking.address, viewerRanking.position)}
                   hideScore={isPending}
+                  isPerson={personhoodMap?.[viewerRanking.address.toLowerCase()]?.isPerson ?? true}
+                  personhoodReason={personhoodMap?.[viewerRanking.address.toLowerCase()]?.reason}
                   onClick={() => setSelectedParticipant(viewerRanking)}
                 />
               </>
