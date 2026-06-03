@@ -28,8 +28,9 @@ import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils
 
 /// @title XAppReviewManager
 /// @notice Handles user reviews and ratings for X2Earn apps in the VeBetterDAO ecosystem.
-/// @dev Upgradeable contract with ERC-7201 namespaced storage. Users who have received rewards
-/// from an app can rate it (1-5 stars) and leave a text review. Other users can upvote, downvote,
+/// @dev Upgradeable contract with ERC-7201 namespaced storage. Rating (1-5 stars) and text reviews
+/// are independent operations: users can rate without reviewing and vice versa. Each user has at most
+/// one rating per app (upsert via submitRating/updateRating). Other users can upvote, downvote,
 /// or report reviews. Reviews are auto-hidden after 20 reports.
 contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     // ---------------- Roles ----------------
@@ -56,7 +57,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         uint256 id;
         bytes32 appId;
         address reviewer;
-        uint8 rating;
+        uint8 rating; // deprecated — kept for storage-layout compatibility
         string title;
         string content;
         uint256 createdAt;
@@ -83,15 +84,15 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     error CannotVoteOwnReview(uint256 reviewId);
     error AlreadyVoted(uint256 reviewId, address voter, VoteType existingVote);
     error UnauthorizedUser(address user);
+    error AlreadyRated(bytes32 appId, address rater);
 
     // ---------------- Events ----------------
     event ReviewCreated(
         uint256 indexed reviewId,
         bytes32 indexed appId,
-        address indexed reviewer,
-        uint8 rating
+        address indexed reviewer
     );
-    event ReviewUpdated(uint256 indexed reviewId, uint8 rating);
+    event ReviewUpdated(uint256 indexed reviewId);
     event ReviewVoted(
         uint256 indexed reviewId,
         address indexed voter,
@@ -99,6 +100,8 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     );
     event ReviewHidden(uint256 indexed reviewId);
     event ReviewUnhidden(uint256 indexed reviewId);
+    event RatingSubmitted(bytes32 indexed appId, address indexed rater, uint8 rating);
+    event RatingUpdated(bytes32 indexed appId, address indexed rater, uint8 rating);
 
     // ---------------- Storage ----------------
     /// @custom:storage-location erc7201:b3tr.storage.XAppReviewManager
@@ -112,6 +115,10 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         mapping(bytes32 => uint256) appReviewCount;
         // appId => sum of all ratings * 100 (for precision, divide by count to get avg)
         mapping(bytes32 => uint256) appRatingSum;
+        // appId => rater => rating (1-5), 0 means not rated
+        mapping(bytes32 => mapping(address => uint8)) userRatings;
+        // appId => number of unique raters
+        mapping(bytes32 => uint256) appRatingCount;
     }
 
     // keccak256(abi.encode(uint256(keccak256("b3tr.storage.XAppReviewManager")) - 1)) & ~bytes32(uint256(0xff))
@@ -162,7 +169,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) {}
 
     function version() public pure returns (string memory) {
-        return "1";
+        return "2";
     }
 
     // ---------------- External: Review CRUD ----------------
@@ -170,17 +177,14 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     /// @notice Creates a review for an app. Caller must have received rewards from the app
     /// (eligibility is verified off-chain via the indexer before the transaction).
     /// @param appId The hashed app ID from X2EarnApps.
-    /// @param rating Star rating (1-5).
     /// @param title Review title (max 200 chars).
     /// @param content Review content (max 2000 chars).
     /// @return reviewId The ID of the newly created review.
     function createReview(
         bytes32 appId,
-        uint8 rating,
         string calldata title,
         string calldata content
     ) external returns (uint256 reviewId) {
-        if (rating < MIN_RATING || rating > MAX_RATING) revert InvalidRating(rating);
         if (bytes(title).length > MAX_TITLE_LENGTH) revert TitleTooLong(bytes(title).length, MAX_TITLE_LENGTH);
         if (bytes(content).length > MAX_CONTENT_LENGTH) revert ContentTooLong(bytes(content).length, MAX_CONTENT_LENGTH);
 
@@ -191,7 +195,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
             id: reviewId,
             appId: appId,
             reviewer: msg.sender,
-            rating: rating,
+            rating: 0,
             title: title,
             content: content,
             createdAt: block.timestamp,
@@ -205,19 +209,16 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         $.appReviewIds[appId].push(reviewId);
         $.userReviewIds[msg.sender].push(reviewId);
         $.appReviewCount[appId]++;
-        $.appRatingSum[appId] += uint256(rating) * 100;
 
-        emit ReviewCreated(reviewId, appId, msg.sender, rating);
+        emit ReviewCreated(reviewId, appId, msg.sender);
     }
 
     /// @notice Edits an existing review. Only the original author can edit.
     /// @param reviewId The ID of the review to edit.
-    /// @param rating New star rating (1-5).
     /// @param title New title (max 200 chars).
     /// @param content New content (max 2000 chars).
     function editReview(
         uint256 reviewId,
-        uint8 rating,
         string calldata title,
         string calldata content
     ) external {
@@ -225,19 +226,48 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         Review storage review = $.reviews[reviewId];
         if (review.id == 0) revert ReviewNotFound(reviewId);
         if (review.reviewer != msg.sender) revert NotReviewAuthor(reviewId, msg.sender);
-        if (rating < MIN_RATING || rating > MAX_RATING) revert InvalidRating(rating);
         if (bytes(title).length > MAX_TITLE_LENGTH) revert TitleTooLong(bytes(title).length, MAX_TITLE_LENGTH);
         if (bytes(content).length > MAX_CONTENT_LENGTH) revert ContentTooLong(bytes(content).length, MAX_CONTENT_LENGTH);
 
-        // Update rating sum
-        $.appRatingSum[review.appId] = $.appRatingSum[review.appId] - uint256(review.rating) * 100 + uint256(rating) * 100;
-
-        review.rating = rating;
         review.title = title;
         review.content = content;
         review.updatedAt = block.timestamp;
 
-        emit ReviewUpdated(reviewId, rating);
+        emit ReviewUpdated(reviewId);
+    }
+
+    // ---------------- External: Rating ----------------
+
+    /// @notice Submits a rating for an app. Each user can rate an app once; subsequent calls revert.
+    /// @param appId The hashed app ID from X2EarnApps.
+    /// @param rating Star rating (1-5).
+    function submitRating(bytes32 appId, uint8 rating) external {
+        if (rating < MIN_RATING || rating > MAX_RATING) revert InvalidRating(rating);
+
+        XAppReviewManagerStorage storage $ = _getStorage();
+        if ($.userRatings[appId][msg.sender] != 0) revert AlreadyRated(appId, msg.sender);
+
+        $.userRatings[appId][msg.sender] = rating;
+        $.appRatingCount[appId]++;
+        $.appRatingSum[appId] += uint256(rating) * 100;
+
+        emit RatingSubmitted(appId, msg.sender, rating);
+    }
+
+    /// @notice Updates an existing rating for an app.
+    /// @param appId The hashed app ID from X2EarnApps.
+    /// @param rating New star rating (1-5).
+    function updateRating(bytes32 appId, uint8 rating) external {
+        if (rating < MIN_RATING || rating > MAX_RATING) revert InvalidRating(rating);
+
+        XAppReviewManagerStorage storage $ = _getStorage();
+        uint8 previous = $.userRatings[appId][msg.sender];
+        if (previous == 0) revert UnauthorizedUser(msg.sender);
+
+        $.appRatingSum[appId] = $.appRatingSum[appId] - uint256(previous) * 100 + uint256(rating) * 100;
+        $.userRatings[appId][msg.sender] = rating;
+
+        emit RatingUpdated(appId, msg.sender, rating);
     }
 
     // ---------------- External: Voting ----------------
@@ -324,13 +354,9 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
 
     /// @notice Returns aggregate review stats for an app.
     /// @return count Total number of reviews.
-    /// @return avgRating Average rating scaled by 100 (divide by 100 for display).
+    /// @return avgRating Deprecated — always 0. Use getAppRatingStats() for rating data.
     function getAppReviewStats(bytes32 appId) external view returns (uint256 count, uint256 avgRating) {
-        XAppReviewManagerStorage storage $ = _getStorage();
-        count = $.appReviewCount[appId];
-        if (count > 0) {
-            avgRating = $.appRatingSum[appId] / count;
-        }
+        count = _getStorage().appReviewCount[appId];
     }
 
     /// @notice Returns the vote history for a review.
@@ -348,5 +374,21 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     /// @notice Returns the total number of reviews created (the next review ID minus 1).
     function totalReviews() external view returns (uint256) {
         return _getStorage().nextReviewId - 1;
+    }
+
+    /// @notice Returns a user's rating for an app (0 if not rated).
+    function getUserRating(bytes32 appId, address user) external view returns (uint8) {
+        return _getStorage().userRatings[appId][user];
+    }
+
+    /// @notice Returns aggregate rating stats for an app.
+    /// @return count Total number of unique raters.
+    /// @return avgRating Average rating scaled by 100 (divide by 100 for display).
+    function getAppRatingStats(bytes32 appId) external view returns (uint256 count, uint256 avgRating) {
+        XAppReviewManagerStorage storage $ = _getStorage();
+        count = $.appRatingCount[appId];
+        if (count > 0) {
+            avgRating = $.appRatingSum[appId] / count;
+        }
     }
 }
