@@ -48,6 +48,11 @@ export type XAppMetadata = {
     app_roadmap?: { image: string; description: string }
     ecosystem_partners?: string[]
   }
+  badgeSettings?: {
+    topEcosystemDapp?: { isPrivate: boolean }
+    topDistributionPerformer?: { isPrivate: boolean }
+    navigatorsPick?: { isPrivate: boolean }
+  }
 }
 /**
   dapp-kit broke the pre-fetching

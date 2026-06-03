@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { FaRegStar, FaStar, FaStarHalfAlt, FaThumbsDown, FaThumbsUp } from "react-icons/fa"
 import { MdFrontHand } from "react-icons/md"
 
-import { useAppReviewStats } from "../../../../../api/contracts/xApps/hooks/useAppReviewStats"
+import { useAppRatingStats } from "../../../../../api/contracts/xApps/hooks/useAppRatingStats"
 import { Review } from "../../../../../api/reviews/types"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
@@ -42,10 +42,9 @@ const StarRating = ({ avgRating }: { avgRating: bigint }) => {
 }
 
 const ReviewCard = ({ review }: { review: Review }) => {
-  const total = review.upvotes + review.downvotes + review.reports
-  const upPct = total > 0 ? Math.round((review.upvotes / total) * 100) : 0
-  const downPct = total > 0 ? Math.round((review.downvotes / total) * 100) : 0
-  const reportPct = total > 0 ? Math.round((review.reports / total) * 100) : 0
+  const upPct = Math.round(review.upvotes.percentage)
+  const downPct = Math.round(review.downvotes.percentage)
+  const reportPct = Math.round(review.reports.percentage)
 
   return (
     <Box bg="gray.50" borderRadius="xl" p={4}>
@@ -96,8 +95,8 @@ export const AppRatingsAndReviews = () => {
   const { open: openWalletModal } = useWalletModal()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data: statsData, isLoading: statsLoading } = useAppReviewStats(appId)
-  const { data: reviewsData, isLoading: reviewsLoading, refetch } = useAppReviews(appId)
+  const { data: statsData, isLoading: statsLoading } = useAppRatingStats(appId)
+  const { data: reviewsData, isLoading: reviewsLoading, refetch } = useAppReviews(appId, { wallet: account?.address })
 
   const count = (statsData as { count: bigint; avgRating: bigint } | undefined)?.count ?? 0n
   const avgRating = (statsData as { count: bigint; avgRating: bigint } | undefined)?.avgRating ?? 0n

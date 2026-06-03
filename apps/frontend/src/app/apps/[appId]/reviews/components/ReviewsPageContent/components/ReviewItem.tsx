@@ -27,10 +27,9 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit }: Props) => {
   const { t } = useTranslation()
   const [isResultsOpen, setIsResultsOpen] = useState(false)
   const isOwn = currentUserAddress?.toLowerCase() === review.author.toLowerCase()
-  const total = review.upvotes + review.downvotes + review.reports
-  const upPct = total > 0 ? Math.round((review.upvotes / total) * 100) : 0
-  const downPct = total > 0 ? Math.round((review.downvotes / total) * 100) : 0
-  const reportPct = total > 0 ? Math.round((review.reports / total) * 100) : 0
+  const upPct = Math.round(review.upvotes.percentage)
+  const downPct = Math.round(review.downvotes.percentage)
+  const reportPct = Math.round(review.reports.percentage)
 
   return (
     <Box borderWidth={1} borderColor="gray.200" borderRadius="xl" p={4} bg="white" overflow="hidden">

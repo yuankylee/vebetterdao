@@ -28,12 +28,14 @@ type Props = {
   endorsementStatus: XAppStatus
   endorsementThreshold?: string
   isEndorsementStatusLoading: boolean
+  noCard?: boolean
 }
 export const AppEndorsementInfoCard = ({
   endorsementScore,
   endorsementStatus,
   endorsementThreshold,
   isEndorsementStatusLoading,
+  noCard = false,
 }: Props) => {
   const { t } = useTranslation()
   const { app } = useCurrentAppInfo()
@@ -163,52 +165,65 @@ export const AppEndorsementInfoCard = ({
     app?.name,
   ])
 
+  const header = (
+    <HStack justifyContent="space-between" alignItems="center" w="full">
+      <Heading size="xl">{t("Endorsement")}</Heading>
+      <Link
+        textStyle="md"
+        fontWeight="semibold"
+        color="actions.secondary.text-lighter"
+        onClick={onOpenEndorsementInfoModal}>
+        {t("History")}
+        <UilArrowUpRight />
+      </Link>
+    </HStack>
+  )
+
+  const body = (
+    <Stack gap={6} w="full">
+      <Skeleton loading={isEndorsementStatusLoading}>
+        <EndorsementStatusCallout endorsementStatus={endorsementStatus} />
+      </Skeleton>
+
+      <Stack direction="column" gap={4} w="full" justify="space-between" alignItems="center">
+        <EndorsementDetails
+          appId={app?.id ?? ""}
+          endorsementScore={endorsementScore}
+          endorsementStatus={endorsementStatus}
+          endorsementThreshold={endorsementThreshold}
+          isEndorsementStatusLoading={isEndorsementStatusLoading}
+          isUserAppEndorser={nodesEndorsingApp.length > 0}
+          endorsers={appEndorsers || []}
+          isAppEndorsersLoading={isAppEndorsersLoading}
+        />
+      </Stack>
+    </Stack>
+  )
+
+  const footer =
+    actionButtons.length > 0 ? (
+      <Skeleton loading={isUserRolesDataLoading || isEndorsementStatusLoading || isUserNodesLoading} w="full">
+        <VStack gap={2} w={"full"}>
+          {actionButtons}
+        </VStack>
+      </Skeleton>
+    ) : null
+
   return (
     <>
-      <Card.Root w={"full"} variant="primary" gap={8} h="full">
-        <Card.Header>
-          <HStack justifyContent="space-between" alignItems="center" w="full">
-            <Heading size="xl">{t("Endorsement")}</Heading>
-            <Link
-              textStyle="md"
-              fontWeight="semibold"
-              color="actions.secondary.text-lighter"
-              onClick={onOpenEndorsementInfoModal}>
-              {t("History")}
-              <UilArrowUpRight />
-            </Link>
-          </HStack>
-        </Card.Header>
-
-        <Card.Body>
-          <Stack gap={6} w="full">
-            <Skeleton loading={isEndorsementStatusLoading}>
-              <EndorsementStatusCallout endorsementStatus={endorsementStatus} />
-            </Skeleton>
-
-            <Stack direction="column" gap={4} w="full" justify="space-between" alignItems="center">
-              <EndorsementDetails
-                appId={app?.id ?? ""}
-                endorsementScore={endorsementScore}
-                endorsementStatus={endorsementStatus}
-                endorsementThreshold={endorsementThreshold}
-                isEndorsementStatusLoading={isEndorsementStatusLoading}
-                isUserAppEndorser={nodesEndorsingApp.length > 0}
-                endorsers={appEndorsers || []}
-                isAppEndorsersLoading={isAppEndorsersLoading}></EndorsementDetails>
-            </Stack>
-          </Stack>
-        </Card.Body>
-        {actionButtons.length > 0 && (
-          <Card.Footer>
-            <Skeleton loading={isUserRolesDataLoading || isEndorsementStatusLoading || isUserNodesLoading} w="full">
-              <VStack gap={2} w={"full"}>
-                {actionButtons}
-              </VStack>
-            </Skeleton>
-          </Card.Footer>
-        )}
-      </Card.Root>
+      {noCard ? (
+        <Stack gap={6} w="full" h="full">
+          {header}
+          {body}
+          {footer}
+        </Stack>
+      ) : (
+        <Card.Root w={"full"} variant="primary" gap={8} h="full">
+          <Card.Header>{header}</Card.Header>
+          <Card.Body>{body}</Card.Body>
+          {footer && <Card.Footer>{footer}</Card.Footer>}
+        </Card.Root>
+      )}
 
       <EndorseAppModal xApp={app} isOpen={isEndorsementModalOpen} onClose={onCloseEndorsementModal} />
       <UnendorseAppModal

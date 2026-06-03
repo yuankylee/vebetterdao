@@ -39,7 +39,6 @@ export const ReviewsPageContent = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortBy, setSortBy] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalInitialRating, setModalInitialRating] = useState(0)
   const [modalExistingReview, setModalExistingReview] = useState<Review | null | undefined>(undefined)
 
   const { data: statsData } = useAppReviewStats(appId)
@@ -54,16 +53,16 @@ export const ReviewsPageContent = () => {
     page: currentPage - 1,
     size: PAGE_SIZE,
     sortBy: sortBy || undefined,
+    wallet: account?.address,
   })
 
   const reviews = reviewsData?.data ?? []
 
-  const handleWriteReview = (initialRating = 0, existingReview?: Review | null) => {
+  const handleWriteReview = (existingReview?: Review | null) => {
     if (!account?.address) {
       openWalletModal()
       return
     }
-    setModalInitialRating(initialRating)
     setModalExistingReview(existingReview ?? null)
     setIsModalOpen(true)
   }
@@ -166,7 +165,7 @@ export const ReviewsPageContent = () => {
                       key={review.id}
                       review={review}
                       currentUserAddress={account?.address}
-                      onEdit={r => handleWriteReview(r.rating, r)}
+                      onEdit={r => handleWriteReview(r)}
                     />
                   ))}
                 </Stack>
@@ -200,7 +199,7 @@ export const ReviewsPageContent = () => {
 
           {/* Rating sidebar */}
           <GridItem>
-            <ReviewRatingsPanel appId={appId} onWriteReview={handleWriteReview} />
+            <ReviewRatingsPanel appId={appId} />
           </GridItem>
         </Grid>
       </Stack>
@@ -210,7 +209,6 @@ export const ReviewsPageContent = () => {
         onClose={() => setIsModalOpen(false)}
         appId={appId}
         existingReview={modalExistingReview}
-        initialRating={modalInitialRating}
         onSuccess={() => {
           refetch()
           setIsModalOpen(false)

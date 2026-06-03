@@ -38,6 +38,7 @@ import { useCurrentAppVeWorldBanner } from "../../../hooks/useCurrentAppVeWorldB
 import { useCurrentAppVeWorldFeaturedImage } from "../../../hooks/useCurrentAppVeWorldFeaturedImage"
 
 import { AppVersionNotes } from "./components/AppVersionNotes/AppVersionNotes"
+import { EditAppBadges } from "./components/EditAppBadges"
 import { EditAppBanner } from "./components/EditAppBanner"
 import { EditAppCategories } from "./components/EditAppCategories/EditAppCategories"
 import { EditAppLogo } from "./components/EditAppLogo"
@@ -81,6 +82,11 @@ export type EditAppForm = {
   appRoadmapDescription: string
   ecosystemPartners: string[]
   tweetLinks: string[]
+  badgeSettings: {
+    topEcosystemDapp: { isPrivate: boolean }
+    topDistributionPerformer: { isPrivate: boolean }
+    navigatorsPick: { isPrivate: boolean }
+  }
 }
 
 enum EditAppPageStep {
@@ -135,6 +141,13 @@ export const EditAppPageContent = () => {
       appRoadmapDescription: appMetadata?.more_details?.app_roadmap?.description ?? "",
       ecosystemPartners: appMetadata?.more_details?.ecosystem_partners ?? [],
       tweetLinks: (appMetadata?.tweets ?? []).map(normalizeXLink),
+      badgeSettings: {
+        topEcosystemDapp: { isPrivate: appMetadata?.badgeSettings?.topEcosystemDapp?.isPrivate ?? false },
+        topDistributionPerformer: {
+          isPrivate: appMetadata?.badgeSettings?.topDistributionPerformer?.isPrivate ?? false,
+        },
+        navigatorsPick: { isPrivate: appMetadata?.badgeSettings?.navigatorsPick?.isPrivate ?? false },
+      },
     },
   })
   const {
@@ -204,6 +217,7 @@ export const EditAppPageContent = () => {
               ecosystem_partners: data.ecosystemPartners.length > 0 ? data.ecosystemPartners : undefined,
             }
           : undefined,
+        badgeSettings: data.badgeSettings,
       })
       return metadataUri
     },
@@ -257,6 +271,13 @@ export const EditAppPageContent = () => {
         appRoadmapDescription: appMetadata.more_details?.app_roadmap?.description ?? "",
         ecosystemPartners: appMetadata.more_details?.ecosystem_partners ?? [],
         tweetLinks: (appMetadata.tweets ?? []).map(normalizeXLink),
+        badgeSettings: {
+          topEcosystemDapp: { isPrivate: appMetadata.badgeSettings?.topEcosystemDapp?.isPrivate ?? false },
+          topDistributionPerformer: {
+            isPrivate: appMetadata.badgeSettings?.topDistributionPerformer?.isPrivate ?? false,
+          },
+          navigatorsPick: { isPrivate: appMetadata.badgeSettings?.navigatorsPick?.isPrivate ?? false },
+        },
       })
     }
   }, [appMetadata, logo, banner, screenshots, veWorldBanner, veWorldFeaturedImage, form])
@@ -412,6 +433,7 @@ export const EditAppPageContent = () => {
             <EditAppSocialUrls form={form} />
           </VStack>
           <VStack flex={1.5} gap={6} align="stretch">
+            <EditAppBadges form={form} />
             <EditSocialMediaUpdates form={form} />
             <AppVersionNotes appId={appId} currentMetadata={appMetadata} />
           </VStack>

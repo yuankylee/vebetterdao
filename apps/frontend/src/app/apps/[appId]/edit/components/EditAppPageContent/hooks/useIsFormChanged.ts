@@ -46,6 +46,14 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     JSON.stringify(appMetadata?.more_details?.ecosystem_partners ?? [])
   const isTweetLinksChanged =
     JSON.stringify(form.watch("tweetLinks").filter(Boolean)) !== JSON.stringify(appMetadata?.tweets ?? [])
+  const badgeSettingsValue = form.watch("badgeSettings")
+  const isBadgeSettingsChanged =
+    (badgeSettingsValue?.topEcosystemDapp?.isPrivate ?? false) !==
+      (appMetadata?.badgeSettings?.topEcosystemDapp?.isPrivate ?? false) ||
+    (badgeSettingsValue?.topDistributionPerformer?.isPrivate ?? false) !==
+      (appMetadata?.badgeSettings?.topDistributionPerformer?.isPrivate ?? false) ||
+    (badgeSettingsValue?.navigatorsPick?.isPrivate ?? false) !==
+      (appMetadata?.badgeSettings?.navigatorsPick?.isPrivate ?? false)
   return (
     isNameChanged ||
     isDescriptionChanged ||
@@ -64,6 +72,7 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     isTeamBackgroundChanged ||
     isAppRoadmapChanged ||
     isEcosystemPartnersChanged ||
-    isTweetLinksChanged
+    isTweetLinksChanged ||
+    isBadgeSettingsChanged
   )
 }

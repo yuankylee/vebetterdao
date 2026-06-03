@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem, Stack } from "@chakra-ui/react"
+import { Grid, GridItem, Stack } from "@chakra-ui/react"
 import { compareAddresses } from "@repo/utils/AddressUtils"
 import { useWallet } from "@vechain/vechain-kit"
 import { useMemo } from "react"
@@ -9,10 +9,10 @@ import { useIsAppAdmin } from "../../../../api/contracts/xApps/hooks/useIsAppAdm
 import { useIsAppModerator } from "../../../../api/contracts/xApps/hooks/useIsAppModerator"
 import { useCurrentAppInfo } from "../hooks/useCurrentAppInfo"
 
+import { AppBadgesAndEndorsementCard } from "./AppBadgesAndEndorsementCard/AppBadgesAndEndorsementCard"
 import { AppBalanceCard } from "./AppBalanceCard/AppBalanceCard"
 import { AppCreationSteps } from "./AppCreationSteps/AppCreationSteps"
 import { AppDetailOverview } from "./AppDetailOverview/AppDetailOverview"
-import { AppEndorsementInfoCard } from "./AppEndorsementInfoCard/AppEndorsementInfoCard"
 import { AppRatingsAndReviews } from "./AppRatingsAndReviews/AppRatingsAndReviews"
 import { AppRewardStatsCard } from "./AppRewardStatsCard"
 import { AppScreenshots } from "./AppScreenshots"
@@ -56,20 +56,14 @@ export const AppDetailPageContent = () => {
             isEndorsementStatusLoading={isEndorsementStatusLoading}
           />
           <AppScreenshots />
-          <Stack direction={["column", "column", "row"]} gap={4} justifyContent="stretch" w="full" h="full">
-            <Box flex={2} minW={0}>
-              <AppRewardStatsCard />
-            </Box>
-
-            <Box flex={1} minW={0}>
-              <AppEndorsementInfoCard
-                endorsementScore={endorsementScore}
-                endorsementStatus={endorsementStatus}
-                endorsementThreshold={maxPointsPerAppValue?.toString()}
-                isEndorsementStatusLoading={isEndorsementStatusLoading}
-              />
-            </Box>
-          </Stack>
+          <AppBadgesAndEndorsementCard
+            appId={app?.id ?? ""}
+            endorsementScore={endorsementScore}
+            endorsementStatus={endorsementStatus}
+            endorsementThreshold={maxPointsPerAppValue?.toString()}
+            isEndorsementStatusLoading={isEndorsementStatusLoading}
+          />
+          <AppRewardStatsCard />
           {shouldRenderBalance && <AppBalanceCard />}
         </Stack>
       </GridItem>

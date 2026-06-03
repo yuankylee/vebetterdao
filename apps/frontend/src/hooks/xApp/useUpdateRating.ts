@@ -5,33 +5,32 @@ import { useCallback } from "react"
 
 import { useBuildTransaction } from "../useBuildTransaction"
 
-const ReviewManagerInterface = new Interface(["function editReview(uint256 reviewId, string title, string content)"])
+const ReviewManagerInterface = new Interface(["function updateRating(bytes32 appId, uint8 rating)"])
 
 type BuildClausesProps = {
-  reviewId: number
-  title: string
-  content: string
+  appId: string
+  rating: number
 }
 
-export type UseEditReviewReturnValue = {
+export type UseUpdateRatingReturnValue = {
   sendTransaction: (data: BuildClausesProps) => Promise<void>
 } & Omit<UseSendTransactionReturnValue, "sendTransaction">
 
-export const useEditReview = ({
+export const useUpdateRating = ({
   onSuccess,
   onFailure,
 }: {
   onSuccess?: () => void
   onFailure?: () => void
-} = {}): UseEditReviewReturnValue => {
+} = {}): UseUpdateRatingReturnValue => {
   const buildClauses = useCallback(
-    ({ reviewId, title, content }: BuildClausesProps): EnhancedClause[] => [
+    ({ appId, rating }: BuildClausesProps): EnhancedClause[] => [
       {
         to: getConfig().xAppReviewManagerContractAddress ?? "",
         value: 0,
-        data: ReviewManagerInterface.encodeFunctionData("editReview", [reviewId, title, content]),
-        comment: "Edit app review",
-        abi: JSON.parse(JSON.stringify(ReviewManagerInterface.getFunction("editReview"))),
+        data: ReviewManagerInterface.encodeFunctionData("updateRating", [appId, rating]),
+        comment: "Update app rating",
+        abi: JSON.parse(JSON.stringify(ReviewManagerInterface.getFunction("updateRating"))),
       },
     ],
     [],

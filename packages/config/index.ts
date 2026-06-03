@@ -77,7 +77,7 @@ export type AppConfig = {
   veDelegateContractAddress: string
   nodeUrl: string
   indexerUrl?: string
-  reviewsApiUrl?: string
+  xAppApiUrl?: string
   xAppReviewManagerContractAddress?: string
   network: Network
 

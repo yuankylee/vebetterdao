@@ -6,12 +6,11 @@ import { useCallback } from "react"
 import { useBuildTransaction } from "../useBuildTransaction"
 
 const ReviewManagerInterface = new Interface([
-  "function createReview(bytes32 appId, uint8 rating, string title, string content) returns (uint256 reviewId)",
+  "function createReview(bytes32 appId, string title, string content) returns (uint256 reviewId)",
 ])
 
 type BuildClausesProps = {
   appId: string
-  rating: number
   title: string
   content: string
 }
@@ -28,11 +27,11 @@ export const useSubmitReview = ({
   onFailure?: () => void
 } = {}): UseSubmitReviewReturnValue => {
   const buildClauses = useCallback(
-    ({ appId, rating, title, content }: BuildClausesProps): EnhancedClause[] => [
+    ({ appId, title, content }: BuildClausesProps): EnhancedClause[] => [
       {
         to: getConfig().xAppReviewManagerContractAddress ?? "",
         value: 0,
-        data: ReviewManagerInterface.encodeFunctionData("createReview", [appId, rating, title, content]),
+        data: ReviewManagerInterface.encodeFunctionData("createReview", [appId, title, content]),
         comment: "Submit app review",
         abi: JSON.parse(JSON.stringify(ReviewManagerInterface.getFunction("createReview"))),
       },

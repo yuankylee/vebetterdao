@@ -72,12 +72,8 @@ const VoteBadge = ({ voteType }: { voteType: 1 | 2 | 3 }) => {
   )
 }
 
-const StackedBar = ({ upvotes, downvotes, reports }: { upvotes: number; downvotes: number; reports: number }) => {
-  const total = upvotes + downvotes + reports
-  if (total === 0) return <Box h={2} borderRadius="full" bg="gray.200" w="full" />
-  const upPct = (upvotes / total) * 100
-  const downPct = (downvotes / total) * 100
-  const reportPct = (reports / total) * 100
+const StackedBar = ({ upPct, downPct, reportPct }: { upPct: number; downPct: number; reportPct: number }) => {
+  if (upPct + downPct + reportPct === 0) return <Box h={2} borderRadius="full" bg="gray.200" w="full" />
   return (
     <Box h={2.5} borderRadius="full" overflow="hidden" w="full" display="flex">
       {upPct > 0 && <Box bg="green.400" h="full" style={{ width: `${upPct}%` }} />}
@@ -110,10 +106,10 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
     return () => clearTimeout(timer)
   }, [search])
 
-  const total = review.upvotes + review.downvotes + review.reports
-  const upPct = total > 0 ? Math.round((review.upvotes / total) * 100) : 0
-  const downPct = total > 0 ? Math.round((review.downvotes / total) * 100) : 0
-  const reportPct = total > 0 ? Math.round((review.reports / total) * 100) : 0
+  const total = review.upvotes.count + review.downvotes.count + review.reports.count
+  const upPct = Math.round(review.upvotes.percentage)
+  const downPct = Math.round(review.downvotes.percentage)
+  const reportPct = Math.round(review.reports.percentage)
 
   const { data: votesData, isLoading: votesLoading } = useReviewVotes(isOpen ? review.reviewId : undefined, {
     search: debouncedSearch,
@@ -144,7 +140,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
             <Text fontWeight="bold" fontSize="md">
               {t("Acquisition Records")}
             </Text>
-            <StackedBar upvotes={review.upvotes} downvotes={review.downvotes} reports={review.reports} />
+            <StackedBar upPct={upPct} downPct={downPct} reportPct={reportPct} />
             <Table.Root size="sm" variant="line">
               <Table.Header>
                 <Table.Row>
@@ -163,7 +159,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       <Text fontSize="sm">{t("Upvote")}</Text>
                     </HStack>
                   </Table.Cell>
-                  <Table.Cell>{formatNumber(review.upvotes)}</Table.Cell>
+                  <Table.Cell>{formatNumber(review.upvotes.count)}</Table.Cell>
                   <Table.Cell textAlign="right">{`${upPct}%`}</Table.Cell>
                 </Table.Row>
                 <Table.Row>
@@ -173,7 +169,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       <Text fontSize="sm">{t("Downvote")}</Text>
                     </HStack>
                   </Table.Cell>
-                  <Table.Cell>{formatNumber(review.downvotes)}</Table.Cell>
+                  <Table.Cell>{formatNumber(review.downvotes.count)}</Table.Cell>
                   <Table.Cell textAlign="right">{`${downPct}%`}</Table.Cell>
                 </Table.Row>
                 <Table.Row>
@@ -183,7 +179,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       <Text fontSize="sm">{t("Report content")}</Text>
                     </HStack>
                   </Table.Cell>
-                  <Table.Cell>{formatNumber(review.reports)}</Table.Cell>
+                  <Table.Cell>{formatNumber(review.reports.count)}</Table.Cell>
                   <Table.Cell textAlign="right">{`${reportPct}%`}</Table.Cell>
                 </Table.Row>
                 <Table.Row fontWeight="semibold">
