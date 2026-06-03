@@ -22,6 +22,7 @@
     "start:testnet": "yarn && dotenv -v NEXT_PUBLIC_APP_ENV=testnet -e .env -- turbo start:testnet --",
     "start:mainnet": "yarn && dotenv -v NEXT_PUBLIC_APP_ENV=mainnet -e .env -- turbo start:mainnet --",
     "dev:up": "yarn && dotenv -v NEXT_PUBLIC_APP_ENV=local -v ENDORSE_XAPPS=true -e .env -- vechain-dev up",
+    "dev:up:no-explorer": "yarn && dotenv -v NEXT_PUBLIC_APP_ENV=local -v ENDORSE_XAPPS=true -e .env -- sh -c 'vechain-dev solo up && vechain-dev deploy'",
     "dev:up:xapps-unendorsed": "yarn && dotenv -v NEXT_PUBLIC_APP_ENV=local -e .env -- vechain-dev up",
     "dev:down": "vechain-dev down",
     "dev:clean": "rm -f packages/config/local.ts && vechain-dev clean",
