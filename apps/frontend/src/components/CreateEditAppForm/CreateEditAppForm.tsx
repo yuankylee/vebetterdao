@@ -1,4 +1,4 @@
-import { Button, Card, Field, Heading, Image, InputGroup, Stack, Text, Textarea, VStack } from "@chakra-ui/react"
+import { Button, Card, Field, Heading, Image, Stack, Text, Textarea, VStack } from "@chakra-ui/react"
 import { ChangeEvent, useCallback, useRef } from "react"
 import {
   Control,
@@ -17,7 +17,6 @@ import { notFoundImage } from "@/constants"
 import { blobToBase64 } from "@/utils/BlobUtils"
 
 import { XApp } from "../../api/contracts/xApps/getXApps"
-import { WalletAddressInput } from "../../app/components/Input/WalletAddressInput"
 import {
   AVG_PHONE_WIDTH,
   VEWORLD_BANNER_UPLOAD_GUIDELINES,
@@ -25,9 +24,10 @@ import {
   LOGO_UPLOAD_GUIDELINES,
   VE_WOLRD_SCALING_FACTOR,
 } from "../../constants/XAppsMedia"
-import { AddressIcon } from "../AddressIcon"
-import { FormItem } from "../CustomFormFields/FormItem"
+import { RequiredAsterisk } from "../CustomFormFields/FormItem"
 import { genericValidation, patternUrlCheck } from "../CustomFormFields/validators"
+import { SharedAppFormFields } from "../SharedAppFormFields"
+import { SharedWalletAddressFields } from "../SharedWalletAddressFields"
 import { UploadFileButton } from "../UploadFileButton/UploadFileButton"
 
 import { VeWorldFeaturedImageGuidelines } from "./VeWorldFeaturedImageGuidelines"
@@ -61,11 +61,11 @@ export type CreateEditAppFormData = {
   description: string
   logo: string
   banner: string
-  projectUrl: string
-  distributionStrategy: string
+  external_url: string
+  distribution_strategy: string
   categories: string[]
   treasuryWalletAddress: string
-  adminWalletAddress: string
+  adminAddress: string
   ve_world_banner: string
   ve_world_featured_image: string
   versionNotes: string
@@ -141,9 +141,6 @@ export const CreateEditAppForm = ({
     [setError, setValue, clearErrors],
   )
 
-  const treasuryWalletAddress = watch("treasuryWalletAddress")
-  const adminWalletAddress = watch("adminWalletAddress")
-
   return (
     <Card.Root>
       <Card.Header>
@@ -151,28 +148,18 @@ export const CreateEditAppForm = ({
       </Card.Header>
       <Card.Body>
         <VStack gap={8} w="full">
-          <FormItem
-            label={t("Name")}
-            placeholder={t("Name")}
-            description={t("The name of your app.")}
-            register={{
-              ...register("name", {
+          <SharedAppFormFields
+            name={{
+              register: register("name", {
                 required: "App Name is required",
                 minLength: { value: 2, message: t("{{fieldName}} is too short", { fieldName: t("App Name") }) },
                 maxLength: { value: 30, message: t("{{fieldName}} is too long", { fieldName: t("App Name") }) },
                 validate: value => genericValidation(value, t("App Name")),
               }),
+              error: errors.name?.message,
             }}
-            error={errors.name?.message}
-          />
-
-          <FormItem
-            label={t("Description")}
-            placeholder={t("Description")}
-            description={t("The description and purpose of your app.")}
-            type="textarea"
-            register={{
-              ...register("description", {
+            description={{
+              register: register("description", {
                 required: "App Description is required",
                 minLength: {
                   value: 100,
@@ -183,33 +170,18 @@ export const CreateEditAppForm = ({
                   message: t("{{fieldName}} is too long", { fieldName: t("App Description") }),
                 },
               }),
+              error: errors.description?.message,
             }}
-            error={errors.description?.message}
-          />
-
-          <FormItem
-            label={t("Project URL")}
-            placeholder={t("Project URL")}
-            description={t("The URL of your app's website or repository.")}
-            register={{
-              ...register("projectUrl", {
+            url={{
+              register: register("external_url", {
                 required: "Project URL is required",
                 maxLength: { value: 255, message: t("{{fieldName}} is too long", { fieldName: t("Project URL") }) },
                 pattern: patternUrlCheck,
               }),
+              error: errors.external_url?.message,
             }}
-            error={errors.projectUrl?.message}
-          />
-
-          <FormItem
-            label={t("How does your app distribute B3TR to the users?")}
-            placeholder={t("Distribution Strategy")}
-            description={t(
-              "Describe how your app distributes rewards. This information will be publicly visible once your app is submitted to VeBetter.",
-            )}
-            type="textarea"
-            register={{
-              ...register("distributionStrategy", {
+            distribution={{
+              register: register("distribution_strategy", {
                 required: "Distribution Strategy is required",
                 minLength: {
                   value: 100,
@@ -220,8 +192,8 @@ export const CreateEditAppForm = ({
                   message: t("{{fieldName}} is too long", { fieldName: t("Distribution Strategy") }),
                 },
               }),
+              error: errors.distribution_strategy?.message,
             }}
-            error={errors.distributionStrategy?.message}
           />
 
           <CategorySelector
@@ -235,56 +207,18 @@ export const CreateEditAppForm = ({
             error={errors.categories?.message}
           />
 
-          <Field.Root invalid={!treasuryWalletAddress}>
-            <Field.Label>{t("Treasury address")}</Field.Label>
-            <Text textStyle="xs" color="gray.500" mb={2}>
-              {t(`The wallet address where you will receive your app's B3TR`)}
-            </Text>
-            <InputGroup>
-              <WalletAddressInput
-                inputGroupProps={{
-                  startElement: (
-                    <AddressIcon
-                      pointerEvents="none"
-                      borderRadius={"full"}
-                      boxSize={6}
-                      minW={6}
-                      minH={6}
-                      address={treasuryWalletAddress}
-                    />
-                  ),
-                }}
-                disabled={isReceiverAddressDisabled}
-                rounded={"xl"}
-                onAddressResolved={address => setValue("treasuryWalletAddress", address ?? "")}
-              />
-            </InputGroup>
-          </Field.Root>
-
-          <Field.Root invalid={!adminWalletAddress}>
-            <Field.Label>{t("Admin address")}</Field.Label>
-            <Text textStyle="xs" color="gray.500" mb={2}>
-              {t("The wallet address which will be used to manage your app")}
-            </Text>
-            <InputGroup>
-              <WalletAddressInput
-                inputGroupProps={{
-                  startElement: (
-                    <AddressIcon
-                      borderRadius={"full"}
-                      boxSize={6}
-                      minW={6}
-                      minH={6}
-                      address={adminWalletAddress ?? ""}
-                    />
-                  ),
-                }}
-                disabled={isReceiverAddressDisabled}
-                rounded={"xl"}
-                onAddressResolved={address => setValue("adminWalletAddress", address ?? "")}
-              />
-            </InputGroup>
-          </Field.Root>
+          <SharedWalletAddressFields
+            treasury={{
+              value: watch("treasuryWalletAddress"),
+              onAddressResolved: address => setValue("treasuryWalletAddress", address ?? ""),
+              disabled: isReceiverAddressDisabled,
+            }}
+            admin={{
+              value: watch("adminAddress"),
+              onAddressResolved: address => setValue("adminAddress", address ?? ""),
+              disabled: isReceiverAddressDisabled,
+            }}
+          />
 
           <Stack direction={["column", "row"]} w="full" justify={"space-between"} align={"flex-start"} gap={4}>
             <Controller
@@ -301,7 +235,10 @@ export const CreateEditAppForm = ({
               }}
               render={({ field: { value } }) => (
                 <Field.Root invalid={!!errors.logo}>
-                  <Field.Label>{t("Logo")}</Field.Label>
+                  <Field.Label>
+                    <RequiredAsterisk />
+                    {t("Logo")}
+                  </Field.Label>
                   <VStack w="full" align="flex-start">
                     <Image
                       alignSelf={"center"}
@@ -339,7 +276,10 @@ export const CreateEditAppForm = ({
               }}
               render={({ field: { value } }) => (
                 <Field.Root invalid={!!errors.banner}>
-                  <Field.Label>{t("Banner")}</Field.Label>
+                  <Field.Label>
+                    <RequiredAsterisk />
+                    {t("Banner")}
+                  </Field.Label>
                   <VStack w="full" align={"flex-start"}>
                     <Image
                       alignSelf={"center"}
@@ -377,7 +317,10 @@ export const CreateEditAppForm = ({
             }}
             render={({ field: { value } }) => (
               <Field.Root invalid={!!errors.ve_world_banner}>
-                <Field.Label>{t("VeWorld Banner")}</Field.Label>
+                <Field.Label>
+                  <RequiredAsterisk />
+                  {t("VeWorld Banner")}
+                </Field.Label>
                 <VStack w="full" align="center">
                   <Image
                     onClick={() => uploadVeWorldBannerRef.current?.click()}
@@ -410,7 +353,10 @@ export const CreateEditAppForm = ({
             }}
             render={({ field: { value } }) => (
               <Field.Root invalid={!!errors.ve_world_featured_image}>
-                <Field.Label>{t("VeWorld Featured Image")}</Field.Label>
+                <Field.Label>
+                  <RequiredAsterisk />
+                  {t("VeWorld Featured Image")}
+                </Field.Label>
                 <VStack w="full" align="center">
                   <Image
                     onClick={() => uploadVeWorldFeaturedImageRef.current?.click()}
@@ -441,9 +387,7 @@ export const CreateEditAppForm = ({
           {!isEdit && (
             <Field.Root invalid={!!errors.versionNotes} w="full">
               <Field.Label fontWeight="semibold">
-                <Text as="span" color="red.500" mr={1}>
-                  {"*"}
-                </Text>
+                <RequiredAsterisk />
                 {t("App Version Notes")}
               </Field.Label>
               <Text textStyle="xs" color="gray.500" mb={2}>

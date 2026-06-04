@@ -1,15 +1,15 @@
 import {
   Button,
-  Separator,
-  Field,
+  Card,
+  Grid,
+  GridItem,
   HStack,
-  Input,
-  Stack,
+  Heading,
+  Separator,
+  SimpleGrid,
   Text,
-  Textarea,
   VStack,
   useDisclosure,
-  Heading,
 } from "@chakra-ui/react"
 import { UilCheck } from "@iconscout/react-unicons"
 import { useWallet } from "@vechain/vechain-kit"
@@ -26,10 +26,15 @@ import { useTransactionModal } from "@/providers/TransactionModalProvider"
 import { DEPRECATED_IDS } from "@/types/appDetails"
 
 import { useAccountPermissions } from "../../../../../../api/contracts/account/hooks/useAccountPermissions"
+import { CategorySelector } from "../../../../../../components/CategorySelector"
+import { SharedAppFormFields } from "../../../../../../components/SharedAppFormFields"
+import { SharedWalletAddressFields } from "../../../../../../components/SharedWalletAddressFields"
 import { URL_REGEX } from "../../../../../../constants/url"
 import { useUpdateAppDetails } from "../../../../../../hooks/xApp/useUpdateAppDetails"
 import { useUploadAppMetadata } from "../../../../../../hooks/xApp/useUploadAppMetadata"
+import { useCurrentAppAdmin } from "../../../hooks/useCurrentAppAdmin"
 import { useCurrentAppBanner } from "../../../hooks/useCurrentAppBanner"
+import { useCurrentAppInfo } from "../../../hooks/useCurrentAppInfo"
 import { useCurrentAppLogo } from "../../../hooks/useCurrentAppLogo"
 import { useCurrentAppMetadata } from "../../../hooks/useCurrentAppMetadata"
 import { useCurrentAppRole } from "../../../hooks/useCurrentAppRole"
@@ -40,7 +45,6 @@ import { useCurrentAppVeWorldFeaturedImage } from "../../../hooks/useCurrentAppV
 import { AppVersionNotes } from "./components/AppVersionNotes/AppVersionNotes"
 import { EditAppBadges } from "./components/EditAppBadges"
 import { EditAppBanner } from "./components/EditAppBanner"
-import { EditAppCategories } from "./components/EditAppCategories/EditAppCategories"
 import { EditAppLogo } from "./components/EditAppLogo"
 import { EditAppSocialUrls } from "./components/EditAppSocialUrls"
 import { EditAppTutorial } from "./components/EditAppTutorial"
@@ -60,6 +64,8 @@ export type EditAppForm = {
   external_url: string
   description: string
   distribution_strategy: string
+  treasuryWalletAddress: string
+  adminAddress: string
   twitterUrl: string
   discordUrl: string
   telegramUrl: string
@@ -108,10 +114,12 @@ export const EditAppPageContent = () => {
   const router = useRouter()
   const { open: isOpen, onOpen, onClose } = useDisclosure()
   const { isTxModalOpen, onClose: onTxModalClose } = useTransactionModal()
-  const { isAdminOrModerator } = useCurrentAppRole()
+  const { isAdminOrModerator, isAdmin } = useCurrentAppRole()
   const { account } = useWallet()
   const { data: permissions } = useAccountPermissions(account?.address ?? "")
   const { appId } = useParams<{ appId: string }>()
+  const { app: currentAppInfo } = useCurrentAppInfo()
+  const { admin: currentAdmin } = useCurrentAppAdmin()
 
   const form = useForm<EditAppForm>({
     defaultValues: {
@@ -122,6 +130,8 @@ export const EditAppPageContent = () => {
       external_url: appMetadata?.external_url ?? "",
       description: appMetadata?.description ?? "",
       distribution_strategy: appMetadata?.distribution_strategy ?? "",
+      treasuryWalletAddress: currentAppInfo?.teamWalletAddress ?? "",
+      adminAddress: currentAdmin ?? "",
       twitterUrl: findUrlByName(appMetadata?.social_urls, "Twitter"),
       discordUrl: findUrlByName(appMetadata?.social_urls, "Discord"),
       telegramUrl: findUrlByName(appMetadata?.social_urls, "Telegram"),
@@ -153,6 +163,8 @@ export const EditAppPageContent = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = form
   const socialUrls = useSocialUrls(form)
@@ -232,11 +244,23 @@ export const EditAppPageContent = () => {
       const metadataUri = await uploadMetadata(data)
       if (!metadataUri) return
 
+      const currentTreasury = currentAppInfo?.teamWalletAddress ?? ""
+      const currentAdminAddr = currentAdmin ?? ""
+      // Bundle address changes into the same transaction (app admin only, not moderators)
+      const treasuryChanged =
+        isAdmin &&
+        !!data.treasuryWalletAddress &&
+        data.treasuryWalletAddress.toLowerCase() !== currentTreasury.toLowerCase()
+      const adminChanged =
+        isAdmin && !!data.adminAddress && data.adminAddress.toLowerCase() !== currentAdminAddr.toLowerCase()
+
       updateAppDetailsMutation.sendTransaction({
         metadataUri,
+        ...(treasuryChanged ? { teamWalletAddress: data.treasuryWalletAddress } : {}),
+        ...(adminChanged ? { adminAddress: data.adminAddress } : {}),
       })
     },
-    [updateAppDetailsMutation, onOpen, uploadMetadata, onTxModalClose],
+    [updateAppDetailsMutation, onOpen, uploadMetadata, onTxModalClose, isAdmin, currentAppInfo, currentAdmin],
   )
 
   // Reset all form values once when metadata first loads from blockchain
@@ -291,6 +315,14 @@ export const EditAppPageContent = () => {
     if (veWorldFeaturedImage) form.setValue("ve_world_featured_image", veWorldFeaturedImage)
   }, [logo, banner, veWorldBanner, veWorldFeaturedImage, form])
 
+  // Sync treasury/admin addresses once blockchain data resolves
+  useEffect(() => {
+    if (currentAppInfo?.teamWalletAddress) form.setValue("treasuryWalletAddress", currentAppInfo.teamWalletAddress)
+  }, [currentAppInfo?.teamWalletAddress, form])
+  useEffect(() => {
+    if (currentAdmin) form.setValue("adminAddress", currentAdmin)
+  }, [currentAdmin, form])
+
   // Sync screenshots separately to avoid new-array-reference triggering reset
   const screenshotsKey = screenshots.filter(Boolean).join(",")
   useEffect(() => {
@@ -341,126 +373,130 @@ export const EditAppPageContent = () => {
         setActiveStep={() => {}}
         goToPrevious={() => {}}
       />
-      <VStack alignItems={"stretch"} gap={8} as="form" onSubmit={handleSubmit(onSubmit)} w="full">
-        <Stack
-          flexDirection={["column", "row"]}
-          justify={["flex-start", "space-between"]}
-          align={["flex-start", "center"]}>
-          <HStack w="full" gap={4}>
-            <Field.Root w="full" invalid={!!errors.name}>
-              <Input
-                fontWeight="semibold"
-                size="lg"
-                {...register("name", {
-                  required: { value: true, message: t("Name required") },
-                  minLength: { value: 3, message: t("Name must be at least 3 characters") },
-                })}
-              />
-              <Field.ErrorText textStyle="xs">{errors?.name?.message ?? ""}</Field.ErrorText>
-            </Field.Root>
-          </HStack>
-          <HStack flexDir={["row-reverse", "row"]} mt={[2, 0]}>
-            <Button variant="ghost" color="status.negative.primary" onClick={goToAppPage}>
-              {t("Cancel")}
-            </Button>
-            <Button variant="primary" type="submit" disabled={!isFormChanged}>
-              <UilCheck size="16px" />
-              {t("Save changes")}
-            </Button>
-          </HStack>
-        </Stack>
-
-        <EditAppBanner form={form} />
-
-        <Stack flexDirection={["column", "row"]} gap={[20, 6]} align={"flex-start"}>
-          <VStack align={"stretch"} flex={3} gap={8} w="full">
-            <EditAppLogo form={form} />
-
-            <VStack align={"stretch"} gap={4}>
-              <Text textStyle="md" fontWeight="semibold">
-                {t("Project URL")}
-              </Text>
-              <Field.Root invalid={!!errors.external_url}>
-                <Input
-                  {...register("external_url", {
-                    required: { value: true, message: t("Project url required") },
-                    pattern: {
-                      value: URL_REGEX,
-                      message: t("Invalid url"),
-                    },
-                  })}
+      <Grid templateColumns="repeat(3, 1fr)" gap={[4, 4, 8]} w="full" as="form" onSubmit={handleSubmit(onSubmit)}>
+        <GridItem colSpan={[3, 3, 2]}>
+          <Card.Root>
+            <Card.Header>
+              <Heading size="3xl">{t("Edit the App")}</Heading>
+            </Card.Header>
+            <Card.Body>
+              <VStack gap={8} w="full">
+                <SharedAppFormFields
+                  name={{
+                    register: register("name", {
+                      required: { value: true, message: t("Name required") },
+                      minLength: { value: 3, message: t("Name must be at least 3 characters") },
+                    }),
+                    error: errors.name?.message,
+                  }}
+                  description={{
+                    register: register("description", {
+                      required: { value: true, message: t("Description required") },
+                      minLength: { value: 20, message: t("Description must be at least 20 characters") },
+                    }),
+                    error: errors.description?.message,
+                  }}
+                  url={{
+                    register: register("external_url", {
+                      required: { value: true, message: t("Project url required") },
+                      pattern: {
+                        value: URL_REGEX,
+                        message: t("Invalid url"),
+                      },
+                    }),
+                    error: errors.external_url?.message,
+                  }}
+                  distribution={{
+                    register: register("distribution_strategy", {
+                      required: t("Distribution Strategy is required"),
+                      minLength: {
+                        value: 20,
+                        message: t("{{fieldName}} is too short", { fieldName: t("Distribution Strategy") }),
+                      },
+                    }),
+                    error: errors.distribution_strategy?.message,
+                  }}
                 />
-                <Field.ErrorText textStyle="xs">{errors?.external_url?.message ?? ""}</Field.ErrorText>
-              </Field.Root>
-            </VStack>
 
-            <VStack align={"stretch"} gap={4}>
-              <Text textStyle="md" fontWeight="semibold">
-                {t("Description")}
-              </Text>
-              <Field.Root invalid={!!errors.description}>
-                <Textarea
-                  {...register("description", {
-                    required: { value: true, message: t("Description required") },
-                    minLength: { value: 20, message: t("Description must be at least 20 characters") },
-                  })}
-                  resize="none"
-                  h="140px"
+                {/* CategorySelector is generic and works with any RHF form type */}
+                <CategorySelector
+                  fieldName="categories"
+                  register={register}
+                  setValue={setValue}
+                  watch={watch}
+                  registerOptions={{
+                    required: { value: true, message: t("Categories are required") },
+                  }}
+                  error={errors.categories?.message}
                 />
-                <Field.ErrorText textStyle="xs">{errors?.description?.message ?? ""}</Field.ErrorText>
-              </Field.Root>
-            </VStack>
-            <VStack align={"stretch"} gap={4}>
-              <Text textStyle="md" fontWeight="semibold">
-                {t("Distribution Strategy")}
-              </Text>
-              <Field.Root invalid={!!errors.distribution_strategy}>
-                <Textarea
-                  {...register("distribution_strategy", {
-                    minLength: {
-                      value: 20,
-                      message: t("{{fieldName}} is too short", { fieldName: t("Distribution Strategy") }),
-                    },
-                  })}
-                  placeholder={t("Eg. Our goal is to distribute at least X percent of the round allocation each week.")}
-                  resize="none"
-                  h="140px"
+
+                {/* Treasury and Admin address — contract enforces onlyRoleAndAppAdmin; inputs disabled for non-admins */}
+                <SharedWalletAddressFields
+                  treasury={{
+                    value: watch("treasuryWalletAddress"),
+                    onAddressResolved: address => setValue("treasuryWalletAddress", address ?? ""),
+                    disabled: !isAdmin,
+                  }}
+                  admin={{
+                    value: watch("adminAddress"),
+                    onAddressResolved: address => setValue("adminAddress", address ?? ""),
+                    disabled: !isAdmin,
+                  }}
                 />
-                <Field.ErrorText textStyle="xs">{errors?.distribution_strategy?.message ?? ""}</Field.ErrorText>
-              </Field.Root>
-            </VStack>
-            <EditAppCategories form={form} />
-            <EditAppSocialUrls form={form} />
-          </VStack>
-          <VStack flex={1.5} gap={6} align="stretch">
+
+                <SimpleGrid columns={[1, 2]} gap={4} w="full">
+                  <EditAppLogo form={form} />
+                  <EditAppBanner form={form} />
+                </SimpleGrid>
+
+                <EditAppSocialUrls form={form} />
+
+                <Separator />
+                <EditScreenshots form={form} />
+                <Separator />
+                <EditAppTutorial form={form} />
+                <Separator />
+                <EditAppWhitepaper form={form} />
+                <Separator />
+                <EditMoreAppDetails form={form} />
+                <Separator />
+
+                <VStack align={"flex-start"} gap={4}>
+                  <Heading size="2xl">{t("VeWorld assets")}</Heading>
+                  <Text textStyle="sm" color={"gray"} pt={0}>
+                    {t(
+                      "VeWorld assets are used to display the app in the VeWorld mobile wallet. Include them to make your app more engaging. ✨",
+                    )}
+                  </Text>
+                  <HStack gap={4} w="full" align={"stretch"}>
+                    <EditVeWorldBanner form={form} />
+                    <EditVeWorldFeatureImage form={form} />
+                  </HStack>
+                </VStack>
+              </VStack>
+            </Card.Body>
+            <Card.Footer display={"flex"} flexDir={"column"} w="full" mt={4}>
+              <HStack justifyContent="flex-end">
+                <Button variant="ghost" color="status.negative.primary" onClick={goToAppPage}>
+                  {t("Cancel")}
+                </Button>
+                <Button variant="primary" type="submit" disabled={!isFormChanged}>
+                  <UilCheck size="16px" />
+                  {t("Save changes")}
+                </Button>
+              </HStack>
+            </Card.Footer>
+          </Card.Root>
+        </GridItem>
+
+        <GridItem colSpan={[3, 3, 1]}>
+          <VStack gap={4} w="full" align={"flex-start"} position="sticky" top={100} right={0}>
             <EditAppBadges form={form} />
             <EditSocialMediaUpdates form={form} />
             <AppVersionNotes appId={appId} currentMetadata={appMetadata} />
           </VStack>
-        </Stack>
-        <Separator />
-        <EditScreenshots form={form} />
-        <Separator />
-        <EditAppTutorial form={form} />
-        <Separator />
-        <EditAppWhitepaper form={form} />
-        <Separator />
-        <EditMoreAppDetails form={form} />
-        <Separator />
-
-        <VStack align={"flex-start"} gap={4}>
-          <Heading size="2xl">{t("VeWorld assets")}</Heading>
-          <Text textStyle="sm" color={"gray"} pt={0}>
-            {t(
-              "VeWorld assets are used to display the app in the VeWorld mobile wallet. Include them to make your app more engaging. ✨",
-            )}
-          </Text>
-          <HStack gap={4} w="full" align={"stretch"}>
-            <EditVeWorldBanner form={form} />
-            <EditVeWorldFeatureImage form={form} />
-          </HStack>
-        </VStack>
-      </VStack>
+        </GridItem>
+      </Grid>
     </>
   )
 }

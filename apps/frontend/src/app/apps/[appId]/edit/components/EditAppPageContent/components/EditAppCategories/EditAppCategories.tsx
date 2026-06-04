@@ -20,6 +20,7 @@ import { FaSearch, FaPlus } from "react-icons/fa"
 
 import { APP_CATEGORIES, MAX_CATEGORIES } from "@/types/appDetails"
 
+import { RequiredAsterisk } from "../../../../../../../../components/CustomFormFields/FormItem"
 import { EditAppForm } from "../../EditAppPageContent"
 
 type EditAppCategoriesProps = {
@@ -72,6 +73,7 @@ export const EditAppCategories = ({ form }: EditAppCategoriesProps) => {
   return (
     <VStack align="flex-start" gap={4} width="full">
       <Text textStyle="md" fontWeight="semibold">
+        <RequiredAsterisk />
         {t("App Categories")}
       </Text>
 

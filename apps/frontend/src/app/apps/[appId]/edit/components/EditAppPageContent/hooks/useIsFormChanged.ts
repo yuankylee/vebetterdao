@@ -2,7 +2,9 @@ import { UseFormReturn } from "react-hook-form"
 
 import { useCurrentAppScreenshots } from "@/app/apps/[appId]/hooks/useCurrentAppScreenshots"
 
+import { useCurrentAppAdmin } from "../../../../hooks/useCurrentAppAdmin"
 import { useCurrentAppBanner } from "../../../../hooks/useCurrentAppBanner"
+import { useCurrentAppInfo } from "../../../../hooks/useCurrentAppInfo"
 import { useCurrentAppLogo } from "../../../../hooks/useCurrentAppLogo"
 import { useCurrentAppMetadata } from "../../../../hooks/useCurrentAppMetadata"
 import { EditAppForm } from "../EditAppPageContent"
@@ -14,6 +16,8 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
   const { banner } = useCurrentAppBanner()
   const { appMetadata } = useCurrentAppMetadata()
   const { screenshots } = useCurrentAppScreenshots()
+  const { app } = useCurrentAppInfo()
+  const { admin } = useCurrentAppAdmin()
   const socialUrls = useSocialUrls(form)
   const isLogoChanged = form.watch("logoImage") !== logo
   const isBannerChanged = form.watch("bannerImage") !== banner
@@ -54,6 +58,11 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
       (appMetadata?.badgeSettings?.topDistributionPerformer?.isPrivate ?? false) ||
     (badgeSettingsValue?.navigatorsPick?.isPrivate ?? false) !==
       (appMetadata?.badgeSettings?.navigatorsPick?.isPrivate ?? false)
+  const isTreasuryChanged =
+    !!form.watch("treasuryWalletAddress") &&
+    form.watch("treasuryWalletAddress").toLowerCase() !== (app?.teamWalletAddress ?? "").toLowerCase()
+  const isAdminAddressChanged =
+    !!form.watch("adminAddress") && form.watch("adminAddress").toLowerCase() !== (admin ?? "").toLowerCase()
   return (
     isNameChanged ||
     isDescriptionChanged ||
@@ -73,6 +82,8 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     isAppRoadmapChanged ||
     isEcosystemPartnersChanged ||
     isTweetLinksChanged ||
-    isBadgeSettingsChanged
+    isBadgeSettingsChanged ||
+    isTreasuryChanged ||
+    isAdminAddressChanged
   )
 }

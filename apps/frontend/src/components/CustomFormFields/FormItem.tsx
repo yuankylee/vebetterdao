@@ -18,7 +18,14 @@ type FormItemProps = {
   leftElement?: React.ReactNode
   tooltip?: string
   maxLength?: number
+  required?: boolean
 }
+
+export const RequiredAsterisk = () => (
+  <Text as="span" color="red.500" mr={1}>
+    {"*"}
+  </Text>
+)
 export const FormItem = ({
   label,
   description,
@@ -32,6 +39,7 @@ export const FormItem = ({
   leftElement,
   tooltip,
   maxLength,
+  required = false,
 }: FormItemProps) => {
   const InputComponent = type === "textarea" ? Textarea : Input
   const [charCount, setCharCount] = useState(defaultValue?.length ?? 0)
@@ -40,6 +48,7 @@ export const FormItem = ({
       {label && (
         <HStack justify="space-between" w="full">
           <Field.Label textStyle="sm" color="text.default" mb={description ? 0 : undefined} htmlFor={register.name}>
+            {required && <RequiredAsterisk />}
             {label}
           </Field.Label>
           {isOptional || tooltip ? (

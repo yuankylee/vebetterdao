@@ -28,6 +28,8 @@ import { useTranslation } from "react-i18next"
 import { FaSearch, FaPlus } from "react-icons/fa"
 
 import { APP_CATEGORIES, AppCategoryItem, MAX_CATEGORIES } from "@/types/appDetails"
+
+import { RequiredAsterisk } from "./CustomFormFields/FormItem"
 type CategorySelectorProps<T extends FieldValues> = {
   fieldName: Path<T>
   register: UseFormRegister<T>
@@ -101,7 +103,10 @@ export const CategorySelector = <T extends FieldValues>({
 
   return (
     <Field.Root invalid={!!error}>
-      <Field.Label textStyle="md">{t("App Categories")}</Field.Label>
+      <Field.Label textStyle="md">
+        <RequiredAsterisk />
+        {t("App Categories")}
+      </Field.Label>
 
       <Text textStyle="xs" color="gray.500" mb={2}>
         {t("Select up to 2 categories that best describe your app.")}
@@ -120,12 +125,15 @@ export const CategorySelector = <T extends FieldValues>({
                 <Tag.Root
                   key={categoryId}
                   size="lg"
+                  px={5}
+                  py={2.5}
                   borderRadius="full"
                   variant="solid"
                   backgroundColor={category.color}
-                  color="black"
-                  mb={2}>
-                  <Tag.Label fontWeight="semibold">{category.name}</Tag.Label>
+                  color="black">
+                  <Tag.Label fontWeight="semibold" fontSize="sm">
+                    {category.name}
+                  </Tag.Label>
                   <Tag.EndElement>
                     <TagCloseTrigger onClick={() => handleRemoveCategory(categoryId)} />
                   </Tag.EndElement>

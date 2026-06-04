@@ -8,6 +8,7 @@ import { toaster } from "@/components/ui/toaster"
 import { blobToBase64 } from "@/utils/BlobUtils"
 import { handleImageCompression } from "@/utils/imageListCompression"
 
+import { RequiredAsterisk } from "../../../../../../../components/CustomFormFields/FormItem"
 import { IMAGE_REQUIREMENTS, BANNER_UPLOAD_GUIDELINES } from "../../../../../../../constants/XAppsMedia"
 import { EditAppForm } from "../EditAppPageContent"
 
@@ -49,27 +50,24 @@ export const EditAppBanner = ({ form }: Props) => {
   return (
     <VStack gap={2} align={"start"}>
       <Text textStyle="md" fontWeight="semibold">
+        <RequiredAsterisk />
         {t("Banner")}
       </Text>
-      <Flex w="full" h="220px" flexBasis={"64px"} position={"relative"} rounded="16px">
+      <Flex w="full" h="200px" position={"relative"} rounded="9px">
         <Image
           src={banner ?? notFoundImage}
           alt={"banner"}
-          maxWidth="none"
-          h="220px"
+          h="full"
           w="full"
-          rounded="16px"
+          rounded="9px"
           objectFit={"cover"}
           objectPosition={"center"}
         />
         <Input type="file" accept={accept} display={"none"} ref={inputRef} onChange={handleUpload} />
         <Flex
-          rounded="16px"
-          top={0}
-          right={0}
-          left={0}
-          bottom={0}
+          rounded="9px"
           position="absolute"
+          inset={0}
           alignItems="center"
           justifyContent="center"
           bg={"#00000005"}

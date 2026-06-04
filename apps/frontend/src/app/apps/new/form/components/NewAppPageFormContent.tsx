@@ -46,10 +46,10 @@ export const NewAppPageFormContent = () => {
         description: "",
         logo: "/assets/icons/dapp_icon_placeholder.svg",
         banner: "/assets/icons/dapp_banner_placeholder.svg",
-        distributionStrategy: latestSubmission?.distributionStrategy ?? "",
-        projectUrl: latestSubmission?.projectUrl ?? "",
+        distribution_strategy: latestSubmission?.distributionStrategy ?? "",
+        external_url: latestSubmission?.projectUrl ?? "",
         treasuryWalletAddress: "",
-        adminWalletAddress: "",
+        adminAddress: "",
         categories: [],
         versionNotes: "",
       },
@@ -87,10 +87,10 @@ export const NewAppPageFormContent = () => {
       const metadataUri = await onMetadataUpload({
         name: data.name,
         description: data.description,
-        distribution_strategy: data.distributionStrategy,
+        distribution_strategy: data.distribution_strategy,
         logo: data.logo,
         banner: data.banner,
-        external_url: data.projectUrl,
+        external_url: data.external_url,
         screenshots: [],
         app_urls: [],
         social_urls: [],
@@ -104,7 +104,7 @@ export const NewAppPageFormContent = () => {
       })
       if (!metadataUri) return
 
-      const adminAddress = data.adminWalletAddress ?? account?.address ?? data.treasuryWalletAddress
+      const adminAddress = data.adminAddress ?? account?.address ?? data.treasuryWalletAddress
 
       submitAppMutation.sendTransaction({
         teamWalletAddress: data.treasuryWalletAddress,

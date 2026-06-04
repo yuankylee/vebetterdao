@@ -8,6 +8,7 @@ import { toaster } from "@/components/ui/toaster"
 import { blobToBase64 } from "@/utils/BlobUtils"
 import { handleImageCompression } from "@/utils/imageListCompression"
 
+import { RequiredAsterisk } from "../../../../../../../components/CustomFormFields/FormItem"
 import { IMAGE_REQUIREMENTS, LOGO_UPLOAD_GUIDELINES } from "../../../../../../../constants/XAppsMedia"
 import { validateImage } from "../../../../../../../utils/ImageValidation"
 import { EditAppForm } from "../EditAppPageContent"
@@ -61,24 +62,24 @@ export const EditAppLogo = ({ form }: Props) => {
   return (
     <VStack gap={2} align={"start"}>
       <Text textStyle="md" fontWeight="semibold">
+        <RequiredAsterisk />
         {t("Logo")}
       </Text>
-      <Flex w="64px" h="64px" flexBasis={"64px"} position={"relative"} rounded="16px">
+      <Flex w="200px" h="200px" position={"relative"} rounded="9px" alignSelf="center">
         <Image
           src={logo ?? notFoundImage}
           alt={"logo"}
-          maxWidth="none"
           h="full"
-          w="64px"
-          rounded="16px"
+          w="full"
+          rounded="9px"
           objectFit={"cover"}
           objectPosition={"center"}
         />
         <Input type="file" accept={accept} display={"none"} ref={inputRef} onChange={handleUpload} />
         <Box>
           <Flex
-            rounded="16px"
-            w="64px"
+            rounded="9px"
+            w="full"
             top={0}
             right={0}
             left={0}
