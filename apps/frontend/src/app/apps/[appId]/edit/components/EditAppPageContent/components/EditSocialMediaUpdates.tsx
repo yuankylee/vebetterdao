@@ -57,7 +57,7 @@ export const EditSocialMediaUpdates = ({ form }: Props) => {
       <Card.Body>
         <VStack align="stretch" gap={4}>
           <VStack align="flex-start" gap={1}>
-            <Heading size="md">{t("Social Media Updates")}</Heading>
+            <Heading size="xl">{t("Social Media Updates")}</Heading>
             <Text textStyle="sm" color="text.subtle">
               {t(
                 "Add X.com post links to achieve seamless synchronization and association of app information, making it easy for users to stay instantly updated on the latest app news.",
@@ -93,8 +93,8 @@ export const EditSocialMediaUpdates = ({ form }: Props) => {
           )}
 
           {!atMax && (
-            <Button variant="tertiary" rounded="full" alignSelf="flex-start" onClick={addLink}>
-              <UilPlus size="16px" />
+            <Button variant="tertiary" px={10} rounded="full" alignSelf="flex-start" onClick={addLink}>
+              <UilPlus />
               {t("Add")}
             </Button>
           )}
