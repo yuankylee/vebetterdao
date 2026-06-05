@@ -125,17 +125,15 @@ export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
         </Card.Body>
       </Card.Root>
 
-      {modalState && (
-        <AppVersionNotesModal
-          isOpen={!!modalState}
-          onClose={() => setModalState(null)}
-          mode={modalState.mode}
-          version={modalState.version}
-          initialNotes={modalState.initialNotes}
-          onSave={handleSave}
-          isSaving={isSaving}
-        />
-      )}
+      <AppVersionNotesModal
+        isOpen={!!modalState}
+        onClose={() => setModalState(null)}
+        mode={modalState?.mode ?? "add"}
+        version={modalState?.version ?? nextVersion}
+        initialNotes={modalState?.initialNotes ?? ""}
+        onSave={handleSave}
+        isSaving={isSaving}
+      />
     </>
   )
 }

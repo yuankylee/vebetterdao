@@ -46,19 +46,17 @@ export const EditMoreAppDetails = ({ form }: Props) => {
   const enabled = form.watch("moreDetailsEnabled")
 
   return (
-    <VStack align="stretch" gap={6}>
-      <HStack gap={4} align="center">
-        <Heading size="2xl">{t("More App Details")}</Heading>
-        <Switch.Root
-          checked={enabled}
-          onCheckedChange={({ checked }) => form.setValue("moreDetailsEnabled", checked)}
-          colorPalette="primary">
-          <Switch.HiddenInput />
-          <Switch.Control>
-            <Switch.Thumb />
-          </Switch.Control>
-        </Switch.Root>
-      </HStack>
+    <VStack align="stretch" gap={4}>
+      <Heading size="2xl">{t("More App Details")}</Heading>
+      <Switch.Root
+        checked={enabled}
+        onCheckedChange={({ checked }) => form.setValue("moreDetailsEnabled", checked)}
+        colorPalette="primary">
+        <Switch.HiddenInput />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+      </Switch.Root>
 
       {enabled && (
         <VStack align="stretch" gap={6}>
@@ -97,7 +95,7 @@ const TeamBackgroundSection = ({ form }: Props) => {
   }
 
   return (
-    <Card.Root variant="outline">
+    <Card.Root variant="outline" bg="#F9F9FA">
       <Card.Body>
         <VStack align="stretch" gap={4}>
           <HStack justify="space-between" align="flex-start">
@@ -194,14 +192,14 @@ const TeamMemberCard = ({
   }
 
   return (
-    <Box bg="bg.secondary" borderRadius="xl" p={4}>
+    <Box bg="white" borderRadius="xl" p={4}>
       <Input ref={inputRef} type="file" display="none" accept="image/*" onChange={handlePhotoChange} />
       <VStack align="stretch" gap={3}>
         {/* Photo row */}
         <HStack gap={3} align="center">
           <Box
-            w="56px"
-            h="56px"
+            w="40px"
+            h="40px"
             borderRadius="full"
             overflow="hidden"
             flexShrink={0}
@@ -220,31 +218,31 @@ const TeamMemberCard = ({
           <Button
             variant="tertiary"
             rounded="full"
-            size="sm"
+            size="md"
             onClick={() => inputRef.current?.click()}
             loading={uploading}>
-            <UilUpload size="14px" />
+            <UilUpload size="16px" />
             {t("Upload")}
           </Button>
           {member.photo && !uploading && (
             <IconButton
               aria-label={t("Delete photo")}
-              variant="ghost"
+              variant="outline"
               color="status.negative.primary"
               rounded="full"
-              size="sm"
+              size="md"
               onClick={() => {
                 onUpdate(index, "photo", "")
                 if (inputRef.current) inputRef.current.value = ""
               }}>
-              <UilTrash size="14px" />
+              <UilTrash size="16px" />
             </IconButton>
           )}
           <IconButton
             aria-label={t("Remove member")}
-            variant="ghost"
+            variant="outline"
             rounded="full"
-            size="sm"
+            size="md"
             ml="auto"
             onClick={() => onRemove(index)}>
             <UilTimes size="16px" />
@@ -316,7 +314,7 @@ const AppRoadmapSection = ({ form }: Props) => {
   }, [form])
 
   return (
-    <Card.Root variant="outline">
+    <Card.Root variant="outline" bg="#F9F9FA">
       <Card.Body>
         <VStack align="stretch" gap={4}>
           <VStack align="flex-start" gap={1}>
@@ -440,7 +438,7 @@ const EcosystemPartnersSection = ({ form }: Props) => {
   )
 
   return (
-    <Card.Root variant="outline">
+    <Card.Root variant="outline" bg="#F9F9FA">
       <Card.Body>
         <VStack align="stretch" gap={4}>
           <HStack justify="space-between" align="flex-start">

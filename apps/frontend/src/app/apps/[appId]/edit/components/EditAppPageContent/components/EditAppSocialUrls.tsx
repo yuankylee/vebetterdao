@@ -1,4 +1,4 @@
-import { Field, Icon, Input, InputGroup, Text, VStack } from "@chakra-ui/react"
+import { Field, Icon, Input, InputGroup, SimpleGrid, Text, VStack } from "@chakra-ui/react"
 import { useMemo } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -94,26 +94,28 @@ export const EditAppSocialUrls = ({ form }: Props) => {
       <Text textStyle="md" fontWeight="semibold">
         {t("Social media links")}
       </Text>
-      {inputData.map(({ inputKey, url, error, placeholder, icon }) => (
-        <Field.Root invalid={!!error} key={inputKey}>
-          <InputGroup startElement={icon}>
-            <Input
-              rounded="full"
-              textStyle="sm"
-              type="url"
-              placeholder={placeholder}
-              defaultValue={url}
-              {...register(inputKey as any, {
-                pattern: {
-                  value: URL_REGEX,
-                  message: t("Invalid url"),
-                },
-              })}
-            />
-          </InputGroup>
-          <Field.ErrorText textStyle="xs">{error?.message || ""}</Field.ErrorText>
-        </Field.Root>
-      ))}
+      <SimpleGrid columns={[1, 2]} gap={4} w="full">
+        {inputData.map(({ inputKey, url, error, placeholder, icon }) => (
+          <Field.Root invalid={!!error} key={inputKey}>
+            <InputGroup startElement={icon}>
+              <Input
+                rounded="full"
+                textStyle="sm"
+                type="url"
+                placeholder={placeholder}
+                defaultValue={url}
+                {...register(inputKey as any, {
+                  pattern: {
+                    value: URL_REGEX,
+                    message: t("Invalid url"),
+                  },
+                })}
+              />
+            </InputGroup>
+            <Field.ErrorText textStyle="xs">{error?.message || ""}</Field.ErrorText>
+          </Field.Root>
+        ))}
+      </SimpleGrid>
     </VStack>
   )
 }

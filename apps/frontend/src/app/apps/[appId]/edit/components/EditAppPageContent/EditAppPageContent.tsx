@@ -11,7 +11,6 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react"
-import { UilCheck } from "@iconscout/react-unicons"
 import { useWallet } from "@vechain/vechain-kit"
 import { useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef } from "react"
@@ -380,7 +379,7 @@ export const EditAppPageContent = () => {
               <Heading size="3xl">{t("Edit the App")}</Heading>
             </Card.Header>
             <Card.Body>
-              <VStack gap={8} w="full">
+              <VStack gap={8} w="full" align="flex-start">
                 <SharedAppFormFields
                   name={{
                     register: register("name", {
@@ -475,16 +474,10 @@ export const EditAppPageContent = () => {
                 </VStack>
               </VStack>
             </Card.Body>
-            <Card.Footer display={"flex"} flexDir={"column"} w="full" mt={4}>
-              <HStack justifyContent="flex-end">
-                <Button variant="ghost" color="status.negative.primary" onClick={goToAppPage}>
-                  {t("Cancel")}
-                </Button>
-                <Button variant="primary" type="submit" disabled={!isFormChanged}>
-                  <UilCheck size="16px" />
-                  {t("Save changes")}
-                </Button>
-              </HStack>
+            <Card.Footer display={"flex"} w="full" mt={4}>
+              <Button colorPalette="blue" type="submit" size="lg" disabled={!isFormChanged} borderRadius={"full"}>
+                {t("Submit")}
+              </Button>
             </Card.Footer>
           </Card.Root>
         </GridItem>

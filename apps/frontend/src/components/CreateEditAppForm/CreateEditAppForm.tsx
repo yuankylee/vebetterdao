@@ -256,7 +256,7 @@ export const CreateEditAppForm = ({
                     ) : (
                       <Field.HelperText>{t(LOGO_UPLOAD_GUIDELINES)}</Field.HelperText>
                     )}
-                    <UploadFileButton mt={4} alignSelf={"flex-end"} onChange={onDrop("logo")} ref={uploadLogoRef} />
+                    <UploadFileButton mt={4} onChange={onDrop("logo")} ref={uploadLogoRef} />
                   </VStack>
                 </Field.Root>
               )}
@@ -297,7 +297,7 @@ export const CreateEditAppForm = ({
                     ) : (
                       <Field.HelperText>{t(BANNER_UPLOAD_GUIDELINES)}</Field.HelperText>
                     )}
-                    <UploadFileButton mt={4} alignSelf={"flex-end"} onChange={onDrop("banner")} ref={uploadBannerRef} />
+                    <UploadFileButton mt={4} onChange={onDrop("banner")} ref={uploadBannerRef} />
                   </VStack>
                 </Field.Root>
               )}
@@ -321,7 +321,7 @@ export const CreateEditAppForm = ({
                   <RequiredAsterisk />
                   {t("VeWorld Banner")}
                 </Field.Label>
-                <VStack w="full" align="center">
+                <VStack w="full" align="flex-start">
                   <Image
                     onClick={() => uploadVeWorldBannerRef.current?.click()}
                     _hover={{ cursor: "pointer" }}
@@ -335,12 +335,7 @@ export const CreateEditAppForm = ({
                   ) : (
                     <Field.HelperText>{t(VEWORLD_BANNER_UPLOAD_GUIDELINES)}</Field.HelperText>
                   )}
-                  <UploadFileButton
-                    mt={4}
-                    alignSelf={"flex-end"}
-                    onChange={onDrop("ve_world_banner")}
-                    ref={uploadVeWorldBannerRef}
-                  />
+                  <UploadFileButton mt={4} onChange={onDrop("ve_world_banner")} ref={uploadVeWorldBannerRef} />
                 </VStack>
               </Field.Root>
             )}
@@ -357,7 +352,7 @@ export const CreateEditAppForm = ({
                   <RequiredAsterisk />
                   {t("VeWorld Featured Image")}
                 </Field.Label>
-                <VStack w="full" align="center">
+                <VStack w="full" align="flex-start">
                   <Image
                     onClick={() => uploadVeWorldFeaturedImageRef.current?.click()}
                     _hover={{ cursor: "pointer" }}
@@ -375,7 +370,6 @@ export const CreateEditAppForm = ({
                   )}
                   <UploadFileButton
                     mt={4}
-                    alignSelf={"flex-end"}
                     onChange={onDrop("ve_world_featured_image")}
                     ref={uploadVeWorldFeaturedImageRef}
                   />
@@ -412,7 +406,7 @@ export const CreateEditAppForm = ({
           )}
         </VStack>
       </Card.Body>
-      <Card.Footer display={"flex"} flexDir={"column"} w="full" mt={4}>
+      <Card.Footer display={"flex"} w="full" mt={4}>
         <Button colorPalette="blue" type="submit" size="lg" alignSelf={"flex-end"} borderRadius={"full"}>
           {isEdit ? "Save" : "Submit"}
         </Button>
