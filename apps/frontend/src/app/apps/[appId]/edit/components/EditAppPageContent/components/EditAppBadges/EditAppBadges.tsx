@@ -25,8 +25,12 @@ const BadgeRow = ({ badge, appId, onClick }: BadgeRowProps) => {
 
   return (
     <HStack
-      gap={3}
-      p={3}
+      gap={1}
+      p={2}
+      css={{
+        bg: "#F9F9FA",
+        border: "1px solid #E7E9EB",
+      }}
       borderWidth="1px"
       rounded="xl"
       cursor="pointer"
@@ -35,11 +39,18 @@ const BadgeRow = ({ badge, appId, onClick }: BadgeRowProps) => {
       transition="background 0.15s">
       {/* Badge image with dashed border */}
       <Box border="2px dashed" borderColor="border.subtle" rounded="xl" p={1} flexShrink={0}>
-        <Image src={badge.image} alt={badge.title} boxSize="52px" objectFit="contain" />
+        <Image src={badge.image} alt={badge.title} boxSize="62px" objectFit="contain" />
       </Box>
 
       <VStack align="flex-start" gap={1} flex={1} minW={0}>
-        <Text textStyle="sm" fontWeight="semibold" truncate>
+        <Text
+          textStyle="md"
+          fontWeight="semibold"
+          color={"#272A2E"}
+          truncate
+          css={{
+            marginBottom: "0.1rem",
+          }}>
           {badge.title}
         </Text>
         {!isLoading && (
@@ -48,12 +59,12 @@ const BadgeRow = ({ badge, appId, onClick }: BadgeRowProps) => {
               display="inline-flex"
               alignItems="center"
               gap={1}
-              bg={isPublished ? "green.subtle" : "orange.subtle"}
+              bg={isPublished ? "#E9FDF1" : "#FFF3E5"}
               px={2}
-              py={0.5}
+              py={1}
               rounded="full">
-              {isPublished ? <UilCheckCircle size="12px" color="#16a34a" /> : <UilClock size="12px" color="#d97706" />}
-              <Text textStyle="xs" fontWeight="semibold" color={isPublished ? "green.700" : "orange.700"}>
+              {isPublished ? <UilCheckCircle size="16px" color="#3DBA67" /> : <UilClock size="16px" color="#FFB566" />}
+              <Text textStyle="xs" fontWeight="semibold" color={isPublished ? "#3DBA67" : "#FFB566"}>
                 {isPublished ? t("Published") : t("Unpublished")}
               </Text>
             </Box>
@@ -61,7 +72,7 @@ const BadgeRow = ({ badge, appId, onClick }: BadgeRowProps) => {
         )}
       </VStack>
 
-      <UilAngleRight size="20px" />
+      <UilAngleRight size="28px" />
     </HStack>
   )
 }
@@ -82,7 +93,7 @@ export const EditAppBadges = ({ form }: Props) => {
         <Card.Body>
           <VStack align="stretch" gap={4}>
             <VStack align="flex-start" gap={1}>
-              <Heading size="md">{t("My Badges")}</Heading>
+              <Heading size="xl">{t("My Badges")}</Heading>
               <Text textStyle="sm" color="text.subtle">
                 {t(
                   "Enable public badges. When the dApp receives a badge, it will be automatically displayed to users publicly. (Only the badges obtained in the last round can be displayed.)",

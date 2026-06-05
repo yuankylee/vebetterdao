@@ -117,8 +117,8 @@ export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
               </VStack>
             ) : null}
 
-            <Button variant="tertiary" w="full" rounded="full" onClick={openAdd}>
-              <UilPlus size="16px" />
+            <Button colorPalette={"blue"} variant="outline" w="full" rounded="full" onClick={openAdd}>
+              <UilPlus />
               {t("Add")}
             </Button>
           </VStack>
