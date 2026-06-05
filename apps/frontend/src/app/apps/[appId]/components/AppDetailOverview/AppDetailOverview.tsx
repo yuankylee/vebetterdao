@@ -1,11 +1,25 @@
 const notFoundImage = "/assets/images/image-not-found.webp"
-import { Button, Card, Flex, HStack, Heading, Image, Skeleton, Stack, Text, VStack } from "@chakra-ui/react"
-import { UilExternalLinkAlt } from "@iconscout/react-unicons"
+import {
+  Button,
+  Card,
+  Grid,
+  GridItem,
+  HStack,
+  Heading,
+  Image,
+  Link,
+  Skeleton,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react"
+import { UilArrowUpRight, UilDownloadAlt, UilExternalLinkAlt } from "@iconscout/react-unicons"
 import dayjs from "dayjs"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAppEarnings } from "@/api/indexer/xallocations/useAppEarnings"
+import { convertUriToUrl } from "@/utils/uri"
 
 import { XAppStatus } from "../../../../../types/appDetails"
 import { useCurrentAppBanner } from "../../hooks/useCurrentAppBanner"
@@ -16,6 +30,7 @@ import { EndorsementStatusCallout } from "../AppEndorsementInfoCard/EndorsementS
 
 import { AdminAppPageButton } from "./components/AdminAppPageButton"
 import { AppDetailSocials } from "./components/AppDetailSocials"
+import { AppScoreCard } from "./components/AppScoreCard"
 import { EditAppPageButton } from "./components/EditAppPageButton"
 
 export const AppDetailOverview = ({
@@ -42,6 +57,12 @@ export const AppDetailOverview = ({
     }
   }, [appMetadata?.external_url])
 
+  const downloadWhitepaper = useCallback(() => {
+    if (appMetadata?.whitepaper) {
+      window.open(convertUriToUrl(appMetadata.whitepaper), "_blank")
+    }
+  }, [appMetadata?.whitepaper])
+
   return (
     <>
       <VStack gap={4} align="stretch">
@@ -59,53 +80,60 @@ export const AppDetailOverview = ({
                   h={{ base: "180px", md: "220px" }}
                 />
               </Skeleton>
-              <Flex gap="48px" flexDir={["column", "column", "row"]} w="full">
-                <VStack alignItems={"stretch"} flex={3} justify={"space-between"} gap={8} w="full">
-                  <HStack justify={"space-between"} flexWrap={"wrap"}>
-                    <Stack
-                      direction={["column", "column", "row"]}
-                      justify={["stretch", "stretch", "space-between"]}
-                      w="full"
-                      align={["stretch", "stretch", "center"]}
-                      gap={[4, 4, 0]}>
-                      <HStack gap={4}>
+              <Grid
+                templateColumns={["1fr", "1fr", "minmax(0, 2fr) minmax(0, 1fr)"]}
+                gap={6}
+                w="full"
+                alignItems="stretch">
+                <GridItem colSpan={[1, 1, 1]}>
+                  <VStack alignItems={"stretch"} gap={8} w="full">
+                    {/* Header row: Logo+Name+Badge (left) | Social+Edit+Admin (right) */}
+                    <HStack justify={"space-between"} flexWrap={"wrap"} gap={4} align="flex-start">
+                      <HStack gap={4} align="flex-start">
                         <Skeleton loading={isLogoLoading} alignContent={"start"}>
                           <Image src={logo ?? notFoundImage} alt={"logo"} boxSize={"64px"} borderRadius="16px" />
                         </Skeleton>
-                        <Skeleton loading={appMetadataLoading && !!appMetadata}>
-                          <Heading size="3xl">
-                            {appMetadata?.name ?? appMetadataError?.message ?? "Error loading name"}
-                          </Heading>
-                        </Skeleton>
-                        <HStack gap={2}>
-                          <EditAppPageButton />
-                          <AdminAppPageButton />
-                        </HStack>
+                        <Stack gap={2}>
+                          <Skeleton loading={appMetadataLoading && !!appMetadata}>
+                            <Heading size="3xl">
+                              {appMetadata?.name ?? appMetadataError?.message ?? "Error loading name"}
+                            </Heading>
+                          </Skeleton>
+                          <Skeleton loading={isEndorsementStatusLoading}>
+                            <EndorsementStatusCallout
+                              endorsementStatus={endorsementStatus}
+                              showDescription={false}
+                              padding={1}
+                              boxSize={4}
+                              textStyle="sm"></EndorsementStatusCallout>
+                          </Skeleton>
+                        </Stack>
                       </HStack>
-                      <Skeleton loading={isEndorsementStatusLoading} alignSelf={["flex-start", "flex-start", "center"]}>
-                        <EndorsementStatusCallout
-                          endorsementStatus={endorsementStatus}
-                          showDescription={false}
-                          padding={2}></EndorsementStatusCallout>
+                      <HStack gap={2}>
+                        <AppDetailSocials socialUrls={appMetadata?.social_urls || []} />
+                        <EditAppPageButton />
+                        <AdminAppPageButton />
+                      </HStack>
+                    </HStack>
+
+                    {/* Description + More link */}
+                    <Stack gap={2}>
+                      <Skeleton loading={appMetadataLoading || !appMetadata}>
+                        <Text textStyle={"md"}>
+                          {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
+                        </Text>
                       </Skeleton>
+                      <Link textStyle="sm" color="text.default" _hover={{ color: "text.brand" }}>
+                        {"More"} <UilArrowUpRight size="14px" />
+                      </Link>
                     </Stack>
-                    <AppDetailSocials socialUrls={appMetadata?.social_urls || []} />
-                  </HStack>
-                  <Skeleton loading={appMetadataLoading || !appMetadata}>
-                    <Text textStyle={"md"}>
-                      {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
-                    </Text>
-                  </Skeleton>
-                  <Stack
-                    flexDirection={["column", "column", "row"]}
-                    justify={"space-between"}
-                    align={"center"}
-                    w="full">
+
+                    {/* Bottom row: Member since | Whitepaper + Go to Website */}
                     <Stack
-                      direction={["column", "column", "row"]}
-                      gap={[4, 4, 10]}
-                      w={{ base: "full", md: "auto" }}
-                      justifyContent={{ base: "space-between", md: "flex-start" }}>
+                      flexDirection={["column", "column", "row"]}
+                      justify={"space-between"}
+                      align={"center"}
+                      w="full">
                       {app?.createdAtTimestamp && app.createdAtTimestamp !== "0" && (
                         <VStack align="stretch">
                           <Text textStyle={"sm"} color="text.subtle">
@@ -125,18 +153,25 @@ export const AppDetailOverview = ({
                           </HStack>
                         </VStack>
                       )}
+                      <HStack gap={3} w={{ base: "full", md: "auto" }} mt={{ base: 4, md: 0 }}>
+                        {appMetadata?.whitepaper && (
+                          <Button variant={"secondary"} onClick={downloadWhitepaper} w={{ base: "full", md: "auto" }}>
+                            {t("Whitepaper")}
+                            <UilDownloadAlt color="currentColor" size={"16px"} />
+                          </Button>
+                        )}
+                        <Button variant={"primary"} onClick={goToWebsite} w={{ base: "full", md: "auto" }}>
+                          {t("Go to Website")}
+                          <UilExternalLinkAlt color="white" size={"16px"} />
+                        </Button>
+                      </HStack>
                     </Stack>
-                    <Button
-                      variant={"primary"}
-                      onClick={goToWebsite}
-                      w={{ base: "full", md: "auto" }}
-                      mt={{ base: 4, md: 0 }}>
-                      {t("Go to Website")}
-                      <UilExternalLinkAlt color="white" size={"16px"} />
-                    </Button>
-                  </Stack>
-                </VStack>
-              </Flex>
+                  </VStack>
+                </GridItem>
+                <GridItem colSpan={[1, 1, 1]}>
+                  <AppScoreCard />
+                </GridItem>
+              </Grid>
             </VStack>
           </Card.Body>
         </Card.Root>

@@ -58,7 +58,18 @@ export const AppSocialMediaUpdates = () => {
         }}>
         <HStack gap={4} align="flex-start" w="max-content">
           {tweetQueries.map((q, idx) => (
-            <Box key={tweetIds[idx]} minW="280px" maxW="320px" flexShrink={0}>
+            <Box
+              key={tweetIds[idx]}
+              minW="280px"
+              maxW="320px"
+              h="400px"
+              flexShrink={0}
+              overflowY="auto"
+              sx={{
+                "&::-webkit-scrollbar": { w: "4px" },
+                "&::-webkit-scrollbar-track": { bg: "transparent" },
+                "&::-webkit-scrollbar-thumb": { bg: "gray.300", borderRadius: "full" },
+              }}>
               {q.isLoading ? (
                 <TweetSkeleton />
               ) : q.data ? (

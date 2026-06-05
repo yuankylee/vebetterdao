@@ -27,7 +27,6 @@ export const ThemedTweet = ({ tweet: t, components }: Props) => {
     <Box
       className="themed-tweet"
       w="full"
-      overflow="hidden"
       bg="card.default"
       border="sm"
       borderColor="border.secondary"
