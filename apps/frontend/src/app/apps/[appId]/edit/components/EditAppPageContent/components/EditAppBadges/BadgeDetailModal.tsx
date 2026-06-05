@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import { BadgeConfig } from "@/api/badges/badgeConfigs"
 import { useAcquisitionRecords } from "@/api/badges/useAcquisitionRecords"
 import { useBadgeStats } from "@/api/badges/useBadgeStats"
-import { useBadgeStatus } from "@/api/badges/useBadgeStatus"
 import { BaseModal } from "@/components/BaseModal"
 
 import { EditAppForm } from "../../EditAppPageContent"
@@ -21,12 +20,12 @@ type Props = {
 
 export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props) => {
   const { t } = useTranslation()
-  const { isPublished } = useBadgeStatus(appId, badge.key)
   const { totalEarned, latestRank } = useBadgeStats(appId, badge.key)
   const { records } = useAcquisitionRecords(appId, badge.key)
 
   const badgeSettings = form.watch("badgeSettings")
   const isPrivate = badgeSettings?.[badge.key]?.isPrivate ?? false
+  const isPublished = !isPrivate
 
   const handleToggle = (checked: boolean) => {
     const current = form.getValues("badgeSettings") ?? {}

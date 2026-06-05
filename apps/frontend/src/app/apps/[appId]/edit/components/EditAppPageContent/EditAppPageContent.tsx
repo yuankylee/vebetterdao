@@ -448,18 +448,6 @@ export const EditAppPageContent = () => {
                   <EditAppBanner form={form} />
                 </SimpleGrid>
 
-                <EditAppSocialUrls form={form} />
-
-                <Separator />
-                <EditScreenshots form={form} />
-                <Separator />
-                <EditAppTutorial form={form} />
-                <Separator />
-                <EditAppWhitepaper form={form} />
-                <Separator />
-                <EditMoreAppDetails form={form} />
-                <Separator />
-
                 <VStack align={"flex-start"} gap={4}>
                   <Heading size="2xl">{t("VeWorld assets")}</Heading>
                   <Text textStyle="sm" color={"gray"} pt={0}>
@@ -472,6 +460,18 @@ export const EditAppPageContent = () => {
                     <EditVeWorldFeatureImage form={form} />
                   </HStack>
                 </VStack>
+
+                <Separator />
+                <EditAppSocialUrls form={form} />
+                <Separator />
+                <EditScreenshots form={form} />
+                <Separator />
+                <EditAppTutorial form={form} />
+                <Separator />
+                <EditAppWhitepaper form={form} />
+                <Separator />
+                <EditMoreAppDetails form={form} />
+                <Separator />
               </VStack>
             </Card.Body>
             <Card.Footer display={"flex"} w="full" mt={4}>

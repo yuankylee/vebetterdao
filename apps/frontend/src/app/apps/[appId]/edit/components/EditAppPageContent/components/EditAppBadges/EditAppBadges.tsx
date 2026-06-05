@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next"
 
 import { BADGE_CONFIGS, BadgeConfig } from "@/api/badges/badgeConfigs"
 import { BadgeKey } from "@/api/badges/types"
-import { useBadgeStatus } from "@/api/badges/useBadgeStatus"
 
 import { EditAppForm } from "../../EditAppPageContent"
 
@@ -15,13 +14,15 @@ import { BadgeDetailModal } from "./BadgeDetailModal"
 
 type BadgeRowProps = {
   badge: BadgeConfig
-  appId: string
+  form: UseFormReturn<EditAppForm, any, EditAppForm>
   onClick: () => void
 }
 
-const BadgeRow = ({ badge, appId, onClick }: BadgeRowProps) => {
+const BadgeRow = ({ badge, form, onClick }: BadgeRowProps) => {
   const { t } = useTranslation()
-  const { isPublished, isLoading } = useBadgeStatus(appId, badge.key as BadgeKey)
+  const badgeSettings = form.watch("badgeSettings")
+  const isPrivate = badgeSettings?.[badge.key]?.isPrivate ?? false
+  const isPublished = !isPrivate
 
   return (
     <HStack
@@ -53,23 +54,21 @@ const BadgeRow = ({ badge, appId, onClick }: BadgeRowProps) => {
           }}>
           {badge.title}
         </Text>
-        {!isLoading && (
-          <HStack gap={1}>
-            <Box
-              display="inline-flex"
-              alignItems="center"
-              gap={1}
-              bg={isPublished ? "#E9FDF1" : "#FFF3E5"}
-              px={2}
-              py={1}
-              rounded="full">
-              {isPublished ? <UilCheckCircle size="16px" color="#3DBA67" /> : <UilClock size="16px" color="#FFB566" />}
-              <Text textStyle="xs" fontWeight="semibold" color={isPublished ? "#3DBA67" : "#FFB566"}>
-                {isPublished ? t("Published") : t("Unpublished")}
-              </Text>
-            </Box>
-          </HStack>
-        )}
+        <HStack gap={1}>
+          <Box
+            display="inline-flex"
+            alignItems="center"
+            gap={1}
+            bg={isPublished ? "#E9FDF1" : "#FFF3E5"}
+            px={2}
+            py={1}
+            rounded="full">
+            {isPublished ? <UilCheckCircle size="16px" color="#3DBA67" /> : <UilClock size="16px" color="#FFB566" />}
+            <Text textStyle="xs" fontWeight="semibold" color={isPublished ? "#3DBA67" : "#FFB566"}>
+              {isPublished ? t("Published") : t("Unpublished")}
+            </Text>
+          </Box>
+        </HStack>
       </VStack>
 
       <UilAngleRight size="28px" />
@@ -103,7 +102,7 @@ export const EditAppBadges = ({ form }: Props) => {
 
             <VStack align="stretch" gap={3}>
               {BADGE_CONFIGS.map(badge => (
-                <BadgeRow key={badge.key} badge={badge} appId={appId} onClick={() => setOpenBadgeKey(badge.key)} />
+                <BadgeRow key={badge.key} badge={badge} form={form} onClick={() => setOpenBadgeKey(badge.key)} />
               ))}
             </VStack>
           </VStack>

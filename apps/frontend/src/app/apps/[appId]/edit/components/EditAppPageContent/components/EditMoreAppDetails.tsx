@@ -459,7 +459,7 @@ const EcosystemPartnersSection = ({ form }: Props) => {
 
           <Input ref={inputRef} type="file" display="none" accept="image/*" multiple onChange={handleChange} />
 
-          <Box display="flex" overflowX="auto" pb={2} gap={3} alignItems="flex-end">
+          <Box display="flex" overflowX="auto" p={4} gap={3} alignItems="flex-end">
             <Reorder.Group
               axis="x"
               values={partners}
@@ -531,7 +531,7 @@ const DraggablePartner = ({
         h="100px"
         objectFit="contain"
         borderRadius="lg"
-        bg="bg.secondary"
+        bg="white"
         p={2}
         draggable="false"
         style={{ touchAction: "none", cursor: "grab" }}
@@ -539,7 +539,9 @@ const DraggablePartner = ({
       />
       <IconButton
         aria-label={t("Remove partner")}
-        size="xs"
+        w="20px"
+        h="20px"
+        minW="20px"
         rounded="full"
         bg="gray.500"
         color="white"
@@ -547,6 +549,7 @@ const DraggablePartner = ({
         position="absolute"
         top="-6px"
         right="-6px"
+        zIndex={1}
         onClick={() => onRemove(index)}>
         <UilTimes size="12px" />
       </IconButton>
