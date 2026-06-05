@@ -29,6 +29,7 @@ import {
   X2EarnAppsV7,
   NavigatorRegistry,
   VOT3V1,
+  XAppReviewManager,
 } from "../../typechain-types"
 import { ContractsConfig } from "@repo/config/contracts/type"
 import { HttpNetworkConfig } from "hardhat/types"
@@ -1307,6 +1308,10 @@ export async function deployAll(config: ContractsConfig) {
     true,
   )) as B3TRChallenges
 
+  console.log("Deploying XAppReviewManager")
+  const xAppReviewManager = (await deployProxy("XAppReviewManager", [TEMP_ADMIN, TEMP_ADMIN])) as XAppReviewManager
+  console.log("XAppReviewManager deployed at:", await xAppReviewManager.getAddress())
+
   const date = new Date(performance.now() - start)
   console.log(`================  Contracts deployed in ${date.getMinutes()}m ${date.getSeconds()}s `)
 
@@ -1331,6 +1336,7 @@ export async function deployAll(config: ContractsConfig) {
     RelayerRewardsPool: await relayerRewardsPool.getAddress(),
     DynamicBaseAllocationPool: await dynamicBaseAllocationPool.getAddress(),
     NavigatorRegistry: await navigatorRegistry.getAddress(),
+    XAppReviewManager: await xAppReviewManager.getAddress(),
   }
 
   const libraries: {
@@ -2066,6 +2072,7 @@ export async function deployAll(config: ContractsConfig) {
     stargateNFT: stargateNftMock,
     dynamicBaseAllocationPool: dynamicBaseAllocationPool,
     navigatorRegistry: navigatorRegistry,
+    xAppReviewManager: xAppReviewManager,
     libraries: {
       governorClockLogic: GovernorClockLogicLib,
       governorConfigurator: GovernorConfiguratorLib,

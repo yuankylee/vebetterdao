@@ -79,6 +79,7 @@ export async function overrideLocalConfigWithNewContracts(
     tokenAuctionContractAddress: await contracts.vechainNodesMock.getAddress(),
     relayerRewardsPoolContractAddress: await contracts.relayerRewardsPool.getAddress(),
     navigatorRegistryContractAddress: await contracts.navigatorRegistry.getAddress(),
+    xAppReviewManagerContractAddress: await contracts.xAppReviewManager.getAddress(),
     b3trGovernorLibraries: {
       governorClockLogicAddress: await contracts.libraries.governorClockLogic.getAddress(),
       governorConfiguratorAddress: await contracts.libraries.governorConfigurator.getAddress(),

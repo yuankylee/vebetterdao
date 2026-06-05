@@ -46,6 +46,7 @@ import {
   VOT3V1,
   ChallengeCoreLogic,
   ChallengeSettlementLogic,
+  XAppReviewManager,
 } from "../../typechain-types"
 import {
   deployAndUpgrade,
@@ -131,6 +132,7 @@ export interface DeployInstance
   navigatorRegistry: NavigatorRegistry
   challengeCoreLogic: ChallengeCoreLogic
   challengeSettlementLogic: ChallengeSettlementLogic
+  xAppReviewManager: XAppReviewManager
 }
 
 export const NFT_NAME = "GalaxyMember"
@@ -1290,6 +1292,11 @@ export const getOrDeployContractInstances = async ({
     },
   )) as B3TRChallenges
 
+  const xAppReviewManager = (await deployProxy("XAppReviewManager", [
+    owner.address,
+    owner.address,
+  ])) as XAppReviewManager
+
   const contractAddresses: Record<string, string> = {
     B3TR: await b3tr.getAddress(),
     VoterRewards: await voterRewards.getAddress(),
@@ -1307,6 +1314,7 @@ export const getOrDeployContractInstances = async ({
     StargateNFT: await stargateNftMock.getAddress(),
     DynamicBaseAllocationPool: await dynamicBaseAllocationPool.getAddress(),
     NavigatorRegistry: await navigatorRegistry.getAddress(),
+    XAppReviewManager: await xAppReviewManager.getAddress(),
   }
 
   const libraries = {
@@ -1484,6 +1492,7 @@ export const getOrDeployContractInstances = async ({
     treasury,
     x2EarnRewardsPool,
     b3trChallenges,
+    xAppReviewManager,
     veBetterPassport,
     veBetterPassportV1,
     veBetterPassportV2,
