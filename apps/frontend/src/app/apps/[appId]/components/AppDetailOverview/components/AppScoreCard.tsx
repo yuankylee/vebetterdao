@@ -36,10 +36,10 @@ export const AppScoreCard = () => {
           position="absolute"
           top={4}
           right={4}
-          textStyle="sm"
-          color="text.default"
-          _hover={{ color: "text.brand" }}>
-          {"More"} <UilArrowUpRight size="14px" />
+          textStyle="md"
+          fontWeight="normal"
+          color="actions.secondary.text-lighter">
+          {"More"} <UilArrowUpRight />
         </Link>
         <Stack gap={0} mb={10}>
           <Text textStyle="4xl" fontWeight="bold" color="green.700">

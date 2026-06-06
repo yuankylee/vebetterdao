@@ -79,7 +79,7 @@ export const AppBalanceCard = () => {
             <Heading size="xl">{t("App Funds")}</Heading>
             <Link
               textStyle="md"
-              fontWeight="semibold"
+              fontWeight="normal"
               color="actions.secondary.text-lighter"
               onClick={onOpenRewardsPoolAccess}>
               {t("History")}

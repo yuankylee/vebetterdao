@@ -47,3 +47,10 @@ Logo (`EditAppLogo.tsx`) and Banner (`EditAppBanner.tsx`) live at `apps/[appId]/
 - `src/api/contracts/xApps/getXAppMetadata.ts` — `XAppMetadata` type (IPFS shape)
 - `src/hooks/xApp/useUpdateAppDetails.ts` — multi-clause metadata+treasury+admin tx
 - `src/components/CustomFormFields/FormItem.tsx` — `required` prop + `RequiredAsterisk` export
+
+## Gotchas
+
+- **ESLint `react/jsx-no-literals`**: Literal strings in JSX must be wrapped in `{}` expression containers (e.g., `{"More"}`, `{"App Score"}`). Bare literals like `More` or `App Score` cause lint failures.
+- **`@iconscout/react-unicons` naming**: Some icons have `Alt` suffix — e.g., `UilDownload` doesn't exist, use `UilDownloadAlt`. Check exports before importing.
+- **Grid `colSpan` with unequal columns**: When `templateColumns` defines unequal widths (e.g., `"2fr 1fr"`), use `colSpan={[1,1,1]}` for both items — `colSpan={[1,1,2]}` in a 2-column grid spans full width.
+- **Card double padding**: `Card.Root` variant already includes padding. Don't add `p={}` to `Card.Body` unless intentional.

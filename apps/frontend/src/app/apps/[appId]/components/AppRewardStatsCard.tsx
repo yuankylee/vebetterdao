@@ -44,7 +44,7 @@ export const AppRewardStatsCard = () => {
         <Card.Header>
           <HStack justifyContent="space-between" alignItems="center" w="full">
             <Heading size="xl">{t("Rewards")}</Heading>
-            <Link textStyle="md" fontWeight="semibold" color="actions.secondary.text-lighter" onClick={onOpenModal}>
+            <Link textStyle="md" fontWeight="normal" color="actions.secondary.text-lighter" onClick={onOpenModal}>
               {t("More")}
               <UilArrowUpRight />
             </Link>

@@ -93,7 +93,7 @@ export const AppDetailOverview = ({
                         <Skeleton loading={isLogoLoading} alignContent={"start"}>
                           <Image src={logo ?? notFoundImage} alt={"logo"} boxSize={"64px"} borderRadius="16px" />
                         </Skeleton>
-                        <Stack gap={2}>
+                        <Stack gap={1}>
                           <Skeleton loading={appMetadataLoading && !!appMetadata}>
                             <Heading size="3xl">
                               {appMetadata?.name ?? appMetadataError?.message ?? "Error loading name"}
@@ -123,8 +123,8 @@ export const AppDetailOverview = ({
                           {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
                         </Text>
                       </Skeleton>
-                      <Link textStyle="sm" color="text.default" _hover={{ color: "text.brand" }}>
-                        {"More"} <UilArrowUpRight size="14px" />
+                      <Link textStyle="md" fontWeight="normal" color="actions.secondary.text-lighter">
+                        {"More"} <UilArrowUpRight />
                       </Link>
                     </Stack>
 

@@ -170,7 +170,7 @@ export const AppEndorsementInfoCard = ({
       <Heading size="xl">{t("Endorsement")}</Heading>
       <Link
         textStyle="md"
-        fontWeight="semibold"
+        fontWeight="normal"
         color="actions.secondary.text-lighter"
         onClick={onOpenEndorsementInfoModal}>
         {t("History")}

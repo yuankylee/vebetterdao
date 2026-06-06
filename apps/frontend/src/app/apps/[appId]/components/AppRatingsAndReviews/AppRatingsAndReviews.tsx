@@ -1,4 +1,5 @@
 import { Box, Button, Card, HStack, Link, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -116,14 +117,19 @@ export const AppRatingsAndReviews = () => {
   return (
     <>
       <Card.Root w="full" borderRadius="xl">
-        <Card.Body p={4}>
+        <Card.Body p={0}>
           <Stack gap={4}>
             <HStack justify="space-between" align="center">
               <Text fontWeight="bold" fontSize="lg">
                 {t("Ratings & Reviews")}
               </Text>
-              <Link href={`/apps/${appId}/reviews`} color="gray.500" fontSize="sm" variant="plain">
-                {t("More ↗")}
+              <Link
+                href={`/apps/${appId}/reviews`}
+                textStyle="md"
+                fontWeight="normal"
+                color="actions.secondary.text-lighter">
+                {t("More")}
+                <UilArrowUpRight />
               </Link>
             </HStack>
 

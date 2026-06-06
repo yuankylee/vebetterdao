@@ -1,4 +1,5 @@
-import { Box, Card, HStack, Heading, Image, Text } from "@chakra-ui/react"
+import { Box, Card, HStack, Heading, Image, Link } from "@chakra-ui/react"
+import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -68,15 +69,14 @@ export const AppBadgesCard = ({ appId }: Props) => {
         <Card.Body p={4}>
           <HStack justify="space-between" align="center" mb={4}>
             <Heading size="md">{t("App Badges")}</Heading>
-            <HStack
-              gap={1}
-              cursor="pointer"
-              color="text.subtle"
-              _hover={{ color: "text.default" }}
+            <Link
+              textStyle="md"
+              fontWeight="normal"
+              color="actions.secondary.text-lighter"
               onClick={() => setIsHistoryOpen(true)}>
-              <Text textStyle="sm">{t("More")}</Text>
-              <Text textStyle="sm">{"↗"}</Text>
-            </HStack>
+              {t("More")}
+              <UilArrowUpRight />
+            </Link>
           </HStack>
 
           <HStack gap={3} flexWrap="wrap">

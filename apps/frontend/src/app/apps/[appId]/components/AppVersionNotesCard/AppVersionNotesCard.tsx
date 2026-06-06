@@ -1,4 +1,5 @@
-import { Card, HStack, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { Card, HStack, Link, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -20,7 +21,7 @@ export const AppVersionNotesCard = () => {
   if (appMetadataLoading) {
     return (
       <Card.Root w="full" borderRadius="xl">
-        <Card.Body p={4}>
+        <Card.Body p={0}>
           <Skeleton h="100px" borderRadius="md" />
         </Card.Body>
       </Card.Root>
@@ -31,21 +32,21 @@ export const AppVersionNotesCard = () => {
     <>
       <AppVersionNotesModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} versions={versionHistory} />
       <Card.Root w="full" borderRadius="xl">
-        <Card.Body p={4}>
+        <Card.Body p={0}>
           <Stack gap={3}>
             <HStack justify="space-between" align="center">
               <Text fontWeight="bold" fontSize="lg">
                 {t("App Version Notes")}
               </Text>
               {versionHistory.length > 0 && (
-                <Text
-                  color="gray.500"
-                  fontSize="sm"
-                  cursor="pointer"
-                  onClick={() => setIsModalOpen(true)}
-                  _hover={{ color: "gray.700" }}>
-                  {t("More ↗")}
-                </Text>
+                <Link
+                  textStyle="md"
+                  fontWeight="normal"
+                  color="actions.secondary.text-lighter"
+                  onClick={() => setIsModalOpen(true)}>
+                  {t("More")}
+                  <UilArrowUpRight />
+                </Link>
               )}
             </HStack>
 

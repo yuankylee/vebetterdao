@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, HStack, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { Box, Card, HStack, Skeleton, Stack, Text } from "@chakra-ui/react"
 import { Component, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { TweetSkeleton } from "react-tweet"
@@ -44,43 +44,47 @@ export const AppSocialMediaUpdates = () => {
   if (tweetIds.length === 0) return null
 
   return (
-    <Stack gap={4}>
-      <Text fontWeight="bold" fontSize="lg">
-        {t("Social Media Updates")}
-      </Text>
-      <Box
-        overflowX="auto"
-        pb={2}
-        sx={{
-          "&::-webkit-scrollbar": { h: "6px" },
-          "&::-webkit-scrollbar-track": { bg: "transparent" },
-          "&::-webkit-scrollbar-thumb": { bg: "gray.300", borderRadius: "full" },
-        }}>
-        <HStack gap={4} align="flex-start" w="max-content">
-          {tweetQueries.map((q, idx) => (
-            <Box
-              key={tweetIds[idx]}
-              minW="280px"
-              maxW="320px"
-              h="400px"
-              flexShrink={0}
-              overflowY="auto"
-              sx={{
-                "&::-webkit-scrollbar": { w: "4px" },
-                "&::-webkit-scrollbar-track": { bg: "transparent" },
-                "&::-webkit-scrollbar-thumb": { bg: "gray.300", borderRadius: "full" },
-              }}>
-              {q.isLoading ? (
-                <TweetSkeleton />
-              ) : q.data ? (
-                <TweetErrorBoundary>
-                  <ThemedTweet tweet={q.data} />
-                </TweetErrorBoundary>
-              ) : null}
-            </Box>
-          ))}
-        </HStack>
-      </Box>
-    </Stack>
+    <Card.Root w="full" variant="primary">
+      <Card.Body>
+        <Stack gap={4}>
+          <Text fontWeight="bold" fontSize="lg">
+            {t("Social Media Updates")}
+          </Text>
+          <Box
+            overflowX="auto"
+            pb={2}
+            sx={{
+              "&::-webkit-scrollbar": { h: "6px" },
+              "&::-webkit-scrollbar-track": { bg: "transparent" },
+              "&::-webkit-scrollbar-thumb": { bg: "gray.300", borderRadius: "full" },
+            }}>
+            <HStack gap={4} align="flex-start" w="max-content">
+              {tweetQueries.map((q, idx) => (
+                <Box
+                  key={tweetIds[idx]}
+                  minW="280px"
+                  maxW="320px"
+                  h="362px"
+                  flexShrink={0}
+                  overflowY="auto"
+                  sx={{
+                    "&::-webkit-scrollbar": { w: "4px" },
+                    "&::-webkit-scrollbar-track": { bg: "transparent" },
+                    "&::-webkit-scrollbar-thumb": { bg: "gray.300", borderRadius: "full" },
+                  }}>
+                  {q.isLoading ? (
+                    <TweetSkeleton />
+                  ) : q.data ? (
+                    <TweetErrorBoundary>
+                      <ThemedTweet tweet={q.data} />
+                    </TweetErrorBoundary>
+                  ) : null}
+                </Box>
+              ))}
+            </HStack>
+          </Box>
+        </Stack>
+      </Card.Body>
+    </Card.Root>
   )
 }

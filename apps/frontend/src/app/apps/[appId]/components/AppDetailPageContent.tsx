@@ -43,10 +43,11 @@ export const AppDetailPageContent = () => {
   return (
     <Grid
       templateColumns={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))", "repeat(3, minmax(0, 1fr))"]}
-      gap={"32px"}
+      gap={"16px"}
       w="full"
       alignItems={"flex-start"}
       data-testid="app-detail-grid">
+      {/* Full-width top section */}
       <GridItem w="full" colSpan={[1, 1, 3]}>
         <Stack direction="column" gap={4}>
           {(isAppModerator || isAppAdmin) && app?.id && <ProofValidationAlert appId={app.id} />}
@@ -56,6 +57,12 @@ export const AppDetailPageContent = () => {
             isEndorsementStatusLoading={isEndorsementStatusLoading}
           />
           <AppScreenshots />
+        </Stack>
+      </GridItem>
+
+      {/* Left panel (2/3) */}
+      <GridItem w="full" colSpan={[1, 1, 2]}>
+        <Stack direction="column" gap={4}>
           <AppBadgesAndEndorsementCard
             appId={app?.id ?? ""}
             endorsementScore={endorsementScore}
@@ -63,18 +70,16 @@ export const AppDetailPageContent = () => {
             endorsementThreshold={maxPointsPerAppValue?.toString()}
             isEndorsementStatusLoading={isEndorsementStatusLoading}
           />
-          <AppRewardStatsCard />
           {shouldRenderBalance && <AppBalanceCard />}
-        </Stack>
-      </GridItem>
-      <GridItem w="full" colSpan={[1, 1, 2]} order={[2, 2, 1]}>
-        <Stack direction="column" gap={8}>
           {shouldRenderCreationSteps ? <AppCreationSteps /> : null}
           <AppTutorial />
           <AppSocialMediaUpdates />
+          <AppRewardStatsCard />
         </Stack>
       </GridItem>
-      <GridItem w="full" colSpan={[1, 1, 1]} order={[1, 1, 2]}>
+
+      {/* Right panel (1/3) */}
+      <GridItem w="full" colSpan={[1, 1, 1]}>
         <Stack direction="column" gap={4}>
           <AppRatingsAndReviews />
           <AppVersionNotesCard />
