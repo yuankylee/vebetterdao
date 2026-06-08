@@ -21,7 +21,9 @@ import { ChangeEvent, useCallback, useRef, useState } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
+const notFoundImage = "/assets/images/image-not-found.webp"
 import { toaster } from "@/components/ui/toaster"
+import { AVG_PHONE_WIDTH, VE_WOLRD_SCALING_FACTOR } from "@/constants/XAppsMedia"
 import { uploadBlobToIPFS } from "@/utils/ipfs"
 import { convertUriToUrl } from "@/utils/uri"
 
@@ -30,7 +32,7 @@ import { EditAppForm } from "../EditAppPageContent"
 const MAX_FILE_BYTES = 100 * 1024 * 1024 // 100 MB
 const MAX_TEAM_MEMBERS = 10
 const MAX_PARTNERS = 10
-
+const computedWidth = Math.min(window.innerWidth, AVG_PHONE_WIDTH) / VE_WOLRD_SCALING_FACTOR
 const safeConvertUri = (url: string): string => {
   try {
     return convertUriToUrl(url)
@@ -117,6 +119,7 @@ const TeamBackgroundSection = ({ form }: Props) => {
           {members.length > 0 && (
             <SimpleGrid columns={[1, 2]} gap={4}>
               {members.map((member, index) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <TeamMemberCard
                   key={index}
                   member={member}
@@ -129,8 +132,19 @@ const TeamBackgroundSection = ({ form }: Props) => {
           )}
 
           {!atMax && (
-            <Button variant="tertiary" rounded="full" alignSelf="flex-start" onClick={addMember}>
-              <UilPlus size="16px" />
+            <Button
+              variant="tertiary"
+              rounded="full"
+              alignSelf="flex-start"
+              onClick={addMember}
+              px={8}
+              css={{
+                _icon: {
+                  width: "4",
+                  height: "4",
+                },
+              }}>
+              <UilPlus />
               {t("Add")}
             </Button>
           )}
@@ -196,7 +210,7 @@ const TeamMemberCard = ({
       <Input ref={inputRef} type="file" display="none" accept="image/*" onChange={handlePhotoChange} />
       <VStack align="stretch" gap={3}>
         {/* Photo row */}
-        <HStack gap={3} align="center">
+        <HStack gap={3} justify={"space-between"} align="center" w="full">
           <Box
             w="40px"
             h="40px"
@@ -215,38 +229,47 @@ const TeamMemberCard = ({
               <Box w="full" h="full" bg="gray.200" />
             )}
           </Box>
-          <Button
-            variant="tertiary"
-            rounded="full"
-            size="md"
-            onClick={() => inputRef.current?.click()}
-            loading={uploading}>
-            <UilUpload size="16px" />
-            {t("Upload")}
-          </Button>
-          {member.photo && !uploading && (
-            <IconButton
-              aria-label={t("Delete photo")}
-              variant="outline"
-              color="status.negative.primary"
+          <HStack justify={"space-between"}>
+            <Button
+              variant="tertiary"
               rounded="full"
               size="md"
-              onClick={() => {
-                onUpdate(index, "photo", "")
-                if (inputRef.current) inputRef.current.value = ""
+              onClick={() => inputRef.current?.click()}
+              loading={uploading}
+              px={8}
+              css={{
+                _icon: {
+                  width: "4",
+                  height: "4",
+                },
               }}>
-              <UilTrash size="16px" />
+              <UilUpload />
+              {t("Upload")}
+            </Button>
+            {member.photo && !uploading && (
+              <IconButton
+                aria-label={t("Delete photo")}
+                variant="outline"
+                color="status.negative.primary"
+                rounded="full"
+                size="md"
+                onClick={() => {
+                  onUpdate(index, "photo", "")
+                  if (inputRef.current) inputRef.current.value = ""
+                }}>
+                <UilTrash size="16px" />
+              </IconButton>
+            )}
+            <IconButton
+              aria-label={t("Remove member")}
+              variant="outline"
+              rounded="full"
+              size="md"
+              ml="auto"
+              onClick={() => onRemove(index)}>
+              <UilTimes size="16px" />
             </IconButton>
-          )}
-          <IconButton
-            aria-label={t("Remove member")}
-            variant="outline"
-            rounded="full"
-            size="md"
-            ml="auto"
-            onClick={() => onRemove(index)}>
-            <UilTimes size="16px" />
-          </IconButton>
+          </HStack>
         </HStack>
 
         {/* Title */}
@@ -333,38 +356,31 @@ const AppRoadmapSection = ({ form }: Props) => {
             <HStack justify="center" p={8}>
               <Spinner />
             </HStack>
-          ) : displayUrl ? (
-            <Image
-              src={displayUrl}
-              alt={t("App Roadmap")}
-              maxH="320px"
-              w="full"
-              objectFit="contain"
-              borderRadius="lg"
-              alignSelf="center"
-            />
           ) : (
             <HStack justify="center">
-              <Box
-                w="200px"
-                h="150px"
-                bg="bg.secondary"
-                borderRadius="lg"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                border="2px dashed"
-                borderColor="border.primary">
-                <Text color="text.subtle" textStyle="sm">
-                  {t("No image")}
-                </Text>
-              </Box>
+              <Image
+                src={displayUrl ?? notFoundImage}
+                alt={t("App Roadmap")}
+                style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+                objectFit="cover"
+              />
             </HStack>
           )}
 
           <HStack>
-            <Button variant="tertiary" rounded="full" onClick={() => inputRef.current?.click()} loading={uploading}>
-              <UilUpload size="16px" />
+            <Button
+              variant="tertiary"
+              rounded="full"
+              onClick={() => inputRef.current?.click()}
+              loading={uploading}
+              px={8}
+              css={{
+                _icon: {
+                  width: "4",
+                  height: "4",
+                },
+              }}>
+              <UilUpload />
               {t("Upload")}
             </Button>
             {roadmapImage && !uploading && (
@@ -385,6 +401,10 @@ const AppRoadmapSection = ({ form }: Props) => {
             onChange={e => form.setValue("appRoadmapDescription", e.target.value)}
             resize="none"
             h="140px"
+            css={{
+              borderRadius: "12px",
+              background: "#FFF",
+            }}
           />
         </VStack>
       </Card.Body>
@@ -459,7 +479,7 @@ const EcosystemPartnersSection = ({ form }: Props) => {
 
           <Input ref={inputRef} type="file" display="none" accept="image/*" multiple onChange={handleChange} />
 
-          <Box display="flex" overflowX="auto" p={4} gap={3} alignItems="flex-end">
+          <Box display="flex" overflowX="auto" gap={3} alignItems="flex-end">
             <Reorder.Group
               axis="x"
               values={partners}
@@ -484,7 +504,7 @@ const EcosystemPartnersSection = ({ form }: Props) => {
                 alignItems="center"
                 justifyContent="center"
                 gap={1}
-                border="1px dashed"
+                border="1px solid"
                 borderColor="border.primary"
                 cursor="pointer"
                 _hover={{ bg: "bg.tertiary" }}>
@@ -514,7 +534,6 @@ const DraggablePartner = ({
   index: number
   onRemove: (index: number) => void
 }) => {
-  const { t } = useTranslation()
   const dragControls = useDragControls()
 
   return (
@@ -524,6 +543,25 @@ const DraggablePartner = ({
       style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}
       dragListener={false}
       dragControls={dragControls}>
+      <HStack
+        bg="rgba(0, 0, 0, 0.2)"
+        width="100%"
+        height="30px"
+        position="absolute"
+        top={0}
+        justifyContent="flex-end"
+        style={{ touchAction: "none", zIndex: 2 }}>
+        <IconButton
+          rounded="full"
+          color="#D23F63"
+          bgColor="#FCEEF1"
+          _hover={{ bgColor: "#FCEEF1DD" }}
+          aria-label="Delete screenshot"
+          size="2xs"
+          onClick={() => onRemove(index)}>
+          <UilTrash />
+        </IconButton>
+      </HStack>
       <Image
         src={safeConvertUri(url)}
         alt={`Partner ${index + 1}`}
@@ -537,22 +575,6 @@ const DraggablePartner = ({
         style={{ touchAction: "none", cursor: "grab" }}
         onPointerDown={e => dragControls.start(e)}
       />
-      <IconButton
-        aria-label={t("Remove partner")}
-        w="20px"
-        h="20px"
-        minW="20px"
-        rounded="full"
-        bg="gray.500"
-        color="white"
-        _hover={{ bg: "gray.600" }}
-        position="absolute"
-        top="-6px"
-        right="-6px"
-        zIndex={1}
-        onClick={() => onRemove(index)}>
-        <UilTimes size="12px" />
-      </IconButton>
     </Reorder.Item>
   )
 }

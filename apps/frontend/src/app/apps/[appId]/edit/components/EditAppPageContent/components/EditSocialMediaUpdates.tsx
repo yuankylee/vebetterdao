@@ -68,6 +68,7 @@ export const EditSocialMediaUpdates = ({ form }: Props) => {
           {tweetLinks.length > 0 && (
             <VStack align="stretch" gap={3}>
               {tweetLinks.map((link, index) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <Field.Root key={index} invalid={!!errors[index]} w="full">
                   <HStack gap={2} align="flex-start" w="full">
                     <VStack align="stretch" flex={1} gap={1}>
@@ -93,7 +94,18 @@ export const EditSocialMediaUpdates = ({ form }: Props) => {
           )}
 
           {!atMax && (
-            <Button variant="tertiary" px={10} rounded="full" alignSelf="flex-start" onClick={addLink}>
+            <Button
+              variant="tertiary"
+              px={10}
+              rounded="full"
+              alignSelf="flex-start"
+              onClick={addLink}
+              css={{
+                _icon: {
+                  width: "4",
+                  height: "4",
+                },
+              }}>
               <UilPlus />
               {t("Add")}
             </Button>

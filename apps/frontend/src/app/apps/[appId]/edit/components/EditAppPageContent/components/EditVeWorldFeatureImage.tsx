@@ -73,40 +73,44 @@ export const EditVeWorldFeatureImage = ({ form }: Props) => {
 
   return (
     <VStack gap={2} align={"start"}>
-      <Heading size="2xl">{t("Featured Image")}</Heading>
-      <Flex w={computedWidth} h="76px" position={"relative"} rounded="12px" mt={4}>
-        <Image
-          src={featuredImage ?? notFoundImage}
-          onError={e => {
-            console.error("Image failed to load:", e)
-            e.currentTarget.src = notFoundImage
-          }}
-          alt="ve_world_featured_image"
-          style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
-          objectFit="cover"
-        />
-        <Input type="file" accept={accept} display={"none"} ref={inputRef} onChange={handleUpload} />
-        <Flex
-          rounded="12px"
-          top={0}
-          right={0}
-          left={0}
-          bottom={0}
-          position="absolute"
-          alignItems="center"
-          justifyContent="center"
-          bg={"#00000005"}
-          cursor={"pointer"}
-          _hover={{ bg: "#00000033" }}
-          onClick={handleClickEdit}>
-          <IconButton aria-label="Edit featured image" rounded={"full"} bg={"#00000033"} _hover={{ bg: "#00000033" }}>
-            <UilPen color="white" />
-          </IconButton>
+      <Heading size="l">
+        <Text css={{ color: "red", display: "inline" }}>{"*"}</Text> {t("VeWorld Featured Image")}
+      </Heading>
+      <VStack gap={2} w="full">
+        <Flex w={computedWidth} h="76px" position={"relative"} rounded="12px" mt={4}>
+          <Image
+            src={featuredImage ?? notFoundImage}
+            onError={e => {
+              console.error("Image failed to load:", e)
+              e.currentTarget.src = notFoundImage
+            }}
+            alt="ve_world_featured_image"
+            style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+            objectFit="cover"
+          />
+          <Input type="file" accept={accept} display={"none"} ref={inputRef} onChange={handleUpload} />
+          <Flex
+            rounded="12px"
+            top={0}
+            right={0}
+            left={0}
+            bottom={0}
+            position="absolute"
+            alignItems="center"
+            justifyContent="center"
+            bg={"#00000005"}
+            cursor={"pointer"}
+            _hover={{ bg: "#00000033" }}
+            onClick={handleClickEdit}>
+            <IconButton aria-label="Edit featured image" rounded={"full"} bg={"#00000033"} _hover={{ bg: "#00000033" }}>
+              <UilPen color="white" />
+            </IconButton>
+          </Flex>
         </Flex>
-      </Flex>
-      <Text textStyle="sm" color={invalidFormat ? "red" : "gray"} pt={0}>
-        {invalidFormat ? invalidMessage : <VeWorldFeaturedImageGuidelines />}
-      </Text>
+        <Text textStyle="sm" color={invalidFormat ? "red" : "gray"} pt={0}>
+          {invalidFormat ? invalidMessage : <VeWorldFeaturedImageGuidelines />}
+        </Text>
+      </VStack>
     </VStack>
   )
 }

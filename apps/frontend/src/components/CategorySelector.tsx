@@ -14,6 +14,7 @@ import {
   TagCloseTrigger,
   Portal,
 } from "@chakra-ui/react"
+import { UilPlus } from "@iconscout/react-unicons"
 import { useEffect, useState } from "react"
 import {
   UseFormRegister,
@@ -25,7 +26,7 @@ import {
   PathValue,
 } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { FaSearch, FaPlus } from "react-icons/fa"
+import { FaSearch } from "react-icons/fa"
 
 import { APP_CATEGORIES, AppCategoryItem, MAX_CATEGORIES } from "@/types/appDetails"
 
@@ -152,8 +153,18 @@ export const CategorySelector = <T extends FieldValues>({
                 placement: "bottom-start",
               }}>
               <Popover.Trigger>
-                <Button variant="outline" borderRadius="full" size="md">
-                  <FaPlus />
+                <Button
+                  px={8}
+                  variant="outline"
+                  borderRadius="full"
+                  size="md"
+                  css={{
+                    _icon: {
+                      width: "4",
+                      height: "4",
+                    },
+                  }}>
+                  <UilPlus />
                   {t("Add Category")}
                 </Button>
               </Popover.Trigger>

@@ -69,9 +69,9 @@ export const EditAppWhitepaper = ({ form }: Props) => {
   }, [form])
 
   return (
-    <VStack align="stretch" gap={6}>
+    <VStack align="stretch" gap={4}>
       <VStack align="flex-start" gap={1}>
-        <Heading size="2xl">{t("Application Whitepaper")}</Heading>
+        <Heading size="l">{t("Application Whitepaper")}</Heading>
         <Text textStyle="sm" color="text.subtle">
           {t("PDF only, max 100MB")}
         </Text>
@@ -104,8 +104,21 @@ export const EditAppWhitepaper = ({ form }: Props) => {
           </IconButton>
         </HStack>
       ) : (
-        <Button variant="tertiary" rounded="full" onClick={() => inputRef.current?.click()} loading={uploading}>
-          <UilUpload size="16px" />
+        <Button
+          variant="outline"
+          rounded="full"
+          onClick={() => inputRef.current?.click()}
+          loading={uploading}
+          css={{
+            _icon: {
+              width: "4",
+              height: "4",
+            },
+            paddingLeft: 8,
+            paddingRight: 8,
+            width: "fit-content",
+          }}>
+          <UilUpload />
           {t("Upload")}
         </Button>
       )}

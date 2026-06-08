@@ -322,19 +322,22 @@ export const CreateEditAppForm = ({
                   {t("VeWorld Banner")}
                 </Field.Label>
                 <VStack w="full" align="flex-start">
-                  <Image
-                    onClick={() => uploadVeWorldBannerRef.current?.click()}
-                    _hover={{ cursor: "pointer" }}
-                    src={value ?? notFoundImage}
-                    alt="ve_world_banner"
-                    style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
-                    objectFit="cover"
-                  />
-                  {errors.ve_world_banner ? (
-                    <Field.ErrorText>{errors.ve_world_banner.message}</Field.ErrorText>
-                  ) : (
-                    <Field.HelperText>{t(VEWORLD_BANNER_UPLOAD_GUIDELINES)}</Field.HelperText>
-                  )}
+                  <VStack w="full">
+                    <Image
+                      onClick={() => uploadVeWorldBannerRef.current?.click()}
+                      _hover={{ cursor: "pointer" }}
+                      src={value ?? notFoundImage}
+                      alt="ve_world_banner"
+                      style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+                      objectFit="cover"
+                    />
+                    {errors.ve_world_banner ? (
+                      <Field.ErrorText>{errors.ve_world_banner.message}</Field.ErrorText>
+                    ) : (
+                      <Field.HelperText>{t(VEWORLD_BANNER_UPLOAD_GUIDELINES)}</Field.HelperText>
+                    )}
+                  </VStack>
+
                   <UploadFileButton mt={4} onChange={onDrop("ve_world_banner")} ref={uploadVeWorldBannerRef} />
                 </VStack>
               </Field.Root>
@@ -353,21 +356,24 @@ export const CreateEditAppForm = ({
                   {t("VeWorld Featured Image")}
                 </Field.Label>
                 <VStack w="full" align="flex-start">
-                  <Image
-                    onClick={() => uploadVeWorldFeaturedImageRef.current?.click()}
-                    _hover={{ cursor: "pointer" }}
-                    src={value ?? notFoundImage}
-                    alt="ve_world_featured_image"
-                    style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
-                    objectFit="cover"
-                  />
-                  {errors.ve_world_featured_image ? (
-                    <Field.ErrorText>{errors.ve_world_featured_image.message}</Field.ErrorText>
-                  ) : (
-                    <Field.HelperText>
-                      <VeWorldFeaturedImageGuidelines />
-                    </Field.HelperText>
-                  )}
+                  <VStack w="full">
+                    <Image
+                      onClick={() => uploadVeWorldFeaturedImageRef.current?.click()}
+                      _hover={{ cursor: "pointer" }}
+                      src={value ?? notFoundImage}
+                      alt="ve_world_featured_image"
+                      style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+                      objectFit="cover"
+                    />
+                    {errors.ve_world_featured_image ? (
+                      <Field.ErrorText>{errors.ve_world_featured_image.message}</Field.ErrorText>
+                    ) : (
+                      <Field.HelperText>
+                        <VeWorldFeaturedImageGuidelines />
+                      </Field.HelperText>
+                    )}
+                  </VStack>
+
                   <UploadFileButton
                     mt={4}
                     onChange={onDrop("ve_world_featured_image")}
@@ -400,6 +406,9 @@ export const CreateEditAppForm = ({
                   required: t("Please enter"),
                   maxLength: { value: 1000, message: t("Maximum 1000") },
                 })}
+                css={{
+                  height: 100,
+                }}
               />
               <Field.ErrorText>{errors.versionNotes?.message}</Field.ErrorText>
             </Field.Root>
@@ -407,7 +416,7 @@ export const CreateEditAppForm = ({
         </VStack>
       </Card.Body>
       <Card.Footer display={"flex"} w="full" mt={4}>
-        <Button colorPalette="blue" type="submit" size="lg" alignSelf={"flex-end"} borderRadius={"full"}>
+        <Button colorPalette="blue" type="submit" px={8} alignSelf={"flex-end"} borderRadius={"full"}>
           {isEdit ? "Save" : "Submit"}
         </Button>
       </Card.Footer>

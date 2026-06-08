@@ -71,15 +71,25 @@ export const EditScreenshots = ({ form }: Props) => {
   )
 
   return (
-    <VStack align="stretch" gap={6}>
-      <HStack justify={"space-between"} flexWrap={"wrap"}>
-        <VStack align="flex-start" gap={1}>
+    <VStack align="stretch" gap={4} w={"full"}>
+      <HStack flexWrap={"wrap"} justify={"space-between"}>
+        <VStack align="flex" gap={1}>
           <Heading size="2xl">{t("Edit screenshots")}</Heading>
           <Text textStyle="sm" color={invalidFormat ? "red" : "gray"}>
             {invalidFormat ? invalidMessage : t(SCREENSHOT_UPLOAD_GUIDELINES)}
           </Text>
         </VStack>
-        <Button variant="primary" onClick={handleUpload} loading={loadingScreenshot}>
+        <Button
+          variant="outline"
+          onClick={handleUpload}
+          loading={loadingScreenshot}
+          px={8}
+          css={{
+            _icon: {
+              width: "4",
+              height: "4",
+            },
+          }}>
           <UilUpload size="16px" />
           {t("Upload")}
         </Button>

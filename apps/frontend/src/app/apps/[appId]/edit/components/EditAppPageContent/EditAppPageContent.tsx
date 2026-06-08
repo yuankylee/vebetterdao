@@ -1,16 +1,4 @@
-import {
-  Button,
-  Card,
-  Grid,
-  GridItem,
-  HStack,
-  Heading,
-  Separator,
-  SimpleGrid,
-  Text,
-  VStack,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Button, Card, Grid, GridItem, Heading, Separator, SimpleGrid, VStack, useDisclosure } from "@chakra-ui/react"
 import { useWallet } from "@vechain/vechain-kit"
 import { useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef } from "react"
@@ -449,16 +437,8 @@ export const EditAppPageContent = () => {
                 </SimpleGrid>
 
                 <VStack align={"flex-start"} gap={4}>
-                  <Heading size="2xl">{t("VeWorld assets")}</Heading>
-                  <Text textStyle="sm" color={"gray"} pt={0}>
-                    {t(
-                      "VeWorld assets are used to display the app in the VeWorld mobile wallet. Include them to make your app more engaging. ✨",
-                    )}
-                  </Text>
-                  <HStack gap={4} w="full" align={"stretch"}>
-                    <EditVeWorldBanner form={form} />
-                    <EditVeWorldFeatureImage form={form} />
-                  </HStack>
+                  <EditVeWorldBanner form={form} />
+                  <EditVeWorldFeatureImage form={form} />
                 </VStack>
 
                 <Separator />
@@ -467,14 +447,15 @@ export const EditAppPageContent = () => {
                 <EditScreenshots form={form} />
                 <Separator />
                 <EditAppTutorial form={form} />
-                <Separator />
                 <EditAppWhitepaper form={form} />
-                <Separator />
-                <EditMoreAppDetails form={form} />
-                <Separator />
               </VStack>
             </Card.Body>
-            <Card.Footer display={"flex"} w="full" mt={4}>
+          </Card.Root>
+          <Card.Root mt={4}>
+            <Card.Body>
+              <EditMoreAppDetails form={form} />
+            </Card.Body>
+            <Card.Footer display={"flex"} w="full" mt={10}>
               <Button colorPalette="blue" type="submit" size="lg" disabled={!isFormChanged} borderRadius={"full"}>
                 {t("Submit")}
               </Button>

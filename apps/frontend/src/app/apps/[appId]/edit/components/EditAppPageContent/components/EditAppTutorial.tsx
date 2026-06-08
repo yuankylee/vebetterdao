@@ -31,9 +31,9 @@ export const EditAppTutorial = ({ form }: Props) => {
   const mode = form.watch("tutorialMode")
 
   return (
-    <VStack align="stretch" gap={6}>
+    <VStack align="stretch" gap={4}>
       <VStack align="flex-start" gap={1}>
-        <Heading size="2xl">{t("App Tutorial")}</Heading>
+        <Heading size="l">{t("App Tutorial")}</Heading>
         <Text textStyle="sm" color="text.subtle">
           {t("Provide app tutorials to help users get started quickly and easily understand the App's features.")}
         </Text>
@@ -141,8 +141,20 @@ const TutorialVideo = ({ form }: Props) => {
           )}
         </VStack>
       ) : (
-        <Button variant="tertiary" rounded="full" onClick={() => inputRef.current?.click()} loading={uploading}>
-          <UilUpload size="16px" />
+        <Button
+          variant="outline"
+          rounded="full"
+          onClick={() => inputRef.current?.click()}
+          loading={uploading}
+          css={{
+            _icon: {
+              width: "4",
+              height: "4",
+            },
+            paddingLeft: 8,
+            paddingRight: 8,
+          }}>
+          <UilUpload />
           {t("Upload")}
         </Button>
       )}
