@@ -1,4 +1,4 @@
-import { Box, HStack, Heading, Image, Switch, Text, VStack } from "@chakra-ui/react"
+import { Box, HStack, Heading, Image, SimpleGrid, Switch, Text, VStack } from "@chakra-ui/react"
 import { UilCheckCircle, UilClock, UilTimes } from "@iconscout/react-unicons"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -37,7 +37,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
       <VStack align="stretch" gap={0}>
         {/* Header */}
         <HStack justify="space-between" align="center" p={{ base: 2, sm: 6 }} pb={4}>
-          <HStack gap={3}>
+          <HStack gap={3} w={{ base: "full", md: "auto" }} justify={{ base: "space-between", md: "flex-start" }}>
             <Heading size="md">{t("Badges details")}</Heading>
             <HStack gap={2}>
               <Switch.Root checked={!isPrivate} onCheckedChange={({ checked }) => handleToggle(checked)}>
@@ -51,7 +51,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
               </Text>
             </HStack>
           </HStack>
-          <Box cursor="pointer" onClick={onClose}>
+          <Box cursor="pointer" onClick={onClose} display={{ base: "none", md: "flex" }}>
             <UilTimes size="20px" />
           </Box>
         </HStack>
@@ -65,7 +65,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
           p={5}
           position="relative">
           {/* Published/Unpublished pill — from API, independent of the switch */}
-          <Box mb={3} position="absolute">
+          <Box mb={3} position="absolute" zIndex={9}>
             <HStack gap={1} display="inline-flex" bg={isPublished ? "#E9FDF1" : "#FFF3E5"} px={2} py={1} rounded="full">
               {isPublished ? <UilCheckCircle size="16px" color="#3DBA67" /> : <UilClock size="16px" color="#FFB566" />}
               <Text textStyle="xs" fontWeight="semibold" color={isPublished ? "#3DBA67" : "#FFB566"}>
@@ -84,7 +84,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                 top={4}
                 left={"12px"}
                 position="absolute"
-                z={9}
+                zIndex={2}
                 objectFit="contain"
               />
             </VStack>
@@ -100,9 +100,18 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
           </VStack>
 
           {/* Stats */}
-          <Box bg="rgba(255,255,255,0.2)" rounded="lg" p={4}>
-            <HStack justify="space-around">
-              <HStack gap={2} align="center">
+          <Box
+            bg={{ base: "transparent", md: "rgba(255,255,255,0.2)" }}
+            rounded={{ base: "none", md: "lg" }}
+            p={{ base: 0, md: 4 }}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+              <HStack
+                gap={2}
+                align="center"
+                justify="center"
+                bg={{ base: "rgba(255,255,255,0.2)", md: "transparent" }}
+                rounded={{ base: "lg", md: "none" }}
+                p={{ base: 4, md: 0 }}>
                 <Image src="/assets/images/badges/badge-left.webp" alt="" w="20px" h="36px" objectFit="contain" />
                 <VStack gap={1} align="center">
                   <Text textStyle="2xl" fontWeight="bold" color="white">
@@ -114,7 +123,13 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                 </VStack>
                 <Image src="/assets/images/badges/badge-right.webp" alt="" w="20px" h="36px" objectFit="contain" />
               </HStack>
-              <HStack gap={2} align="center">
+              <HStack
+                gap={2}
+                align="center"
+                justify="center"
+                bg={{ base: "rgba(255,255,255,0.2)", md: "transparent" }}
+                rounded={{ base: "lg", md: "none" }}
+                p={{ base: 4, md: 0 }}>
                 <Image src="/assets/images/badges/badge-left.webp" alt="" w="20px" h="36px" objectFit="contain" />
                 <VStack gap={1} align="center">
                   <Text textStyle="2xl" fontWeight="bold" color="white">
@@ -127,40 +142,44 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                 </VStack>
                 <Image src="/assets/images/badges/badge-right.webp" alt="" w="20px" h="36px" objectFit="contain" />
               </HStack>
-            </HStack>
+            </SimpleGrid>
           </Box>
         </Box>
 
         {/* Acquisition Records */}
-        <VStack align="stretch" gap={3} px={{ base: 2, sm: 6 }} pb={6}>
-          <Heading size="sm">{t("Acquisition Records")}</Heading>
-          <VStack align="stretch" gap={0}>
-            <HStack justify="space-between" pb={2} borderBottomWidth="1px">
-              <Text textStyle="sm" fontWeight="bold" flex={1}>
-                {t("Round")}
-              </Text>
-              <Text textStyle="sm" fontWeight="bold" flex={1}>
-                {t("Ranking")}
-              </Text>
-              <Text textStyle="sm" fontWeight="bold" flex={1} textAlign="right">
-                {t("Date")}
-              </Text>
-            </HStack>
-            {records.map(record => (
-              <HStack key={record.round} justify="space-between" py={2} borderBottomWidth="1px">
-                <Text textStyle="sm" flex={1}>
-                  {"# "}
-                  {record.round}
+        <VStack justify="space-between" align="center" px={{ base: 2, sm: 6 }}>
+          <Box w="full" borderRadius="12px" gap={3} p={{ base: 2, sm: 4 }} pb={6} bg={"#F9F9FA"}>
+            <Heading size="sm" mb={4}>
+              {t("Acquisition Records")}
+            </Heading>
+            <VStack align="stretch" gap={0}>
+              <HStack justify="space-between" pb={2} borderBottomWidth="1px">
+                <Text textStyle="sm" fontWeight="bold" flex={1}>
+                  {t("Round")}
                 </Text>
-                <Text textStyle="sm" flex={1}>
-                  {record.ranking ?? t("Not Ranked")}
+                <Text textStyle="sm" fontWeight="bold" flex={1}>
+                  {t("Ranking")}
                 </Text>
-                <Text textStyle="sm" flex={1} textAlign="right">
-                  {record.date}
+                <Text textStyle="sm" fontWeight="bold" flex={1} textAlign="right">
+                  {t("Date")}
                 </Text>
               </HStack>
-            ))}
-          </VStack>
+              {records.map(record => (
+                <HStack key={record.round} justify="space-between" py={2} borderBottomWidth="1px">
+                  <Text textStyle="sm" flex={1}>
+                    {"# "}
+                    {record.round}
+                  </Text>
+                  <Text textStyle="sm" flex={1}>
+                    {record.ranking ?? t("Not Ranked")}
+                  </Text>
+                  <Text textStyle="sm" flex={1} textAlign="right">
+                    {record.date}
+                  </Text>
+                </HStack>
+              ))}
+            </VStack>
+          </Box>
         </VStack>
       </VStack>
     </BaseModal>

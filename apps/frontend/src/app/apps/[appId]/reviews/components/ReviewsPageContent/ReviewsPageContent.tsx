@@ -1,12 +1,10 @@
 import {
   Box,
-  Button,
   ButtonGroup,
   Grid,
   GridItem,
   HStack,
   IconButton,
-  Image,
   Link,
   NativeSelect,
   Pagination,
@@ -19,6 +17,8 @@ import { useParams } from "next/navigation"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu"
+
+import { ReviewsPageBanner } from "@/app/components/ActionBanners/components/ReviewsPageBanner"
 
 import { useAppReviewStats } from "../../../../../../api/contracts/xApps/hooks/useAppReviewStats"
 import { Review } from "../../../../../../api/reviews/types"
@@ -86,47 +86,7 @@ export const ReviewsPageContent = () => {
           </Text>
         </HStack>
 
-        {/* Hero card */}
-        <Box
-          bgGradient="to-br"
-          gradientFrom="blue.400"
-          gradientTo="purple.500"
-          borderRadius="2xl"
-          p={{ base: 5, md: 8 }}
-          color="white"
-          position="relative"
-          overflow="hidden">
-          <HStack justify="space-between" align="flex-end" gap={4}>
-            <Stack gap={3} flex={1}>
-              <Text fontWeight="bold" fontSize={{ base: "xl", md: "2xl" }}>
-                {t("Reviews")}
-              </Text>
-              <Text fontSize="sm" opacity={0.9} maxW="480px">
-                {t(
-                  "Welcome to share your experience or valuable suggestions in the comments section below. Every voice you share helps make this DApp more user-friendly and better.",
-                )}
-              </Text>
-              <Button
-                variant="primary"
-                borderRadius="full"
-                w="fit-content"
-                bg="white"
-                color="blue.600"
-                _hover={{ bg: "gray.100" }}
-                onClick={() => handleWriteReview()}>
-                {t("Write a Review")}
-              </Button>
-            </Stack>
-            <Image
-              src="/assets/mascot/mascot-data.png"
-              alt="mascot"
-              h={{ base: "80px", md: "120px" }}
-              objectFit="contain"
-              flexShrink={0}
-              display={{ base: "none", md: "block" }}
-            />
-          </HStack>
-        </Box>
+        <ReviewsPageBanner onClick={handleWriteReview} />
 
         {/* Main grid */}
         <Grid templateColumns={["1fr", "1fr", "2fr 1fr"]} gap={6} alignItems="flex-start">

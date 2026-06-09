@@ -1,4 +1,4 @@
-import { Box, Card, Link, Stack, Text } from "@chakra-ui/react"
+import { Card, Image, Link, Stack, Text } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
 
 // TODO: replace with real data from backend API
@@ -9,40 +9,29 @@ const MOCK_ROUND_NUMBER = 77
 
 export const AppScoreCard = () => {
   return (
-    <Card.Root variant="primary" bg="green.50" position="relative" h="full" overflow="hidden">
-      {/* decorative gradient circles */}
-      <Box
+    <Card.Root variant="primary" bg="#E9FDF1" position="relative" h="full" overflow="hidden">
+      <Image
+        src="/assets/images/score-card-bg.webp"
+        alt=""
+        w="224px"
+        h="280px"
         position="absolute"
-        top="-40px"
-        right="-40px"
-        w="160px"
-        h="160px"
-        borderRadius="full"
-        bg="green.200"
-        opacity={0.5}
-      />
-      <Box
-        position="absolute"
-        bottom="-30px"
-        right="-20px"
-        w="120px"
-        h="120px"
-        borderRadius="full"
-        bg="green.100"
-        opacity={0.6}
+        objectFit="contain"
+        right={0}
+        top={0}
       />
       <Card.Body position="relative" zIndex={1} alignItems="flex-start">
         <Link
           position="absolute"
-          top={4}
-          right={4}
+          top={0}
+          right={0}
           textStyle="md"
           fontWeight="normal"
           color="actions.secondary.text-lighter">
           {"More"} <UilArrowUpRight />
         </Link>
         <Stack gap={0} mb={10}>
-          <Text textStyle="4xl" fontWeight="bold" color="green.700">
+          <Text textStyle="4xl" fontWeight="bold" color="#3DBA67">
             {MOCK_SCORE.toFixed(2)}
           </Text>
           <Text textStyle="sm" color="text.subtle">

@@ -1,4 +1,5 @@
-import { Button, HStack, Input, Stack, Text, Textarea } from "@chakra-ui/react"
+import { Box, Button, Heading, HStack, Input, Stack, Text, Textarea } from "@chakra-ui/react"
+import { UilTimes } from "@iconscout/react-unicons"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -74,59 +75,73 @@ export const WriteReviewModal = ({ isOpen, onClose, appId, existingReview, onSuc
   }
 
   return (
-    <BaseModal isOpen={isOpen} onClose={handleClose} showCloseButton isCloseable modalContentProps={{ maxW: "500px" }}>
-      <Stack gap={5}>
-        <Text fontWeight="bold" fontSize="xl">
-          {isEdit ? t("Edit the review") : t("Write a Review")}
-        </Text>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      showCloseButton={false}
+      isCloseable
+      modalContentProps={{ maxW: "682px" }}
+      modalBodyProps={{ p: 6 }}>
+      <HStack justify="space-between" align="center" pb={6}>
+        <Heading size="md">{isEdit ? t("Edit the review") : t("Write a Review")}</Heading>
+        <Box cursor="pointer" onClick={onClose}>
+          <UilTimes size="20px" />
+        </Box>
+      </HStack>
 
-        <Stack as="form" gap={4} onSubmit={handleSubmit(onSubmit)}>
-          <Stack gap={1}>
-            <Input
-              placeholder={t("Title")}
-              borderRadius="xl"
-              size="lg"
-              {...register("title", {
-                required: t("Please enter"),
-                maxLength: { value: 100, message: t("Maximum 100 characters") },
-              })}
-              borderColor={errors.title ? "red.400" : undefined}
-            />
-            {errors.title && (
-              <Text fontSize="xs" color="red.400" px={1}>
-                {errors.title.message}
-              </Text>
-            )}
-          </Stack>
-
-          <Stack gap={1}>
-            <Textarea
-              placeholder={t("Review")}
-              borderRadius="xl"
-              rows={5}
-              resize="none"
-              {...register("content", {
-                required: t("Please enter"),
-                maxLength: { value: 1000, message: t("Maximum 1000 characters") },
-              })}
-              borderColor={errors.content ? "red.400" : undefined}
-            />
-            {errors.content && (
-              <Text fontSize="xs" color="red.400" px={1}>
-                {errors.content.message}
-              </Text>
-            )}
-          </Stack>
-
-          <HStack justify="flex-end" gap={3} pt={1}>
-            <Button variant="outline" borderRadius="full" onClick={handleClose}>
-              {t("Cancel")}
-            </Button>
-            <Button variant="primary" borderRadius="full" type="submit">
-              {t("Send")}
-            </Button>
-          </HStack>
+      <Stack as="form" gap={3} onSubmit={handleSubmit(onSubmit)}>
+        <Stack gap={1}>
+          <Input
+            placeholder={t("Title")}
+            borderRadius="xl"
+            size="lg"
+            {...register("title", {
+              required: t("Please enter"),
+              maxLength: { value: 100, message: t("Maximum 100 characters") },
+            })}
+            borderColor={errors.title ? "red.400" : undefined}
+          />
+          {errors.title && (
+            <Text fontSize="xs" color="red.400" px={1}>
+              {errors.title.message}
+            </Text>
+          )}
         </Stack>
+
+        <Stack gap={1}>
+          <Textarea
+            placeholder={t("Review")}
+            borderRadius="xl"
+            rows={5}
+            resize="none"
+            {...register("content", {
+              required: t("Please enter"),
+              maxLength: { value: 1000, message: t("Maximum 1000 characters") },
+            })}
+            borderColor={errors.content ? "red.400" : undefined}
+          />
+          {errors.content && (
+            <Text fontSize="xs" color="red.400" px={1}>
+              {errors.content.message}
+            </Text>
+          )}
+        </Stack>
+        <HStack justify="flex-end" gap={3} pt={1}>
+          <Button
+            variant="subtle"
+            colorPalette="blue"
+            css={{
+              backgroundColor: "#E6EEFF",
+            }}
+            borderRadius="full"
+            px={10}
+            onClick={handleClose}>
+            {t("Cancel")}
+          </Button>
+          <Button variant="primary" borderRadius="full" px={10} type="submit">
+            {t("Send")}
+          </Button>
+        </HStack>
       </Stack>
     </BaseModal>
   )
