@@ -25,6 +25,15 @@ export type ReviewsResponse = {
   pagination: { hasNext: boolean; cursor?: string }
 }
 
+/** GET /api/v1/xapp/apps/{appId}/rating */
+export type AppRatingSummaryResponse = {
+  appId: string
+  average: number
+  count: number
+  userRating: number | null
+  hasRated: boolean
+}
+
 export type VoteEntry = {
   voter: string
   domain?: string | null

@@ -1,12 +1,14 @@
 import { Button, Card, Stack, Text } from "@chakra-ui/react"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
-import { useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { FaRegStar, FaStar } from "react-icons/fa"
 
+import { ReviewTxVerifier } from "@/components/Debug/ReviewTxVerifier"
 import { toaster } from "@/components/ui/toaster"
 
 import { useUserRating } from "../../../../../../../api/contracts/xApps/hooks/useUserRating"
+import { useAppRatingSummary } from "../../../../../../../api/reviews/useAppRatingSummary"
 import { useSubmitRating } from "../../../../../../../hooks/xApp/useSubmitRating"
 import { useUpdateRating } from "../../../../../../../hooks/xApp/useUpdateRating"
 
@@ -52,17 +54,33 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
   const { account } = useWallet()
   const { open: openWalletModal } = useWalletModal()
   const [selectedRating, setSelectedRating] = useState(0)
+  const [lastRatingTxId, setLastRatingTxId] = useState<string>()
 
-  const { data: existingOnChainRating, refetch: refetchRating } = useUserRating(appId, account?.address)
-  const existingRating = existingOnChainRating ?? 0
+  const { data: ratingSummary, refetch: refetchRatingSummary } = useAppRatingSummary(appId, account?.address)
+  const existingRating = ratingSummary?.userRating ?? 0
+
+  const {
+    data: chainRating,
+    refetch: refetchChainRating,
+    isPending,
+    isFetching,
+  } = useUserRating(appId, account?.address)
 
   const handleSuccess = () => {
     toaster.create({ title: t("Operation succeeded"), type: "success" })
-    refetchRating()
+    void refetchRatingSummary()
+    void refetchChainRating()
   }
 
   const submitRating = useSubmitRating({ onSuccess: handleSuccess })
   const updateRating = useUpdateRating({ onSuccess: handleSuccess })
+
+  useEffect(() => {
+    const fromUpdate = updateRating.txReceipt?.meta?.txID
+    const fromSubmit = submitRating.txReceipt?.meta?.txID
+    const raw = fromUpdate ?? fromSubmit
+    if (raw) setLastRatingTxId(String(raw))
+  }, [updateRating.txReceipt?.meta?.txID, submitRating.txReceipt?.meta?.txID])
 
   const handleLeaveRating = () => {
     if (!account?.address) {
@@ -86,7 +104,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
   return (
     <Stack gap={4}>
       {/* Leave a Rating panel — shown when user has not yet rated */}
-      {existingRating === 0 && (
+      {!ratingSummary?.hasRated && (
         <Card.Root borderRadius="xl">
           <Card.Body>
             <Stack gap={11} align="center">
@@ -114,7 +132,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       )}
 
       {/* Update Rating panel — shown when user already has a rating */}
-      {existingRating > 0 && (
+      {ratingSummary?.hasRated && (
         <Card.Root borderRadius="xl">
           <Card.Body>
             <Stack gap={11} align="center">
@@ -139,6 +157,16 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
           </Card.Body>
         </Card.Root>
       )}
+
+      <Suspense fallback={null}>
+        <ReviewTxVerifier
+          key={appId}
+          initialTxId={lastRatingTxId}
+          walletAddress={account?.address}
+          isRatingLoading={!!account?.address && (isPending || isFetching)}
+          onChainRating={chainRating}
+        />
+      </Suspense>
     </Stack>
   )
 }

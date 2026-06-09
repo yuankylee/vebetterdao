@@ -6,8 +6,8 @@ import { useTranslation } from "react-i18next"
 import { FaRegStar, FaStar, FaStarHalfAlt, FaThumbsDown, FaThumbsUp } from "react-icons/fa"
 import { MdFrontHand } from "react-icons/md"
 
-import { useAppRatingStats } from "../../../../../api/contracts/xApps/hooks/useAppRatingStats"
 import { Review } from "../../../../../api/reviews/types"
+import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
@@ -18,10 +18,9 @@ const getAuthorColor = (address: string) => AUTHOR_COLORS[parseInt(address.slice
 
 const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
-const formatCount = (n: bigint) => {
-  const num = Number(n)
-  if (num >= 1000) return `${(num / 1000).toFixed(0)}k`
-  return num.toString()
+const formatCount = (n: number) => {
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}k`
+  return n.toString()
 }
 
 const formatDate = (ts: number) =>
@@ -29,8 +28,8 @@ const formatDate = (ts: number) =>
 
 const STAR_COLOR = "#FFB566"
 
-const StarRating = ({ avgRating }: { avgRating: bigint }) => {
-  const rating = Number(avgRating) / 100
+const StarRating = ({ average }: { average: number }) => {
+  const rating = average
   return (
     <HStack gap={0.5}>
       {Array.from({ length: 5 }, (_, i) => {
@@ -96,15 +95,20 @@ export const AppRatingsAndReviews = () => {
   const { open: openWalletModal } = useWalletModal()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data: statsData, isLoading: statsLoading } = useAppRatingStats(appId)
+  const {
+    data: ratingSummary,
+    isPending: ratingSummaryPending,
+    isFetching: ratingSummaryFetching,
+    refetch: refetchRatingSummary,
+  } = useAppRatingSummary(appId, account?.address)
   const { data: reviewsData, isLoading: reviewsLoading, refetch } = useAppReviews(appId, { wallet: account?.address })
 
-  const count = (statsData as { count: bigint; avgRating: bigint } | undefined)?.count ?? 0n
-  const avgRating = (statsData as { count: bigint; avgRating: bigint } | undefined)?.avgRating ?? 0n
-  const ratingDisplay = (Number(avgRating) / 100).toFixed(1)
+  const average = ratingSummary?.average ?? 0
+  const count = ratingSummary?.count ?? 0
+  const ratingDisplay = average.toFixed(1)
 
   const visibleReviews = (reviewsData?.data ?? []).filter(r => !r.isHidden).slice(0, 2)
-  const isLoading = statsLoading || reviewsLoading
+  const isLoading = ratingSummaryPending || ratingSummaryFetching || reviewsLoading
 
   const handleWriteReview = () => {
     if (!account?.address) {
@@ -142,7 +146,7 @@ export const AppRatingsAndReviews = () => {
                   {ratingDisplay}
                 </Text>
                 <Stack align="flex-end" gap={1}>
-                  <StarRating avgRating={avgRating} />
+                  <StarRating average={average} />
                   <Text color="gray.500" fontSize="sm">
                     {`${formatCount(count)} ${t("ratings")}`}
                   </Text>
@@ -175,7 +179,8 @@ export const AppRatingsAndReviews = () => {
         onClose={() => setIsModalOpen(false)}
         appId={appId}
         onSuccess={() => {
-          refetch()
+          void refetch()
+          void refetchRatingSummary()
         }}
       />
     </>

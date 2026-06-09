@@ -1,11 +1,10 @@
 import { getConfig } from "@repo/config"
 import { EnhancedClause, UseSendTransactionReturnValue } from "@vechain/vechain-kit"
-import { Interface } from "ethers"
 import { useCallback } from "react"
 
 import { useBuildTransaction } from "../useBuildTransaction"
 
-const ReviewManagerInterface = new Interface(["function submitRating(bytes32 appId, uint8 rating)"])
+import { ReviewManagerInterface } from "./reviewManagerInterface"
 
 type BuildClausesProps = {
   appId: string
