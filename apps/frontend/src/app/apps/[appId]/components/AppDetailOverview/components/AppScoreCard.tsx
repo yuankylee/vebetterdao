@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Card, Link, Stack, Text, useDisclosure } from "@chakra-ui/react"
+import { Card, Image, Link, Stack, Text, useDisclosure } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useTranslation } from "react-i18next"
 
@@ -8,6 +8,11 @@ import { LightMode } from "@/components/ui/color-mode"
 
 import { AppScoreDetailsModal } from "./AppScoreDetailsModal"
 import { APP_SCORE_ACCENT_HEX, APP_SCORE_MOCK } from "./appScoreMockData"
+// TODO: replace with real data from backend API
+// const MOCK_SCORE = 85.12
+// const MOCK_RANKING = 20
+// const MOCK_ROUND_DATE = "9 Dec, 2025"
+// const MOCK_ROUND_NUMBER = 77
 
 export const AppScoreCard = () => {
   const { t } = useTranslation()
@@ -22,32 +27,20 @@ export const AppScoreCard = () => {
           position="relative"
           h="full"
           overflow="hidden"
-          bg="green.50"
+          bg="#E9FDF1"
           border="none"
           _dark={{
             bg: "green.50",
           }}>
-          <Box
+          <Image
+            src="/assets/images/score-card-bg.webp"
+            alt=""
+            w="224px"
+            h="280px"
             position="absolute"
-            top="-40px"
-            right="-40px"
-            w="160px"
-            h="160px"
-            borderRadius="full"
-            bg="green.200"
-            opacity={0.5}
-            _dark={{ bg: "green.200" }}
-          />
-          <Box
-            position="absolute"
-            bottom="-30px"
-            right="-20px"
-            w="120px"
-            h="120px"
-            borderRadius="full"
-            bg="green.100"
-            opacity={0.6}
-            _dark={{ bg: "green.100" }}
+            objectFit="contain"
+            right={0}
+            top={0}
           />
           <Card.Body position="relative" zIndex={1} alignItems="flex-start" color="text.default">
             <Link

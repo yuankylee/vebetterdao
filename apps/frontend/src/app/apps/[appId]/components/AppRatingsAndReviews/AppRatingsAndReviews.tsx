@@ -27,7 +27,7 @@ const formatCount = (n: bigint) => {
 const formatDate = (ts: number) =>
   new Date(ts * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
 
-const STAR_COLOR = "#ED8936"
+const STAR_COLOR = "#FFB566"
 
 const StarRating = ({ avgRating }: { avgRating: bigint }) => {
   const rating = Number(avgRating) / 100
@@ -127,7 +127,8 @@ export const AppRatingsAndReviews = () => {
                 href={`/apps/${appId}/reviews`}
                 textStyle="md"
                 fontWeight="normal"
-                color="actions.secondary.text-lighter">
+                color="actions.secondary.text-lighter"
+                _focus={{ outline: "none", boxShadow: "none" }}>
                 {t("More")}
                 <UilArrowUpRight />
               </Link>

@@ -72,7 +72,7 @@ export const AppDetailOverview = ({
       <VStack gap={4} align="stretch">
         <Card.Root variant="primary">
           <Card.Body>
-            <VStack align="stretch" gap={4}>
+            <VStack align="stretch" gap={6}>
               <Skeleton loading={isBannerLoading}>
                 <Image
                   src={banner ?? notFoundImage}
@@ -90,7 +90,7 @@ export const AppDetailOverview = ({
                 w="full"
                 alignItems="stretch">
                 <GridItem colSpan={[1, 1, 1]}>
-                  <VStack alignItems={"stretch"} gap={8} w="full">
+                  <VStack alignItems={"stretch"} gap={6} w="full">
                     {/* Header row: Logo+Name+Badge (left) | Social+Edit+Admin (right) */}
                     <HStack justify={"space-between"} flexWrap={"wrap"} gap={4} align="flex-start">
                       <HStack gap={4} align="flex-start">
@@ -121,7 +121,7 @@ export const AppDetailOverview = ({
                     </HStack>
 
                     {/* Description + More link */}
-                    <Stack gap={2}>
+                    <Stack gap={2} mt={2}>
                       <Skeleton loading={appMetadataLoading || !appMetadata}>
                         <Text textStyle={"md"}>
                           {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
@@ -129,6 +129,7 @@ export const AppDetailOverview = ({
                       </Skeleton>
                       <Link
                         textStyle="md"
+                        mt={8}
                         fontWeight="normal"
                         color="actions.secondary.text-lighter"
                         onClick={onOpenMoreDetails}>
@@ -139,9 +140,13 @@ export const AppDetailOverview = ({
 
                     {/* Bottom row: Member since | Whitepaper + Go to Website */}
                     <Stack
+                      borderTopWidth="1px"
+                      borderTopStyle="solid"
+                      borderColor="#F1F2F3"
                       flexDirection={["column", "column", "row"]}
                       justify={"space-between"}
-                      align={"center"}
+                      align={"left"}
+                      pt={6}
                       w="full">
                       {app?.createdAtTimestamp && app.createdAtTimestamp !== "0" && (
                         <VStack align="stretch">

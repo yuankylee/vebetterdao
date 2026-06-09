@@ -10,13 +10,13 @@ import { useUserRating } from "../../../../../../../api/contracts/xApps/hooks/us
 import { useSubmitRating } from "../../../../../../../hooks/xApp/useSubmitRating"
 import { useUpdateRating } from "../../../../../../../hooks/xApp/useUpdateRating"
 
-const STAR_COLOR = "#ED8936"
-const STAR_EMPTY_COLOR = "#CBD5E0"
+const STAR_COLOR = "#FFB566"
+const STAR_EMPTY_COLOR = "#D2D5D9"
 
 const InteractiveStars = ({
   value,
   onChange,
-  size = 32,
+  size = 40,
 }: {
   value: number
   onChange: (v: number) => void
@@ -89,7 +89,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       {existingRating === 0 && (
         <Card.Root borderRadius="xl">
           <Card.Body>
-            <Stack gap={3} align="center">
+            <Stack gap={11} align="center">
               <Stack gap={1} w="full">
                 <Text fontWeight="bold" fontSize="lg">
                   {t("Ratings")}
@@ -98,11 +98,14 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
                   {t("Please rate this App. Your feedback is the driving force behind its growth")}
                 </Text>
               </Stack>
-              <InteractiveStars value={selectedRating} onChange={setSelectedRating} />
-              <Text fontSize="xs" color="gray.400">
-                {t("Tap to rate")}
-              </Text>
-              <Button variant="primary" w="full" borderRadius="full" mt="44px" onClick={handleLeaveRating}>
+              <Stack gap={1} w="full" align="center">
+                <InteractiveStars value={selectedRating} onChange={setSelectedRating} />
+                <Text textStyle="sm" fontWeight="semibold">
+                  {t("Tap to rate")}
+                </Text>
+              </Stack>
+
+              <Button variant="primary" w="full" borderRadius="full" onClick={handleLeaveRating}>
                 {t("Leave a Rating")}
               </Button>
             </Stack>
@@ -114,7 +117,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       {existingRating > 0 && (
         <Card.Root borderRadius="xl">
           <Card.Body>
-            <Stack gap={3} align="center">
+            <Stack gap={11} align="center">
               <Stack gap={1} w="full">
                 <Text fontWeight="bold" fontSize="lg">
                   {t("Ratings")}
@@ -123,11 +126,13 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
                   {t("Please rate this App. Your feedback is the driving force behind its growth")}
                 </Text>
               </Stack>
-              <InteractiveStars value={selectedRating || existingRating} onChange={setSelectedRating} />
-              <Text fontSize="xs" color="gray.400">
-                {t("Tap to rate")}
-              </Text>
-              <Button variant="primary" w="full" borderRadius="full" mt="44px" onClick={handleUpdateRating}>
+              <Stack gap={1} w="full" align="center">
+                <InteractiveStars value={selectedRating || existingRating} onChange={setSelectedRating} />
+                <Text textStyle="sm" fontWeight="semibold">
+                  {t("Tap to rate")}
+                </Text>
+              </Stack>
+              <Button variant="primary" w="full" borderRadius="full" onClick={handleUpdateRating}>
                 {t("Update Rating")}
               </Button>
             </Stack>

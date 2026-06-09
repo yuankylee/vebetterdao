@@ -40,7 +40,7 @@ const BadgeRow = ({ badge, form, onClick }: BadgeRowProps) => {
       transition="background 0.15s">
       {/* Badge image with dashed border */}
       <Box border="2px dashed" borderColor="border.subtle" rounded="xl" p={1} flexShrink={0}>
-        <Image src={badge.image} alt={badge.title} boxSize="62px" objectFit="contain" />
+        <Image src={badge.image} alt={badge.title} boxSize="64px" objectFit="contain" />
       </Box>
 
       <VStack align="flex-start" gap={1} flex={1} minW={0}>

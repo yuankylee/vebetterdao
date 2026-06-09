@@ -19,20 +19,21 @@ const BadgeIcon = ({ badgeKey, count }: BadgeIconProps) => {
   return (
     <Box position="relative" display="inline-flex" flexShrink={0}>
       <Image
-        src={config.image}
+        flex={1}
+        src={hasCount ? config.image : config.greyImage}
         alt={config.title}
-        boxSize="64px"
+        boxSize={"80px"}
         objectFit="contain"
         filter={hasCount ? undefined : "grayscale(1) opacity(0.35)"}
       />
       {hasCount && (
         <Box
           position="absolute"
-          bottom="4px"
+          bottom="6px"
           left="50%"
           transform="translateX(-50%)"
           color="white"
-          fontSize="11px"
+          fontSize="14px"
           fontWeight="bold"
           lineHeight="18px"
           whiteSpace="nowrap">
@@ -93,7 +94,7 @@ export const AppBadgesAndEndorsementCard = ({
                   <UilArrowUpRight />
                 </Link>
               </HStack>
-              <HStack gap={3} flexWrap="wrap">
+              <HStack gap={3} justify="space-between" px={5}>
                 {sortedKeys.map(key => (
                   <BadgeIcon key={key} badgeKey={key} count={countsMap[key]} />
                 ))}
