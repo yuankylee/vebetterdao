@@ -1,4 +1,4 @@
-import { Center, Heading, SimpleGrid, Skeleton, Text, VStack } from "@chakra-ui/react"
+import { Heading, SimpleGrid, Skeleton, Text, VStack } from "@chakra-ui/react"
 import { FormattingUtils } from "@repo/utils"
 import { getCompactFormatter } from "@repo/utils/FormattingUtils"
 import { useMemo } from "react"
@@ -6,8 +6,7 @@ import { useTranslation } from "react-i18next"
 
 import { useAppAvailableFunds } from "@/api/contracts/x2EarnRewardsPool/hooks/getter/useAppAvailableFunds"
 import { useAppRewardsBalance } from "@/api/contracts/x2EarnRewardsPool/hooks/getter/useAppRewardsBalance"
-import { useAppActionOverview } from "@/api/indexer/actions/useAppActionOverview"
-import { useAppEarnings } from "@/api/indexer/xallocations/useAppEarnings"
+import { useAppRewardDetails } from "@/api/indexer/xallocations/useAppRewardDetails"
 
 import { useCurrentAppInfo } from "../../../hooks/useCurrentAppInfo"
 
@@ -29,10 +28,12 @@ const StatItem = ({ label, value, postfix }: { label: string; value: string; pos
   </VStack>
 )
 
+const STATS_SKELETON_KEYS = ["rs-0", "rs-1", "rs-2", "rs-3", "rs-4", "rs-5", "rs-6", "rs-7"] as const
+
 const StatsSkeleton = ({ count }: { count: number }) => (
-  <SimpleGrid columns={[1, 2, 3]} gap={4} w="full">
-    {Array.from({ length: count }).map((_, i) => (
-      <VStack key={i} align="flex-start" gap={1}>
+  <SimpleGrid columns={[2, 2, 4]} gap={4} w="full">
+    {STATS_SKELETON_KEYS.slice(0, count).map(slotKey => (
+      <VStack key={slotKey} align="flex-start" gap={1}>
         <Skeleton w="40%" h="16px" />
         <Skeleton w="60%" h="32px" />
       </VStack>
@@ -45,8 +46,7 @@ export const RewardStatisticsSection = () => {
   const { app } = useCurrentAppInfo()
   const appId = app?.id ?? ""
 
-  const { data: allTimeOverview, isLoading: allTimeLoading } = useAppActionOverview(appId)
-  const { data: earningsData } = useAppEarnings(appId)
+  const { data: rewardDetails, isLoading: rewardDetailsLoading } = useAppRewardDetails(appId)
   const { data: availableFunds, isLoading: isAvailableFundsLoading } = useAppAvailableFunds(appId)
   const { data: rewardsBalance, isLoading: isRewardsBalanceLoading } = useAppRewardsBalance(appId)
 
@@ -55,44 +55,63 @@ export const RewardStatisticsSection = () => {
   }, [availableFunds, rewardsBalance])
 
   const isBalanceLoading = isAvailableFundsLoading || isRewardsBalanceLoading
+  const isLoading = rewardDetailsLoading || isBalanceLoading
 
-  const allTimeStats = useMemo(() => {
-    if (!allTimeOverview) return null
-    return {
-      totalRewards: FormattingUtils.humanNumber(allTimeOverview.totalRewardAmount ?? 0),
-      actionsRewarded: FormattingUtils.humanNumber(allTimeOverview.actionsRewarded ?? 0),
-      uniqueUsers: FormattingUtils.humanNumber(allTimeOverview.totalUniqueUserInteractions ?? 0),
+  const stats = useMemo(() => {
+    const d = rewardDetails ?? {
+      totalAllocationEarnings: 0,
+      averageAllocationPerRound: 0,
+      totalRounds: 0,
+      totalDistributionPerformance: 0,
+      totalDistributed: 0,
+      averageDistributionPerRound: 0,
+      actionsRewarded: 0,
     }
-  }, [allTimeOverview])
+    const perf = Number(d.totalDistributionPerformance ?? 0)
+    return {
+      dAppBalance: compact.format(totalAppBalance),
+      totalAllocationEarnings: compact.format(d.totalAllocationEarnings ?? 0),
+      averageAllocationPerRound: compact.format(d.averageAllocationPerRound ?? 0),
+      totalRounds: FormattingUtils.humanNumber(d.totalRounds ?? 0),
+      totalDistributionPerformance: perf.toFixed(2),
+      totalDistributed: compact.format(d.totalDistributed ?? 0),
+      averageDistributionPerRound: compact.format(d.averageDistributionPerRound ?? 0),
+      actionsRewarded: FormattingUtils.humanNumber(d.actionsRewarded ?? 0),
+    }
+  }, [rewardDetails, totalAppBalance])
 
-  const allocationTotal = useMemo(() => {
-    if (!earningsData || !Array.isArray(earningsData)) return 0
-    return earningsData.reduce((sum, earning) => sum + (earning.totalAmount || 0), 0)
-  }, [earningsData])
+  if (isLoading) {
+    return (
+      <VStack gap={6} align="stretch" w="full">
+        <StatsSkeleton count={8} />
+      </VStack>
+    )
+  }
 
   return (
     <VStack gap={6} align="stretch" w="full">
-      {allTimeLoading || isBalanceLoading ? (
-        <StatsSkeleton count={5} />
-      ) : allTimeStats ? (
-        <SimpleGrid columns={[2, 3, 3]} gap={4} w="full">
-          <StatItem label={t("Balance")} value={compact.format(totalAppBalance)} postfix={t("B3TR")} />
-          <StatItem
-            label={t("Received from allocations")}
-            value={compact.format(allocationTotal)}
-            postfix={t("B3TR")}
-          />
-          <StatItem label={t("Distributed")} value={allTimeStats.totalRewards} postfix={t("B3TR")} />
-          <StatItem label={t("Actions Rewarded")} value={allTimeStats.actionsRewarded} />
-          <StatItem label={t("Unique Users")} value={allTimeStats.uniqueUsers} />
-        </SimpleGrid>
-      ) : (
-        <Center w="full" py={4}>
-          <Text textStyle="sm" color="text.subtle">
-            {t("No statistics available")}
-          </Text>
-        </Center>
-      )}
+      <SimpleGrid columns={[2, 2, 4]} gap={4} w="full">
+        <StatItem label={t("dApp Balance")} value={stats.dAppBalance} postfix={t("B3TR")} />
+        <StatItem label={t("Total Allocation Earnings")} value={stats.totalAllocationEarnings} postfix={t("B3TR")} />
+        <StatItem
+          label={t("Average Allocation Per Round")}
+          value={stats.averageAllocationPerRound}
+          postfix={t("B3TR")}
+        />
+        <StatItem label={t("Total Rounds")} value={stats.totalRounds} />
+        <StatItem
+          label={t("Total Distribution Performance")}
+          value={stats.totalDistributionPerformance}
+          postfix={t("%")}
+        />
+        <StatItem label={t("Total Distributed")} value={stats.totalDistributed} postfix={t("B3TR")} />
+        <StatItem
+          label={t("Average Distribution Per Round")}
+          value={stats.averageDistributionPerRound}
+          postfix={t("B3TR")}
+        />
+        <StatItem label={t("Actions Rewarded")} value={stats.actionsRewarded} />
+      </SimpleGrid>
     </VStack>
   )
 }

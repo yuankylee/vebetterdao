@@ -50,7 +50,8 @@ Logo (`EditAppLogo.tsx`) and Banner (`EditAppBanner.tsx`) live at `apps/[appId]/
 
 ## Gotchas
 
-- **ESLint `react/jsx-no-literals`**: Literal strings in JSX must be wrapped in `{}` expression containers (e.g., `{"More"}`, `{"App Score"}`). Bare literals like `More` or `App Score` cause lint failures.
+- **ESLint `react/jsx-no-literals`**: Literal strings in JSX must be wrapped in `{}` expression containers (e.g., `{"More"}`, `{"App Score"}`). That includes punctuation between nodes: `{t("Label")}{": "}{value}` — a bare `:` after `{t(...)}` still counts as a JSX text literal and fails lint.
+- **ESLint `react/no-array-index-key` (warn)**: Avoid `key={i}` / keys derived from map index. Prefer stable ids; for identical skeleton slots use a fixed key array (`slice(0, n).map(key => ...)`) instead of `Array.from(..., (_, i) => ...)`.
 - **`@iconscout/react-unicons` naming**: Some icons have `Alt` suffix — e.g., `UilDownload` doesn't exist, use `UilDownloadAlt`. Check exports before importing.
 - **Grid `colSpan` with unequal columns**: When `templateColumns` defines unequal widths (e.g., `"2fr 1fr"`), use `colSpan={[1,1,1]}` for both items — `colSpan={[1,1,2]}` in a 2-column grid spans full width.
 - **Card double padding**: `Card.Root` variant already includes padding. Don't add `p={}` to `Card.Body` unless intentional.

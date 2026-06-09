@@ -11,6 +11,7 @@ import {
   Skeleton,
   Stack,
   Text,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react"
 import { UilArrowUpRight, UilDownloadAlt, UilExternalLinkAlt } from "@iconscout/react-unicons"
@@ -32,6 +33,7 @@ import { AdminAppPageButton } from "./components/AdminAppPageButton"
 import { AppDetailSocials } from "./components/AppDetailSocials"
 import { AppScoreCard } from "./components/AppScoreCard"
 import { EditAppPageButton } from "./components/EditAppPageButton"
+import { MoreAppDetailsModal } from "./components/MoreAppDetailsModal"
 
 export const AppDetailOverview = ({
   endorsementStatus,
@@ -41,6 +43,7 @@ export const AppDetailOverview = ({
   isEndorsementStatusLoading: boolean
 }) => {
   const { t } = useTranslation()
+  const { open: isMoreDetailsOpen, onOpen: onOpenMoreDetails, onClose: onCloseMoreDetails } = useDisclosure()
   const { app } = useCurrentAppInfo()
   const { appMetadata, appMetadataLoading, appMetadataError } = useCurrentAppMetadata()
   const { logo, isLogoLoading } = useCurrentAppLogo()
@@ -65,6 +68,7 @@ export const AppDetailOverview = ({
 
   return (
     <>
+      <MoreAppDetailsModal isOpen={isMoreDetailsOpen} onClose={onCloseMoreDetails} />
       <VStack gap={4} align="stretch">
         <Card.Root variant="primary">
           <Card.Body>
@@ -123,8 +127,13 @@ export const AppDetailOverview = ({
                           {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
                         </Text>
                       </Skeleton>
-                      <Link textStyle="md" fontWeight="normal" color="actions.secondary.text-lighter">
-                        {"More"} <UilArrowUpRight />
+                      <Link
+                        textStyle="md"
+                        fontWeight="normal"
+                        color="actions.secondary.text-lighter"
+                        onClick={onOpenMoreDetails}>
+                        {t("More")}
+                        <UilArrowUpRight />
                       </Link>
                     </Stack>
 

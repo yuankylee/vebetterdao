@@ -70,14 +70,18 @@ export const RewardDetailsModal = ({
   const { distributors, isLoading: distributorsLoading } = useCurrentAppRewardDistributors()
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} modalProps={{ size: "4xl" }}>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      modalProps={{ size: "4xl" }}
+      modalContentProps={{ minW: "1000px", maxW: "min(100vw - 32px, 1200px)" }}>
       <VStack gap={6} align="flex-start" w="full">
         <Heading size="2xl">{t("Reward Details")}</Heading>
 
         <Card.Root variant="primary" p={4} gap={4} w="full">
           <Card.Header p={0}>
             <Heading size="xl" alignSelf="flex-start">
-              {t("Strategy")}
+              {t("Distribution Policy")}
             </Heading>
           </Card.Header>
 
@@ -91,7 +95,7 @@ export const RewardDetailsModal = ({
         <Card.Root variant="primary" p={4} gap={4} w="full">
           <Card.Header p={0}>
             <Heading size="xl" alignSelf="flex-start">
-              {t("All time statistics")}
+              {t("Data Statistics")}
             </Heading>
           </Card.Header>
 

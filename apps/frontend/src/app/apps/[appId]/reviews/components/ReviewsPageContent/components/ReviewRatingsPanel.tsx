@@ -88,7 +88,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       {/* Leave a Rating panel — shown when user has not yet rated */}
       {existingRating === 0 && (
         <Card.Root borderRadius="xl">
-          <Card.Body p={4}>
+          <Card.Body>
             <Stack gap={3} align="center">
               <Stack gap={1} w="full">
                 <Text fontWeight="bold" fontSize="lg">
@@ -102,7 +102,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
               <Text fontSize="xs" color="gray.400">
                 {t("Tap to rate")}
               </Text>
-              <Button variant="primary" w="full" borderRadius="full" onClick={handleLeaveRating}>
+              <Button variant="primary" w="full" borderRadius="full" mt="44px" onClick={handleLeaveRating}>
                 {t("Leave a Rating")}
               </Button>
             </Stack>
@@ -113,7 +113,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       {/* Update Rating panel — shown when user already has a rating */}
       {existingRating > 0 && (
         <Card.Root borderRadius="xl">
-          <Card.Body p={4}>
+          <Card.Body>
             <Stack gap={3} align="center">
               <Stack gap={1} w="full">
                 <Text fontWeight="bold" fontSize="lg">
@@ -127,7 +127,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
               <Text fontSize="xs" color="gray.400">
                 {t("Tap to rate")}
               </Text>
-              <Button variant="primary" w="full" borderRadius="full" onClick={handleUpdateRating}>
+              <Button variant="primary" w="full" borderRadius="full" mt="44px" onClick={handleUpdateRating}>
                 {t("Update Rating")}
               </Button>
             </Stack>

@@ -1315,6 +1315,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/b3tr/xallocations/reward-details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get XAllocation reward details summary for an app
+         * @description Returns allocation totals, distribution totals, performance percentage, and action counts.
+         */
+        get: operations["getXAllocRewardDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/b3tr/xallocations/distribution-performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get per-round distribution performance for an app
+         * @description Returns allocation, distributed B3TR, and distribution performance % per round for charting.
+         */
+        get: operations["getXAllocDistributionPerformance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/b3tr/users/{wallet}/proposals/comments": {
         parameters: {
             query?: never;
@@ -1870,6 +1910,26 @@ export interface paths {
          *                 - If both roundId and date are provided, a BadRequest error is returned.
          */
         get: operations["getAppOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/b3tr/actions/apps/{appId}/roundUserStats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Per-round active and new user counts for an app
+         * @description Returns user engagement buckets by round for the selected range preset.
+         */
+        get: operations["getAppRoundUserStats"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2705,6 +2765,29 @@ export interface components {
             teamAllocationAmount: number;
             rewardsAllocationAmount: number;
         };
+        XAllocRewardDetailsResponse: {
+            totalAllocationEarnings: number;
+            averageAllocationPerRound: number;
+            /** Format: int32 */
+            totalRounds: number;
+            totalDistributionPerformance: number;
+            totalDistributed: number;
+            averageDistributionPerRound: number;
+            /** Format: int64 */
+            actionsRewarded: number;
+        };
+        /** One round row for distribution performance chart */
+        XAllocDistributionPerformanceRow: {
+            /** Format: int32 */
+            roundId: number;
+            /** Format: int64 */
+            roundTime: number;
+            totalAllocationAmount: number;
+            rewardsAllocationAmount: number;
+            b3trDistributed: number;
+            /** @description distributionPerformance = b3trDistributed / totalAllocationAmount * 100 (up to 4 decimal places) */
+            distributionPerformance: number;
+        };
         PaginatedResponseProposalComment: {
             data: components["schemas"]["ProposalComment"][];
             pagination: components["schemas"]["PaginationDetail"];
@@ -3092,6 +3175,24 @@ export interface components {
             rankByActionsRewarded?: number;
             /** Format: int64 */
             totalUniqueUserInteractions: number;
+        };
+        /** One round row for GET …/roundUserStats */
+        RoundUserStatRow: {
+            /** Format: int32 */
+            round: number;
+            /** Format: int64 */
+            roundDate: number;
+            /** Format: int64 */
+            activeUsers: number;
+            /** Format: int64 */
+            newUsers: number;
+        };
+        /** Response for per-round user statistics */
+        AppRoundUserStatsResponse: {
+            appId: string;
+            /** @description Cumulative distinct users when provided by the indexer */
+            totalUsers?: number;
+            datas: components["schemas"]["RoundUserStatRow"][];
         };
         AccountOverviewResponse: {
             address: string;
@@ -8040,6 +8141,149 @@ export interface operations {
             };
         };
     };
+    getXAllocRewardDetails: {
+        parameters: {
+            query: {
+                /**
+                 * @description App ID to query by (bytes32 hex).
+                 * @example 0x2fc30c2ad41a2994061efaf218f1d52dc92bc4a31a0f02a4916490076a7a393a
+                 */
+                appId: string;
+            };
+            header?: {
+                /** @description Optional caller/project identifier used for observability and usage tracking. */
+                "X-Project-Id"?: components["parameters"]["XProjectIdHeader"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["XAllocRewardDetailsResponse"];
+                };
+            };
+            /** @description Validation errors occurred, eg: invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+            /** @description Access to the requested resource is forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                    "application/problem+json": string;
+                };
+            };
+            /** @description Requested resource was not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+            /** @description Service not available */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+        };
+    };
+    getXAllocDistributionPerformance: {
+        parameters: {
+            query: {
+                /**
+                 * @description App ID to query by (bytes32 hex).
+                 * @example 0x2fc30c2ad41a2994061efaf218f1d52dc92bc4a31a0f02a4916490076a7a393a
+                 */
+                appId: string;
+                /**
+                 * @description Time range: `3M` (13 rounds), `6M` (26), `1Y` (52), `All` (unlimited). Default `All`.
+                 * @enum {string}
+                 */
+                range?: "3M" | "6M" | "1Y" | "All";
+            };
+            header?: {
+                /** @description Optional caller/project identifier used for observability and usage tracking. */
+                "X-Project-Id"?: components["parameters"]["XProjectIdHeader"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["XAllocDistributionPerformanceRow"][];
+                };
+            };
+            /** @description Validation errors occurred, eg: invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+            /** @description Access to the requested resource is forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                    "application/problem+json": string;
+                };
+            };
+            /** @description Requested resource was not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+            /** @description Service not available */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+        };
+    };
     getUserProposalComments: {
         parameters: {
             query?: {
@@ -10104,6 +10348,81 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["AppOverview"];
+                };
+            };
+            /** @description Validation errors occurred, eg: invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+            /** @description Access to the requested resource is forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                    "application/problem+json": string;
+                };
+            };
+            /** @description Requested resource was not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+            /** @description Service not available */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExceptionResponse"];
+                    "application/problem+json": components["schemas"]["ExceptionResponse"];
+                };
+            };
+        };
+    };
+    getAppRoundUserStats: {
+        parameters: {
+            query: {
+                /**
+                 * @description Round range preset: `3M`, `6M`, `1Y`, or `All`.
+                 * @enum {string}
+                 */
+                range: "3M" | "6M" | "1Y" | "All";
+            };
+            header?: {
+                /** @description Optional caller/project identifier used for observability and usage tracking. */
+                "X-Project-Id"?: components["parameters"]["XProjectIdHeader"];
+            };
+            path: {
+                /**
+                 * @description App ID to query by.
+                 * @example 0x2fc30c2ad41a2994061efaf218f1d52dc92bc4a31a0f02a4916490076a7a393a
+                 */
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AppRoundUserStatsResponse"];
                 };
             };
             /** @description Validation errors occurred, eg: invalid input */

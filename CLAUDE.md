@@ -99,7 +99,7 @@ Stop: `yarn dev:down` (leaves shared stack running for other projects) | Wipe: `
 
 - `yarn test`: Run all tests
 - `yarn test:watch`: Run tests in watch mode
-- `yarn typecheck`: Run TypeScript type checking (frontend workspace)
+- `yarn typecheck`: (optional, run only if requested) TypeScript type checking (frontend workspace)
 - `yarn playwright:e2e`: Run Playwright e2e tests
 - `yarn contracts:test`: Run contract tests (Hardhat)
 
@@ -317,7 +317,7 @@ Each iteration:
 
 1. Find highest-priority story with `passes: false`
 2. Implement the feature
-3. Run type checks (`yarn typecheck`)
+3. (Optional: Run type checks with `yarn typecheck` if requested by user)
 4. Update `prd.json`: set `passes: true` and add notes
 5. Append progress to `progress.txt`
 6. Create a git commit

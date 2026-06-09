@@ -13,6 +13,11 @@ The skill at [`.claude/skills/frontend-ui/SKILL.md`](.claude/skills/frontend-ui/
 - Recipe variants (`apps/frontend/src/app/theme/*.ts`)
 - Style patterns (mobile-first, modal/bottom-sheet split, card/button/badge usage, i18n)
 
+## ESLint (React)
+
+- **`react/jsx-no-literals`**: No bare text in JSX — wrap in `{""}`. Colons after translated labels need the same: `{t("X")}{": "}{value}`, not `{t("X")}: {value}`.
+- **`react/no-array-index-key`**: Prefer stable `key`s (entity id or composite of fields). For static placeholder grids, map over a fixed `const` key tuple instead of index.
+
 ## Before writing frontend code
 
 **Read the skill first.** Then:
