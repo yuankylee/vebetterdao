@@ -52,7 +52,8 @@ export const ReviewsPageContent = () => {
     wallet: account?.address,
   })
   const reviews = reviewsData?.data ?? []
-  const reviewsPagination = reviewsData?.pagination ?? {}
+  const totalReviews = reviewsData?.pagination?.total ?? 0
+  const totalPages = reviewsData?.pagination?.totalPages ?? 0
 
   const handleWriteReview = (existingReview?: Review | null) => {
     if (!account?.address) {
@@ -92,7 +93,7 @@ export const ReviewsPageContent = () => {
               <Stack gap={4}>
                 <HStack justify="space-between" align="center">
                   <Text fontWeight="bold" fontSize="lg">
-                    {`${t("Reviews")}(${reviewsPagination.total ?? 0})`}
+                    {`${t("Reviews")}(${totalReviews})`}
                   </Text>
                   <NativeSelect.Root size="sm" w="240px">
                     <NativeSelect.Field
@@ -132,9 +133,9 @@ export const ReviewsPageContent = () => {
                   </Stack>
                 )}
 
-                {reviewsPagination?.total > PAGE_SIZE && (
+                {totalPages > PAGE_SIZE && (
                   <Pagination.Root
-                    count={reviewsPagination.total ?? 0}
+                    count={totalPages}
                     pageSize={PAGE_SIZE}
                     page={currentPage}
                     onPageChange={e => setCurrentPage(e.page)}>
