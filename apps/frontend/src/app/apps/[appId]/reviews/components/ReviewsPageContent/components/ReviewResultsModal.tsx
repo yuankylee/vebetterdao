@@ -1,9 +1,7 @@
 import { Box, CloseButton, HStack, Input, InputGroup, Skeleton, Stack, Table, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FaThumbsDown, FaThumbsUp } from "react-icons/fa"
-import { LuSearch } from "react-icons/lu"
-import { MdFrontHand } from "react-icons/md"
+import { LuThumbsUp, LuThumbsDown, LuHand, LuSearch } from "react-icons/lu"
 
 import { Review, VoteEntry } from "../../../../../../../api/reviews/types"
 import { useReviewVotes } from "../../../../../../../api/reviews/useReviewVotes"
@@ -26,24 +24,24 @@ const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address
 const VOTE_CONFIG = {
   1: {
     label: "Upvote",
-    icon: FaThumbsUp,
-    iconColor: "#38A169",
+    icon: LuThumbsUp,
+    iconColor: "#3DBA67",
     color: "green.600",
     borderColor: "green.400",
     bg: "green.50",
   },
   2: {
     label: "Downvote",
-    icon: FaThumbsDown,
-    iconColor: "#E53E3E",
+    icon: LuThumbsDown,
+    iconColor: "#C53030",
     color: "red.500",
     borderColor: "red.400",
     bg: "red.50",
   },
   3: {
     label: "Report content",
-    icon: MdFrontHand,
-    iconColor: "#DD6B20",
+    icon: LuHand,
+    iconColor: "#F2A54E",
     color: "orange.600",
     borderColor: "orange.400",
     bg: "orange.50",
@@ -60,11 +58,11 @@ const VoteBadge = ({ voteType }: { voteType: 1 | 2 | 3 }) => {
       py={1}
       borderWidth={1}
       borderColor={cfg.borderColor}
-      borderRadius="full"
-      bg={cfg.bg}
+      borderRadius="6px"
+      bg={"#FFFFFF"}
       display="inline-flex"
       w="fit-content">
-      <Icon size={12} color={cfg.iconColor} />
+      <Icon size={16} color={cfg.iconColor} />
       <Text fontSize="xs" color={cfg.color} fontWeight="medium">
         {cfg.label}
       </Text>
@@ -131,7 +129,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
           <Text fontWeight="bold" fontSize="xl">
             {t("Result details")}
           </Text>
-          <CloseButton onClick={onClose} size="sm" />
+          <CloseButton onClick={onClose} size="md" />
         </HStack>
 
         {/* Acquisition Records */}
@@ -141,7 +139,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
               {t("Acquisition Records")}
             </Text>
             <StackedBar upPct={upPct} downPct={downPct} reportPct={reportPct} />
-            <Table.Root size="sm" variant="line">
+            <Table.Root size="sm">
               <Table.Header>
                 <Table.Row>
                   <Table.ColumnHeader fontWeight="semibold">{t("Option")}</Table.ColumnHeader>
@@ -154,9 +152,11 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
               <Table.Body>
                 <Table.Row>
                   <Table.Cell>
-                    <HStack gap={2}>
-                      <FaThumbsUp size={14} color="#38A169" />
-                      <Text fontSize="sm">{t("Upvote")}</Text>
+                    <HStack gap={2} alignItems="center">
+                      <LuThumbsUp size={16} color="#38A169" />
+                      <Text fontSize="sm" fontWeight="semibold">
+                        {t("Upvote")}
+                      </Text>
                     </HStack>
                   </Table.Cell>
                   <Table.Cell>{formatNumber(review.upvotes.count)}</Table.Cell>
@@ -165,7 +165,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                 <Table.Row>
                   <Table.Cell>
                     <HStack gap={2}>
-                      <FaThumbsDown size={14} color="#E53E3E" />
+                      <LuThumbsDown size={16} color="#E53E3E" />
                       <Text fontSize="sm">{t("Downvote")}</Text>
                     </HStack>
                   </Table.Cell>
@@ -175,7 +175,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                 <Table.Row>
                   <Table.Cell>
                     <HStack gap={2}>
-                      <MdFrontHand size={15} color="#DD6B20" />
+                      <LuHand size={16} color="#DD6B20" />
                       <Text fontSize="sm">{t("Report content")}</Text>
                     </HStack>
                   </Table.Cell>
@@ -201,7 +201,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
             <InputGroup startElement={<LuSearch size={16} color="gray" />}>
               <Input
                 placeholder={t("Search voter address or domain")}
-                borderRadius="full"
+                borderRadius="12px"
                 bg="white"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -220,7 +220,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                 {t("No votes found")}
               </Text>
             ) : (
-              <Table.Root size="sm" variant="line">
+              <Table.Root size="sm">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeader fontWeight="semibold">{t("Voters")}</Table.ColumnHeader>
