@@ -1,4 +1,5 @@
-import { Button, Field, HStack, Text, Textarea, VStack } from "@chakra-ui/react"
+import { Box, Button, Field, Heading, HStack, Text, Textarea, VStack } from "@chakra-ui/react"
+import { UilTimes } from "@iconscout/react-unicons"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -41,48 +42,56 @@ export const AppVersionNotesModal = ({
   const onSubmit = (data: FormValues) => onSave(data.notes)
 
   return (
-    <BaseModal
-      isOpen={isOpen}
-      onClose={onClose}
-      showCloseButton
-      ariaTitle={t(mode === "add" ? "Add Version Notes" : "Edit Version Notes")}>
+    <BaseModal isOpen={isOpen} onClose={onClose} modalContentProps={{ maxW: "682px" }} modalBodyProps={{ p: 6 }}>
+      <HStack justify="space-between" align="center">
+        <Heading size="xl">{t(mode === "add" ? "Add Version Notes" : "Edit Version Notes")}</Heading>
+        <Box cursor="pointer" onClick={onClose} display={{ base: "none", lg: "block" }}>
+          <UilTimes size="24px" />
+        </Box>
+      </HStack>
       <VStack as="form" onSubmit={handleSubmit(onSubmit)} gap={6} align="stretch">
-        <VStack align="stretch" gap={1}>
-          <Text textStyle="xl" fontWeight="bold">
-            {t(mode === "add" ? "Add Version Notes" : "Edit Version Notes")}
-          </Text>
+        <VStack align="stretch" gap={3}>
           <Text textStyle="sm" color="text.subtle">
             {t(
               "Add the app version number so users can stay informed about update content, resulting in a better user experience.",
             )}
           </Text>
         </VStack>
+        <VStack gap={3} align={"flex-start"}>
+          <Text textStyle="md" fontWeight="semibold">
+            {t("Version Number")}
+            {": "}
+            {version}
+          </Text>
 
-        <Text textStyle="md" fontWeight="semibold">
-          {t("Version Number")}
-          {": "}
-          {version}
-        </Text>
-
-        <Field.Root invalid={!!errors.notes}>
-          <Textarea
-            placeholder={t("Please enter")}
-            resize="none"
-            h="160px"
-            rounded="xl"
-            {...register("notes", {
-              required: t("Please enter"),
-              maxLength: { value: 1000, message: t("Maximum 1000") },
-            })}
-          />
-          <Field.ErrorText>{errors.notes?.message}</Field.ErrorText>
-        </Field.Root>
+          <Field.Root invalid={!!errors.notes}>
+            <Textarea
+              placeholder={t("Please enter")}
+              resize="none"
+              h="160px"
+              rounded="xl"
+              {...register("notes", {
+                required: t("Please enter"),
+                maxLength: { value: 1000, message: t("Maximum 1000") },
+              })}
+            />
+            <Field.ErrorText>{errors.notes?.message}</Field.ErrorText>
+          </Field.Root>
+        </VStack>
 
         <HStack justify="flex-end" gap={3}>
-          <Button variant="ghost" onClick={onClose} type="button">
+          <Button
+            variant="subtle"
+            colorPalette="blue"
+            css={{
+              backgroundColor: "#E6EEFF",
+            }}
+            borderRadius="full"
+            px={10}
+            onClick={onClose}>
             {t("Cancel")}
           </Button>
-          <Button variant="primary" type="submit" loading={isSaving}>
+          <Button variant="primary" borderRadius="full" px={10} type="submit" loading={isSaving}>
             {t("Save")}
           </Button>
         </HStack>

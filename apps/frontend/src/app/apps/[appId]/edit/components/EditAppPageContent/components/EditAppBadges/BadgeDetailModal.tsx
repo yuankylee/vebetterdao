@@ -33,12 +33,12 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
   }
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false} isCloseable modalBodyProps={{ p: 0 }}>
+    <BaseModal isOpen={isOpen} onClose={onClose} isCloseable modalBodyProps={{ p: 0 }}>
       <VStack align="stretch" gap={0}>
         {/* Header */}
         <HStack justify="space-between" align="center" p={{ base: 2, sm: 6 }} pb={4}>
           <HStack gap={3} w={{ base: "full", md: "auto" }} justify={{ base: "space-between", md: "flex-start" }}>
-            <Heading size="md">{t("Badges details")}</Heading>
+            <Heading size="xl">{t("Badges details")}</Heading>
             <HStack gap={2}>
               <Switch.Root checked={!isPrivate} onCheckedChange={({ checked }) => handleToggle(checked)}>
                 <Switch.HiddenInput />
@@ -52,7 +52,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
             </HStack>
           </HStack>
           <Box cursor="pointer" onClick={onClose} display={{ base: "none", md: "flex" }}>
-            <UilTimes size="20px" />
+            <UilTimes size="24px" />
           </Box>
         </HStack>
 

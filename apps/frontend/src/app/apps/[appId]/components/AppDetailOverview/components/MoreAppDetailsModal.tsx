@@ -1,6 +1,7 @@
 "use client"
 
 import { Box, Heading, HStack, Image, SimpleGrid, Skeleton, Text, VStack } from "@chakra-ui/react"
+import { UilTimes } from "@iconscout/react-unicons"
 import { useTranslation } from "react-i18next"
 
 import { BaseModal } from "@/components/BaseModal"
@@ -53,30 +54,32 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      ariaTitle={t("More App Details")}
-      showCloseButton
-      modalProps={{ size: "4xl" }}
-      modalContentProps={{ minW: "1000px", maxW: "min(100vw - 32px, 1200px)" }}>
-      <VStack gap={8} align="stretch" w="full">
-        <Heading size="2xl">{t("More App Details")}</Heading>
-
-        <HStack gap={4} align="flex-start" w="full" flexWrap={{ base: "wrap", md: "nowrap" }}>
-          <Skeleton loading={isLogoLoading} boxSize="64px" borderRadius="16px" flexShrink={0}>
-            <Image src={logoSrc} alt="" boxSize="64px" borderRadius="16px" objectFit="cover" />
+      isCloseable
+      modalContentProps={{ maxW: "821px" }}
+      modalBodyProps={{ p: 6 }}>
+      <HStack justify="space-between" align="center">
+        <Heading size="xl">{t("More App Details")}</Heading>
+        <Box cursor="pointer" onClick={onClose} display={{ base: "none", lg: "block" }}>
+          <UilTimes size="24px" />
+        </Box>
+      </HStack>
+      <VStack gap={4} align="stretch" w="full" mt={6} maxH="80vh" overflowY="auto">
+        <HStack gap={4} align="flex-start" w="full">
+          <Skeleton loading={isLogoLoading} boxSize="48px" borderRadius="12px" flexShrink={0}>
+            <Image src={logoSrc} alt="" boxSize="48px" borderRadius="12px" objectFit="cover" />
           </Skeleton>
           <VStack align="flex-start" gap={3} flex={1} minW={0}>
             <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
               <Heading size="3xl">{appMetadata?.name ?? ""}</Heading>
             </Skeleton>
-            <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
-              <Text textStyle="md" color="text.subtle" whiteSpace="pre-wrap">
-                {appMetadata?.description ?? ""}
-              </Text>
-            </Skeleton>
           </VStack>
         </HStack>
-
-        <VStack align="stretch" gap={6} w="full">
+        <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
+          <Text textStyle="xs" as="span" wordBreak="break-word" whiteSpace="normal">
+            {appMetadata?.description ?? ""}
+          </Text>
+        </Skeleton>
+        <VStack align="stretch" gap={4} w="full">
           <SectionPanel title={t("Ecosystem Partners")}>
             {partners.length > 0 ? (
               <HStack gap={3} overflowX="auto" pb={1} align="stretch">
