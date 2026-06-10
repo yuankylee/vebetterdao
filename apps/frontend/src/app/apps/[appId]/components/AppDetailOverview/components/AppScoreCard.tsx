@@ -45,8 +45,8 @@ export const AppScoreCard = () => {
           <Card.Body position="relative" zIndex={1} alignItems="flex-start" color="text.default">
             <Link
               position="absolute"
-              top={4}
-              right={4}
+              top={0}
+              right={0}
               textStyle="md"
               fontWeight="normal"
               color="actions.secondary.text-lighter"
@@ -54,16 +54,16 @@ export const AppScoreCard = () => {
               {t("More")}
               <UilArrowUpRight />
             </Link>
-            <Stack gap={0} mb={10}>
-              <Text textStyle="4xl" fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
+            <Stack gap={0} mb={12}>
+              <Text textStyle="4xl" mb={1} fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
                 {m.score.toFixed(2)}
               </Text>
               <Text textStyle="sm" color="text.subtle">
                 {t("App Score")}
               </Text>
             </Stack>
-            <Stack gap={4}>
-              <Stack gap={0}>
+            <Stack>
+              <Stack gap={1} mb={6}>
                 <Text textStyle="lg" fontWeight="bold" color="text.default">
                   {"#"}
                   {m.ranking}
@@ -72,7 +72,7 @@ export const AppScoreCard = () => {
                   {t("Ranking")}
                 </Text>
               </Stack>
-              <Text textStyle="md" fontWeight="semibold" color="text.default">
+              <Text textStyle="lg" fontWeight="semibold" color="text.default">
                 {t("{{date}} (Round #{{round}})", { date: m.roundDate, round: m.roundNumber })}
               </Text>
             </Stack>

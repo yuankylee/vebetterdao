@@ -1,9 +1,8 @@
 import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FaThumbsDown, FaThumbsUp } from "react-icons/fa"
-import { LuChartBar, LuPencil } from "react-icons/lu"
-import { MdFrontHand } from "react-icons/md"
+import { LuThumbsUp, LuThumbsDown, LuHand, LuChartBar } from "react-icons/lu"
+import { PiPencilSimpleLineBold } from "react-icons/pi"
 
 import { Review } from "../../../../../../../api/reviews/types"
 
@@ -30,10 +29,11 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit }: Props) => {
   const upPct = Math.round(review.upvotes.percentage)
   const downPct = Math.round(review.downvotes.percentage)
   const reportPct = Math.round(review.reports.percentage)
+  const myVoteType = review.myVoteType
 
   return (
-    <Box borderWidth={1} borderColor="gray.200" borderRadius="xl" p={4} bg="white" overflow="hidden">
-      <Stack gap={3}>
+    <Box borderWidth={1} borderColor="gray.200" bg={"#F9F9FA"} borderRadius="xl" p={4} overflow="hidden">
+      <Stack gap={4}>
         {review.isHidden && (
           <Box bg="red.50" borderRadius="md" py={2} px={3}>
             <Text color="red.500" fontSize="sm" textAlign="center" fontWeight="medium">
@@ -42,12 +42,14 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit }: Props) => {
           </Box>
         )}
 
-        <Text fontWeight="bold" fontSize="md">
-          {review.title}
-        </Text>
-        <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap">
-          {review.content}
-        </Text>
+        <Stack gap={1}>
+          <Text fontWeight="bold" fontSize="md">
+            {review.title}
+          </Text>
+          <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap">
+            {review.content}
+          </Text>
+        </Stack>
 
         <HStack justify="space-between" align="center">
           <HStack gap={2}>
@@ -61,37 +63,47 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit }: Props) => {
           </Text>
         </HStack>
 
-        <HStack justify="space-between" align="center" pt={1} borderTopWidth={1} borderColor="gray.100">
+        <HStack justify="space-between" align="center" borderTopWidth={1} borderColor="#E7E9EB" pt={4}>
           <Box>
             {isOwn && (
-              <Button size="xs" variant="outline" borderRadius="full" gap={1} onClick={() => onEdit?.(review)}>
-                <LuPencil size={12} />
+              <Button
+                size="sm"
+                px={3}
+                colorPalette={"blue"}
+                variant="outline"
+                borderRadius="full"
+                gap={1}
+                onClick={() => onEdit?.(review)}
+                css={{
+                  backgroundColor: "#FFF",
+                }}>
+                <PiPencilSimpleLineBold />
                 {t("Edit")}
               </Button>
             )}
           </Box>
           <HStack gap={4}>
-            <HStack gap={1} color={upPct > 50 ? "green.500" : "gray.500"}>
-              <FaThumbsUp size={13} />
-              <Text fontSize="xs">{`${upPct}%`}</Text>
+            <HStack gap={1} color={myVoteType == 1 ? "#3DBA67" : "gray.500"}>
+              <LuThumbsUp size={16} />
+              <Text fontSize="sm" fontWeight="semibold">{`${upPct}%`}</Text>
             </HStack>
-            <HStack gap={1} color={downPct > 50 ? "red.500" : "gray.500"}>
-              <FaThumbsDown size={13} />
-              <Text fontSize="xs">{`${downPct}%`}</Text>
+            <HStack gap={1} color={myVoteType == 2 ? "#C53030" : "gray.500"}>
+              <LuThumbsDown size={16} />
+              <Text fontSize="sm" fontWeight="semibold">{`${downPct}%`}</Text>
             </HStack>
-            <HStack gap={1} color="gray.500">
-              <MdFrontHand size={14} />
-              <Text fontSize="xs">{`${reportPct}%`}</Text>
+            <HStack gap={1} color={myVoteType == 3 ? "#F2A54E" : "gray.500"}>
+              <LuHand size={16} />
+              <Text fontSize="sm" fontWeight="semibold">{`${reportPct}%`}</Text>
             </HStack>
             <Box
               as="button"
               onClick={() => setIsResultsOpen(true)}
               cursor="pointer"
-              color="gray.400"
+              color="gray.500"
               _hover={{ color: "gray.600" }}
               display="flex"
               alignItems="center">
-              <LuChartBar size={14} />
+              <LuChartBar size={16} />
             </Box>
           </HStack>
         </HStack>

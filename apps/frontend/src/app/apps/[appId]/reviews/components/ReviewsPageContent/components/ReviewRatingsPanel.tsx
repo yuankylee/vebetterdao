@@ -30,7 +30,7 @@ const InteractiveStars = ({
   value,
   onChange,
   displayRatingFromApi,
-  size = 40,
+  size = 44,
 }: {
   /** Whole stars 0–5 from user taps only (0 = none yet). */
   value: number
@@ -174,7 +174,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
             <Stack gap={11} align="center">
               <Stack gap={1} w="full">
                 <Text fontWeight="bold" fontSize="lg">
-                  {t("Ratings")}
+                  {t("Ratings & Reviews")}
                 </Text>
                 <Text color="gray.500" fontSize="sm">
                   {t("Please rate this App. Your feedback is the driving force behind its growth")}
