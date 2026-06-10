@@ -1,6 +1,25 @@
 /** @type {import('next').NextConfig} */
 
+const { copyFileSync, existsSync } = require("node:fs")
 const { join } = require("node:path")
+
+/**
+ * Gitignored `src/mocks/custom-handlers/index.ts` is optional; Turbopack still needs the file on disk.
+ * Runs whenever Next loads this config (`next dev`, `next build`, etc.).
+ */
+function ensureMswCustomHandlers() {
+  const dir = join(__dirname, "src/mocks/custom-handlers")
+  const target = join(dir, "index.ts")
+  const example = join(dir, "index.example.ts")
+  if (!existsSync(target)) {
+    copyFileSync(example, target)
+    console.info(
+      "[MSW] Created src/mocks/custom-handlers/index.ts from index.example.ts (gitignored; created when Next loads config if missing).",
+    )
+  }
+}
+
+ensureMswCustomHandlers()
 
 // Global self polyfill for environments where it's not defined
 if (typeof self === "undefined") {

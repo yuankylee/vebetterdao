@@ -6,6 +6,7 @@ import { Metadata, Viewport } from "next"
 import { APPLICATION_NAME, IMAGE_DIMENSION, pagesMetadata } from "@/metadata/pages"
 
 import { ClientWrapper } from "./client-wrapper"
+import { MswDevBootstrap } from "./msw-dev-bootstrap"
 
 // Get metadata of the platform
 const basePath = getConfig()?.basePath
@@ -68,7 +69,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="preconnect" href="https://indexer.mainnet.vechain.org" crossOrigin="anonymous" />
       </head>
       <body>
-        <ClientWrapper>{children}</ClientWrapper>
+        {process.env.NODE_ENV === "development" ? (
+          <MswDevBootstrap>
+            <ClientWrapper>{children}</ClientWrapper>
+          </MswDevBootstrap>
+        ) : (
+          <ClientWrapper>{children}</ClientWrapper>
+        )}
       </body>
     </html>
   )

@@ -73,6 +73,7 @@
   },
   "devDependencies": {
     "@chakra-ui/cli": "^3.5.0",
+    "@msw-mcp/client": "^1.0.3",
     "@next/bundle-analyzer": "16.2.6",
     "@next/eslint-plugin-next": "^16.2.6",
     "@repo/eslint-config": "*",
@@ -86,6 +87,7 @@
     "@types/uuid": "^9.0.8",
     "eslint": "^8",
     "eslint-config-next": "14.2.25",
+    "msw": "^2.11.0",
     "openapi-typescript": "^7.9.1",
     "resize-observer-polyfill": "^1.5.1",
     "rollup-plugin-node-builtins": "^2.1.2",
@@ -94,5 +96,10 @@
     "typescript-eslint": "^7.15.0",
     "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^4.3.2"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
