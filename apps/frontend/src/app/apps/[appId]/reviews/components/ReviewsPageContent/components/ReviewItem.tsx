@@ -1,10 +1,14 @@
 import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react"
-import { useState } from "react"
+import { useWallet, useWalletModal } from "@vechain/vechain-kit"
+import { type ReactNode, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { LuThumbsUp, LuThumbsDown, LuHand, LuChartBar } from "react-icons/lu"
 import { PiPencilSimpleLineBold } from "react-icons/pi"
 
+import { toaster } from "@/components/ui/toaster"
+
 import { Review } from "../../../../../../../api/reviews/types"
+import { type ReviewVoteType } from "../../../../../../../hooks/xApp/useVoteOnReview"
 
 import { ReviewResultsModal } from "./ReviewResultsModal"
 
@@ -16,20 +20,72 @@ const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address
 const formatDate = (ts: number) =>
   new Date(ts * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
 
+const UP_COLOR = "#3DBA67"
+const DOWN_COLOR = "#C53030"
+const REPORT_COLOR = "#F2A54E"
+const NEUTRAL_COLOR = "gray.500"
+
 type Props = {
   review: Review
   currentUserAddress?: string
   onEdit?: (review: Review) => void
+  onVote?: (reviewId: number, voteType: ReviewVoteType) => void
 }
 
-export const ReviewItem = ({ review, currentUserAddress, onEdit }: Props) => {
+export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props) => {
   const { t } = useTranslation()
+  const { account } = useWallet()
+  const { open: openWalletModal } = useWalletModal()
   const [isResultsOpen, setIsResultsOpen] = useState(false)
   const isOwn = currentUserAddress?.toLowerCase() === review.author.toLowerCase()
   const upPct = Math.round(review.upvotes.percentage)
   const downPct = Math.round(review.downvotes.percentage)
   const reportPct = Math.round(review.reports.percentage)
-  const myVoteType = review.myVoteType
+  const myVote = review.myVoteType ?? 0
+  const hasVoted = myVote !== 0
+
+  const handleVotePress = (voteType: ReviewVoteType) => {
+    if (hasVoted) return
+    if (!onVote) return
+    if (!account?.address) {
+      openWalletModal()
+      return
+    }
+    if (isOwn) {
+      toaster.create({ title: t("You cannot vote on your own review."), type: "warning" })
+      return
+    }
+    if (review.isHidden) {
+      toaster.create({ title: t("You cannot vote on a hidden review."), type: "warning" })
+      return
+    }
+    onVote(review.reviewId, voteType)
+  }
+
+  const voteButton = (voteType: ReviewVoteType, icon: ReactNode, label: string, pct: number, activeColor: string) => {
+    const isActive = myVote === voteType
+    const color = isActive ? activeColor : NEUTRAL_COLOR
+    return (
+      <Box
+        as="button"
+        type="button"
+        display="flex"
+        alignItems="center"
+        gap={1}
+        onClick={() => handleVotePress(voteType)}
+        cursor={hasVoted ? "default" : "pointer"}
+        color={color}
+        bg="transparent"
+        border="none"
+        p={1}
+        borderRadius="md"
+        _hover={hasVoted ? undefined : { bg: "gray.100" }}
+        aria-label={label}>
+        {icon}
+        <Text fontSize="sm" fontWeight="semibold">{`${pct}%`}</Text>
+      </Box>
+    )
+  }
 
   return (
     <Box borderWidth={1} borderColor="gray.200" bg={"#F9F9FA"} borderRadius="xl" p={4} overflow="hidden">
@@ -83,26 +139,23 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit }: Props) => {
             )}
           </Box>
           <HStack gap={4}>
-            <HStack gap={1} color={myVoteType == 1 ? "#3DBA67" : "gray.500"}>
-              <LuThumbsUp size={16} />
-              <Text fontSize="sm" fontWeight="semibold">{`${upPct}%`}</Text>
-            </HStack>
-            <HStack gap={1} color={myVoteType == 2 ? "#C53030" : "gray.500"}>
-              <LuThumbsDown size={16} />
-              <Text fontSize="sm" fontWeight="semibold">{`${downPct}%`}</Text>
-            </HStack>
-            <HStack gap={1} color={myVoteType == 3 ? "#F2A54E" : "gray.500"}>
-              <LuHand size={16} />
-              <Text fontSize="sm" fontWeight="semibold">{`${reportPct}%`}</Text>
-            </HStack>
+            {voteButton(1, <LuThumbsUp size={16} />, t("Upvote"), upPct, UP_COLOR)}
+            {voteButton(2, <LuThumbsDown size={16} />, t("Downvote"), downPct, DOWN_COLOR)}
+            {voteButton(3, <LuHand size={16} />, t("Report content"), reportPct, REPORT_COLOR)}
             <Box
               as="button"
+              type="button"
               onClick={() => setIsResultsOpen(true)}
               cursor="pointer"
               color="gray.500"
               _hover={{ color: "gray.600" }}
               display="flex"
-              alignItems="center">
+              alignItems="center"
+              bg="transparent"
+              border="none"
+              p={1}
+              borderRadius="md"
+              aria-label={t("Result details")}>
               <LuChartBar size={16} />
             </Box>
           </HStack>

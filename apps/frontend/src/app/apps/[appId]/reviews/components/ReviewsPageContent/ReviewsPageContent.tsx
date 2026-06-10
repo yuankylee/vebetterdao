@@ -23,6 +23,7 @@ import { ReviewsPageBanner } from "@/app/components/ActionBanners/components/Rev
 
 import { Review } from "../../../../../../api/reviews/types"
 import { useAppReviews } from "../../../../../../api/reviews/useAppReviews"
+import { useVoteOnReview } from "../../../../../../hooks/xApp/useVoteOnReview"
 import { WriteReviewModal } from "../../../components/AppRatingsAndReviews/WriteReviewModal"
 
 import { ReviewItem } from "./components/ReviewItem"
@@ -50,6 +51,12 @@ export const ReviewsPageContent = () => {
     size: PAGE_SIZE,
     sortBy: sortBy || undefined,
     wallet: account?.address,
+  })
+
+  const { sendTransaction: sendVoteOnReview } = useVoteOnReview({
+    onSuccess: () => {
+      void refetch()
+    },
   })
   const reviews = reviewsData?.data ?? []
   const reviewsPagination = reviewsData?.pagination ?? {}
@@ -127,6 +134,9 @@ export const ReviewsPageContent = () => {
                         review={review}
                         currentUserAddress={account?.address}
                         onEdit={r => handleWriteReview(r)}
+                        onVote={(reviewId, voteType) => {
+                          void sendVoteOnReview({ reviewId, voteType })
+                        }}
                       />
                     ))}
                   </Stack>
