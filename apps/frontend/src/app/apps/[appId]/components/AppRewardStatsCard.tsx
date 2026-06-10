@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, HStack, Link, SegmentGroup, Skeleton, Text, useDisclosure, VStack } from "@chakra-ui/react"
+import { Card, HStack, Link, SegmentGroup, Text, useDisclosure, VStack } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { getCompactFormatter } from "@repo/utils/FormattingUtils"
 import { useParams } from "next/navigation"
@@ -25,15 +25,16 @@ export const AppRewardStatsCard = () => {
   const { t } = useTranslation()
   const { data: appMetadata } = useXAppMetadata(appId ?? "")
   const { open: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure()
-  const [period, setPeriod] = useState<Period>("6M")
+  const [distributionPeriod, setDistributionPeriod] = useState<Period>("6M")
+  const [userStatsPeriod, setUserStatsPeriod] = useState<Period>("6M")
 
   const { data: distributionRows, isLoading: distributionLoading } = useAppDistributionPerformance(appId ?? "", {
-    range: period,
+    range: distributionPeriod,
   })
 
   const { data: userRoundStats, isLoading: userStatsLoading } = useAppRoundUserStats(
     appId ?? "",
-    { range: period },
+    { range: userStatsPeriod },
     { enabled: !!appId },
   )
 
@@ -60,8 +61,8 @@ export const AppRewardStatsCard = () => {
           <RewardHistoryChart
             distributionRows={distributionRows}
             isLoading={distributionLoading}
-            period={period}
-            onPeriodChange={setPeriod}
+            period={distributionPeriod}
+            onPeriodChange={setDistributionPeriod}
           />
         </Card.Body>
       </Card.Root>
@@ -73,25 +74,21 @@ export const AppRewardStatsCard = () => {
 
         <Card.Body>
           <VStack align="stretch" gap={3} w="full">
-            {userStatsLoading ? (
-              <Skeleton h="6" maxW="200px" borderRadius="md" />
-            ) : totalUsersDisplay != null ? (
-              <Text textStyle="md">
-                {t("Total Users")}
-                {": "}
-                <Text as="span" color="blue.600" fontWeight="semibold">
-                  {compact.format(totalUsersDisplay)}
-                </Text>
+            <Text textStyle="md">
+              {t("Total Users")}
+              {": "}
+              <Text as="span" color="blue.600" fontWeight="semibold">
+                {totalUsersDisplay != null ? compact.format(totalUsersDisplay) : "-"}
               </Text>
-            ) : null}
+            </Text>
             <HStack justify="space-between" align="center" w="full" flexWrap="wrap" gap={3}>
               <SegmentGroup.Root
                 alignSelf="flex-start"
                 w="fit-content"
                 size={{ base: "sm" }}
                 borderRadius="lg"
-                value={period}
-                onValueChange={e => setPeriod(e.value as Period)}>
+                value={userStatsPeriod}
+                onValueChange={e => setUserStatsPeriod(e.value as Period)}>
                 <SegmentGroup.Indicator borderRadius="lg" />
                 {["3M", "6M", "1Y", "All"].map(item => (
                   <SegmentGroup.Item key={item} value={item}>

@@ -18,6 +18,10 @@ The skill at [`.claude/skills/frontend-ui/SKILL.md`](.claude/skills/frontend-ui/
 - **`react/jsx-no-literals`**: No bare text in JSX — wrap in `{""}`. Colons after translated labels need the same: `{t("X")}{": "}{value}`, not `{t("X")}: {value}`.
 - **`react/no-array-index-key`**: Prefer stable `key`s (entity id or composite of fields). For static placeholder grids, map over a fixed `const` key tuple instead of index.
 
+## Typecheck
+
+- Do not run `yarn typecheck` unless the user explicitly asks for it.
+
 ## Before writing frontend code
 
 **Read the skill first.** Then:

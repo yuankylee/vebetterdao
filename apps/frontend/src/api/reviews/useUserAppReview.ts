@@ -15,5 +15,5 @@ export const useUserAppReview = (appId: string, authorAddress?: string) =>
   useQuery({
     queryKey: ["appReviews", appId, "user", authorAddress],
     queryFn: () => fetchUserAppReview(appId, authorAddress!),
-    enabled: !!appId && !!authorAddress && !!getConfig().xAppApiUrl,
+    enabled: !!appId && !!authorAddress && !!getConfig().indexerUrl,
   })

@@ -2,7 +2,7 @@
 
 import { Box, Center, HStack, Skeleton, Text, VStack } from "@chakra-ui/react"
 import { getCompactFormatter } from "@repo/utils/FormattingUtils"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
@@ -19,6 +19,18 @@ type ChartRow = {
   roundDate: number
   activeUsers: number
   newUsers: number
+}
+
+function userStatsIntegerYTicks(yMaxInt: number): number[] {
+  const cap = Math.max(1, yMaxInt)
+  if (cap <= 12) {
+    return Array.from({ length: cap + 1 }, (_, i) => i)
+  }
+  const step = Math.max(1, Math.ceil(cap / 5))
+  const ticks: number[] = [0]
+  for (let v = step; v < cap; v += step) ticks.push(v)
+  if (ticks[ticks.length - 1] !== cap) ticks.push(cap)
+  return ticks
 }
 
 const UserStatsTooltip = ({
@@ -107,6 +119,11 @@ export const UserStatsChart = ({
   hideLegend?: boolean
 }) => {
   const { t } = useTranslation()
+  const fetchCompletedOnceRef = useRef(false)
+
+  useEffect(() => {
+    if (!isLoading) fetchCompletedOnceRef.current = true
+  }, [isLoading])
 
   const chartData = useMemo<ChartRow[]>(() => {
     if (!stats?.datas?.length) return []
@@ -120,8 +137,17 @@ export const UserStatsChart = ({
       }))
   }, [stats])
 
-  if (isLoading) {
-    return <Skeleton w="full" h="280px" borderRadius="xl" />
+  const { userStatsYDomainMax, userStatsYTicks } = useMemo(() => {
+    let raw = 0
+    for (const d of chartData) {
+      raw = Math.max(raw, d.activeUsers, d.newUsers)
+    }
+    const domainMax = Math.max(1, Math.ceil(raw * 1.05))
+    return { userStatsYDomainMax: domainMax, userStatsYTicks: userStatsIntegerYTicks(domainMax) }
+  }, [chartData])
+
+  if (isLoading && !chartData.length && !fetchCompletedOnceRef.current) {
+    return <Skeleton w="full" h="240px" borderRadius="xl" />
   }
 
   if (!chartData.length) {
@@ -138,9 +164,25 @@ export const UserStatsChart = ({
     <VStack w="full" align="stretch" gap={3}>
       {hideLegend ? null : <UserStatsLegend />}
 
-      <Box w="full" h="240px">
+      <Box
+        w="full"
+        h="240px"
+        css={{
+          "& .recharts-wrapper": { outline: "none" },
+          "& .recharts-wrapper:focus, & .recharts-wrapper:focus-visible": { outline: "none" },
+          "& .recharts-surface": { outline: "none" },
+          "& .recharts-surface:focus, & .recharts-surface:focus-visible": { outline: "none" },
+          "& svg": { outline: "none" },
+          "& svg:focus, & svg:focus-visible": { outline: "none" },
+          "& .recharts-wrapper g": { outline: "none" },
+          "& .recharts-wrapper g:focus, & .recharts-wrapper g:focus-visible": { outline: "none" },
+        }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 0 }} barCategoryGap="18%">
+          <BarChart
+            accessibilityLayer={false}
+            data={chartData}
+            margin={{ top: 8, right: 8, left: 4, bottom: 0 }}
+            barCategoryGap="18%">
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
             <XAxis
               dataKey="round"
@@ -151,8 +193,10 @@ export const UserStatsChart = ({
               tickLine={false}
             />
             <YAxis
+              domain={[0, userStatsYDomainMax]}
+              ticks={userStatsYTicks}
               tick={{ fontSize: 11 }}
-              tickFormatter={v => compact.format(v as number)}
+              tickFormatter={v => String(Math.round(Number(v)))}
               stroke="#a0aec0"
               axisLine={false}
               tickLine={false}

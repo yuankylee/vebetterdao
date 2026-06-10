@@ -1,3 +1,5 @@
+import { keepPreviousData } from "@tanstack/react-query"
+
 import { indexerQueryClient } from "../api"
 import { paths } from "../schema"
 
@@ -20,5 +22,6 @@ export const useAppDistributionPerformance = (
   return indexerQueryClient.useQuery("get", "/api/v1/b3tr/xallocations/distribution-performance", {
     params: { query: { appId, ...queryOptions } },
     enabled: options?.enabled !== false && !!appId,
+    placeholderData: keepPreviousData,
   })
 }

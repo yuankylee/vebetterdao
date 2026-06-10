@@ -2,7 +2,7 @@
 
 import { Box, Center, SegmentGroup, Skeleton, Text, useToken, VStack } from "@chakra-ui/react"
 import { getCompactFormatter } from "@repo/utils/FormattingUtils"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
@@ -29,7 +29,40 @@ type ChartDataPoint = {
   distributionPerformance: number
 }
 
+/** Y max ≤ 100 with headroom so small % bars stay visible (avoids fixed 0–100 when data is tiny). */
+function distributionPerformanceYAxisMax(values: number[]): number {
+  if (!values.length) return 100
+  const m = Math.max(...values)
+  if (!Number.isFinite(m) || m <= 0) return 100
+  if (m >= 100) return 100
+  const padded = m * 1.15
+  const niceSteps = [
+    0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7.5, 10, 12, 15, 20, 25, 30, 40, 50,
+    60, 75, 100,
+  ]
+  const next = niceSteps.find(s => s >= padded) ?? 100
+  return Math.min(100, next)
+}
+
 const BAR_COLOR_KEY = "purple.500"
+
+const PeriodSelector = ({ period, onPeriodChange }: { period: Period; onPeriodChange: (period: Period) => void }) => (
+  <SegmentGroup.Root
+    alignSelf="flex-start"
+    w="fit-content"
+    size={{ base: "sm" }}
+    borderRadius="lg"
+    value={period}
+    onValueChange={e => onPeriodChange(e.value as Period)}>
+    <SegmentGroup.Indicator borderRadius="lg" />
+    {(["3M", "6M", "1Y", "All"] as const).map(item => (
+      <SegmentGroup.Item key={item} value={item}>
+        <SegmentGroup.ItemText>{item}</SegmentGroup.ItemText>
+        <SegmentGroup.ItemHiddenInput />
+      </SegmentGroup.Item>
+    ))}
+  </SegmentGroup.Root>
+)
 
 /*
 const metricOptions = [
@@ -115,6 +148,11 @@ export const RewardHistoryChart = ({
   showPeriodSelector?: boolean
 }) => {
   const { t } = useTranslation()
+  const fetchCompletedOnceRef = useRef(false)
+
+  useEffect(() => {
+    if (!isLoading) fetchCompletedOnceRef.current = true
+  }, [isLoading])
 
   const tokenColors = useToken("colors", [BAR_COLOR_KEY])
   const barColor = tokenColors[0]
@@ -133,41 +171,30 @@ export const RewardHistoryChart = ({
       }))
   }, [distributionRows])
 
-  if (isLoading) {
-    return <Skeleton w="full" h="260px" borderRadius="xl" />
+  const distributionYMax = useMemo(
+    () => distributionPerformanceYAxisMax(chartData.map(d => d.distributionPerformance)),
+    [chartData],
+  )
+
+  const distributionYTickFormatter = (v: number) => {
+    const n = Number(v)
+    if (distributionYMax <= 1) return `${n.toFixed(2)}%`
+    if (distributionYMax <= 10) return `${n.toFixed(1)}%`
+    return `${Math.round(n)}%`
   }
 
-  if (!chartData.length) {
-    return (
+  const chartArea =
+    isLoading && !chartData.length && !fetchCompletedOnceRef.current ? (
+      <Skeleton w="full" h="220px" borderRadius="xl" />
+    ) : !chartData.length ? (
       <Center w="full" py={6}>
         <Text textStyle="sm" color="text.subtle">
           {t("No round data available yet")}
         </Text>
       </Center>
-    )
-  }
-
-  return (
-    <VStack w="full" align="stretch" gap={3}>
-      {showPeriodSelector ? (
-        <SegmentGroup.Root
-          alignSelf="flex-start"
-          w="fit-content"
-          size={{ base: "sm" }}
-          borderRadius="lg"
-          value={period}
-          onValueChange={e => onPeriodChange(e.value as Period)}>
-          <SegmentGroup.Indicator borderRadius="lg" />
-          {["3M", "6M", "1Y", "All"].map(item => (
-            <SegmentGroup.Item key={item} value={item}>
-              <SegmentGroup.ItemText>{item}</SegmentGroup.ItemText>
-              <SegmentGroup.ItemHiddenInput />
-            </SegmentGroup.Item>
-          ))}
-        </SegmentGroup.Root>
-      ) : null}
-
-      {/*
+    ) : (
+      <>
+        {/*
       <NativeSelect.Root size="sm" w="auto" minW={{ base: "full", md: "180px" }}>
         <NativeSelect.Field
           value={metric}
@@ -185,36 +212,55 @@ export const RewardHistoryChart = ({
       </NativeSelect.Root>
       */}
 
-      <Box w="full" h="220px">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-            <XAxis
-              dataKey="round"
-              tick={{ fontSize: 11 }}
-              tickFormatter={v => `#${v}`}
-              stroke="#a0aec0"
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              domain={[0, 100]}
-              tick={{ fontSize: 11 }}
-              tickFormatter={v => `${Number(v)}%`}
-              stroke="#a0aec0"
-              axisLine={false}
-              tickLine={false}
-            />
-            <Tooltip content={<DistributionTooltip />} />
-            <Bar
-              dataKey="distributionPerformance"
-              fill={barColor}
-              radius={[4, 4, 0, 0]}
-              name={t("Distribution Performance")}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </Box>
+        <Box
+          w="full"
+          h="220px"
+          css={{
+            "& .recharts-wrapper": { outline: "none" },
+            "& .recharts-wrapper:focus, & .recharts-wrapper:focus-visible": { outline: "none" },
+            "& .recharts-surface": { outline: "none" },
+            "& .recharts-surface:focus, & .recharts-surface:focus-visible": { outline: "none" },
+            "& svg": { outline: "none" },
+            "& svg:focus, & svg:focus-visible": { outline: "none" },
+            "& .recharts-wrapper g": { outline: "none" },
+            "& .recharts-wrapper g:focus, & .recharts-wrapper g:focus-visible": { outline: "none" },
+          }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart accessibilityLayer={false} data={chartData} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis
+                dataKey="round"
+                tick={{ fontSize: 11 }}
+                tickFormatter={v => `#${v}`}
+                stroke="#a0aec0"
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                domain={[0, distributionYMax]}
+                tick={{ fontSize: 11 }}
+                tickFormatter={distributionYTickFormatter}
+                stroke="#a0aec0"
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip content={<DistributionTooltip />} />
+              <Bar
+                dataKey="distributionPerformance"
+                fill={barColor}
+                radius={[4, 4, 0, 0]}
+                name={t("Distribution Performance")}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </Box>
+      </>
+    )
+
+  return (
+    <VStack w="full" align="stretch" gap={3}>
+      {showPeriodSelector ? <PeriodSelector period={period} onPeriodChange={onPeriodChange} /> : null}
+      {chartArea}
     </VStack>
   )
 }

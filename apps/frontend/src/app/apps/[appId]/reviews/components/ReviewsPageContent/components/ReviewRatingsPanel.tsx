@@ -1,8 +1,8 @@
 import { Button, Card, Stack, Text } from "@chakra-ui/react"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { FaRegStar, FaStar } from "react-icons/fa"
+import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa"
 
 import { ReviewTxVerifier } from "@/components/Debug/ReviewTxVerifier"
 import { toaster } from "@/components/ui/toaster"
@@ -15,21 +15,38 @@ import { useUpdateRating } from "../../../../../../../hooks/xApp/useUpdateRating
 const STAR_COLOR = "#FFB566"
 const STAR_EMPTY_COLOR = "#D2D5D9"
 
+/** If rating is strictly between two whole numbers (e.g. 3 < n < 4), show as k+0.5 (3.5 stars); whole numbers unchanged. */
+function displayRatingForStars(n: number): number {
+  if (!Number.isFinite(n) || n <= 0) return 0
+  const clamped = Math.min(5, Math.max(0, n))
+  const lo = Math.floor(clamped)
+  const hi = Math.ceil(clamped)
+  if (lo === hi) return clamped
+  if (clamped > lo && clamped < hi) return lo + 0.5
+  return clamped
+}
+
 const InteractiveStars = ({
   value,
   onChange,
+  displayRatingFromApi,
   size = 40,
 }: {
+  /** Whole stars 0–5 from user taps only (0 = none yet). */
   value: number
   onChange: (v: number) => void
+  /** When `value === 0` and user is not hovering, show this API rating (between k and k+1 → k.5 stars). */
+  displayRatingFromApi?: number
   size?: number
 }) => {
   const [hovered, setHovered] = useState(0)
+  const displayApi = displayRatingForStars(displayRatingFromApi ?? 0)
+  const showApiHalfStars = value === 0 && displayApi > 0 && hovered === 0
+
   return (
     <div style={{ display: "flex", gap: 4, justifyContent: "center" }}>
       {Array.from({ length: 5 }, (_, i) => {
-        const filled = (hovered || value) > i
-        return (
+        const starBtn = (child: ReactNode) => (
           <button
             key={i}
             type="button"
@@ -37,8 +54,27 @@ const InteractiveStars = ({
             onMouseLeave={() => setHovered(0)}
             onClick={() => onChange(i + 1)}
             style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
-            {filled ? <FaStar size={size} color={STAR_COLOR} /> : <FaRegStar size={size} color={STAR_EMPTY_COLOR} />}
+            {child}
           </button>
+        )
+
+        if (hovered > 0) {
+          const filled = hovered > i
+          return starBtn(
+            filled ? <FaStar size={size} color={STAR_COLOR} /> : <FaRegStar size={size} color={STAR_EMPTY_COLOR} />,
+          )
+        }
+
+        if (showApiHalfStars) {
+          const r = displayApi
+          if (i < Math.floor(r)) return starBtn(<FaStar size={size} color={STAR_COLOR} />)
+          if (i < r && r % 1 >= 0.5) return starBtn(<FaStarHalfAlt size={size} color={STAR_COLOR} />)
+          return starBtn(<FaRegStar size={size} color={STAR_EMPTY_COLOR} />)
+        }
+
+        const filled = value > i
+        return starBtn(
+          filled ? <FaStar size={size} color={STAR_COLOR} /> : <FaRegStar size={size} color={STAR_EMPTY_COLOR} />,
         )
       })}
     </div>
@@ -96,7 +132,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       openWalletModal()
       return
     }
-    const rating = selectedRating || existingRating
+    const rating = selectedRating > 0 ? selectedRating : existingRating
     if (rating === 0) return
     updateRating.sendTransaction({ appId, rating })
   }
@@ -145,7 +181,11 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
                 </Text>
               </Stack>
               <Stack gap={1} w="full" align="center">
-                <InteractiveStars value={selectedRating || existingRating} onChange={setSelectedRating} />
+                <InteractiveStars
+                  value={selectedRating}
+                  displayRatingFromApi={existingRating}
+                  onChange={setSelectedRating}
+                />
                 <Text textStyle="sm" fontWeight="semibold">
                   {t("Tap to rate")}
                 </Text>

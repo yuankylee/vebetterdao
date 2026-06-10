@@ -1,3 +1,5 @@
+import { keepPreviousData } from "@tanstack/react-query"
+
 import { indexerQueryClient } from "../api"
 import { paths } from "../schema"
 
@@ -19,5 +21,6 @@ export const useAppRoundUserStats = (
   return indexerQueryClient.useQuery("get", "/api/v1/b3tr/actions/apps/{appId}/roundUserStats", {
     params: { path: { appId }, query: queryOptions },
     enabled: options?.enabled !== false && !!appId,
+    placeholderData: keepPreviousData,
   })
 }

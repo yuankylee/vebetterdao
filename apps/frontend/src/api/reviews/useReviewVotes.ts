@@ -23,5 +23,5 @@ export const useReviewVotes = (reviewId: number | undefined, options: UseReviewV
   useQuery({
     queryKey: ["reviewVotes", reviewId, options.search, options.page, options.size],
     queryFn: () => fetchReviewVotes(reviewId!, options),
-    enabled: !!reviewId && !!getConfig().xAppApiUrl,
+    enabled: !!reviewId && !!getConfig().indexerUrl,
   })

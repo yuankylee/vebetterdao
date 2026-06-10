@@ -25,5 +25,5 @@ export const useAppReviews = (appId: string, options: UseAppReviewsOptions = {})
   useQuery({
     queryKey: ["appReviews", appId, options.page ?? 0, options.size ?? 2, options.sortBy, options.wallet],
     queryFn: () => fetchAppReviews(appId, options),
-    enabled: !!appId && !!getConfig().xAppApiUrl,
+    enabled: !!appId && !!getConfig().indexerUrl,
   })

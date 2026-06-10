@@ -24,5 +24,5 @@ export const useAppRatingSummary = (appId: string, wallet?: string) =>
   useQuery({
     queryKey: getAppRatingSummaryQueryKey(appId, wallet),
     queryFn: () => fetchAppRatingSummary(appId, wallet),
-    enabled: !!appId && !!getConfig().xAppApiUrl,
+    enabled: !!appId && !!getConfig().indexerUrl,
   })
