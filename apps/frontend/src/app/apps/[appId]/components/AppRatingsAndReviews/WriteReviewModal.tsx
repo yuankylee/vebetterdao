@@ -78,14 +78,13 @@ export const WriteReviewModal = ({ isOpen, onClose, appId, existingReview, onSuc
     <BaseModal
       isOpen={isOpen}
       onClose={handleClose}
-      showCloseButton={false}
       isCloseable
       modalContentProps={{ maxW: "682px" }}
       modalBodyProps={{ p: 6 }}>
       <HStack justify="space-between" align="center" pb={6}>
-        <Heading size="md">{isEdit ? t("Edit the review") : t("Write a Review")}</Heading>
-        <Box cursor="pointer" onClick={onClose}>
-          <UilTimes size="20px" />
+        <Heading size="xl">{isEdit ? t("Edit the review") : t("Write a Review")}</Heading>
+        <Box cursor="pointer" onClick={onClose} display={{ base: "none", lg: "block" }}>
+          <UilTimes size="24px" />
         </Box>
       </HStack>
 

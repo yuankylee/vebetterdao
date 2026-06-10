@@ -1,8 +1,10 @@
-import { Card, Heading, Skeleton, Text, VStack, Center, HStack, IconButton, useClipboard } from "@chakra-ui/react"
+import { Card, Heading, Skeleton, Text, VStack, Center, HStack, IconButton, useClipboard, Box } from "@chakra-ui/react"
+import { UilTimes } from "@iconscout/react-unicons"
 import { humanAddress } from "@repo/utils/FormattingUtils"
 import { useVechainDomain } from "@vechain/vechain-kit"
 import { useTranslation } from "react-i18next"
-import { FaCopy, FaExternalLinkAlt, FaCheck } from "react-icons/fa"
+import { FaExternalLinkAlt } from "react-icons/fa"
+import { RxCopy, RxCheckbox } from "react-icons/rx"
 
 import { AddressIcon } from "@/components/AddressIcon"
 import { BaseModal } from "@/components/BaseModal"
@@ -39,10 +41,10 @@ const DistributorItem = ({ distributor }: { distributor: string }) => {
             <IconButton
               variant="ghost"
               size="2xs"
-              color="text.subtle"
+              color={isCopied ? "green" : "text.subtle"}
               aria-label={isCopied ? t("Address copied") : t("Copy address")}
               onClick={() => copy()}>
-              {isCopied ? <FaCheck /> : <FaCopy />}
+              {isCopied ? <RxCheckbox /> : <RxCopy />}
             </IconButton>
           </HStack>
         </VStack>
@@ -71,30 +73,34 @@ export const RewardDetailsModal = ({
 
   return (
     <BaseModal
+      ariaTitle={t("Reward Details")}
       isOpen={isOpen}
       onClose={onClose}
-      modalProps={{ size: "4xl" }}
-      modalContentProps={{ minW: "1000px", maxW: "min(100vw - 32px, 1200px)" }}>
-      <VStack gap={6} align="flex-start" w="full">
-        <Heading size="2xl">{t("Reward Details")}</Heading>
-
-        <Card.Root variant="primary" p={4} gap={4} w="full">
+      modalContentProps={{ maxW: "960px" }}
+      modalBodyProps={{ p: 6 }}>
+      <VStack gap={3} align="flex-start" w="full">
+        <HStack justify="space-between" align="center" w="full">
+          <Heading size="xl">{t("Reward Details")}</Heading>
+          <Box cursor="pointer" onClick={onClose} display={{ base: "none", lg: "block" }}>
+            <UilTimes size="24px" />
+          </Box>
+        </HStack>
+        <Card.Root variant="primary" p={4} gap={4} w="full" maxH={{ base: "", lg: "30vh" }} overflowY="auto">
           <Card.Header p={0}>
-            <Heading size="xl" alignSelf="flex-start">
+            <Heading size="sm" alignSelf="flex-start">
               {t("Distribution Policy")}
             </Heading>
           </Card.Header>
-
-          <Card.Body p={0}>
-            <Text textStyle="md" color="text.subtle" whiteSpace="pre-wrap">
+          <Box p={0} lineHeight="18px">
+            <Text textStyle="sm" as="span" wordBreak="break-word" whiteSpace="normal">
               {distributionStrategy}
             </Text>
-          </Card.Body>
+          </Box>
         </Card.Root>
 
         <Card.Root variant="primary" p={4} gap={4} w="full">
           <Card.Header p={0}>
-            <Heading size="xl" alignSelf="flex-start">
+            <Heading size="sm" alignSelf="flex-start">
               {t("Data Statistics")}
             </Heading>
           </Card.Header>
@@ -107,7 +113,7 @@ export const RewardDetailsModal = ({
         {app?.teamWalletAddress && (
           <Card.Root variant="primary" p={4} gap={4} w="full">
             <Card.Header p={0}>
-              <Heading size="xl" alignSelf="flex-start">
+              <Heading size="sm" alignSelf="flex-start">
                 {t("Treasury address")}
               </Heading>
             </Card.Header>
@@ -122,7 +128,7 @@ export const RewardDetailsModal = ({
 
         <Card.Root variant="primary" p={4} gap={4} w="full">
           <Card.Header p={0}>
-            <Heading size="xl" alignSelf="flex-start">
+            <Heading size="sm" alignSelf="flex-start">
               {t("Distributors")}
             </Heading>
           </Card.Header>

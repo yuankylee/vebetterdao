@@ -15,21 +15,21 @@ const BadgeHistoryRow = ({ badgeKey, appId }: BadgeRowProps) => {
   const { totalEarned, latestRank } = useBadgeStats(appId, badgeKey)
 
   return (
-    <HStack gap={4} p={4} borderWidth="1px" rounded="xl">
-      <Box border="2px dashed" borderColor="border.subtle" rounded="xl" p={1} flexShrink={0}>
-        <Image src={config.image} alt={config.title} boxSize="56px" objectFit="contain" />
+    <HStack gap={2} p={4} border="1px solid" bg={"#F9F9FA"} borderColor="#E7E9EB" rounded="xl" w="full">
+      <Box flexShrink={0}>
+        <Image src={config.image} alt={config.title} boxSize="61px" objectFit="contain" />
       </Box>
       <VStack align="flex-start" gap={0.5}>
-        <Text textStyle="sm" fontWeight="semibold">
+        <Text textStyle="md" fontWeight="semibold">
           {config.title}
         </Text>
         <HStack gap={4} flexWrap="wrap">
-          <Text textStyle="xs" color="text.subtle">
+          <Text textStyle="sm" color="text.subtle">
             {t("Total Badges Earned")}
             {": "}
             {totalEarned}
           </Text>
-          <Text textStyle="xs" color="text.subtle">
+          <Text textStyle="sm" color="text.subtle">
             {t("Latest Badges")}
             {": #"}
             {latestRank}
@@ -46,19 +46,22 @@ export const BadgeHistoryModal = ({ isOpen, onClose, appId }: Props) => {
   const { t } = useTranslation()
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false} isCloseable modalBodyProps={{ p: 0 }}>
-      <VStack align="stretch" gap={0}>
-        <HStack justify="space-between" align="center" p={6} pb={4}>
-          <Heading size="md">{t("Badge History")}</Heading>
-          <Box cursor="pointer" onClick={onClose}>
-            <UilTimes size="20px" />
-          </Box>
-        </HStack>
-        <VStack align="stretch" gap={3} px={6} pb={6}>
-          {BADGE_CONFIGS.map(badge => (
-            <BadgeHistoryRow key={badge.key} badgeKey={badge.key} appId={appId} />
-          ))}
-        </VStack>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCloseable
+      modalContentProps={{ maxW: "682px" }}
+      modalBodyProps={{ p: 6 }}>
+      <HStack justify="space-between" align="center" pb={4}>
+        <Heading size="xl">{t("Badge History")}</Heading>
+        <Box cursor="pointer" onClick={onClose} display={{ base: "none", lg: "block" }}>
+          <UilTimes size="24px" />
+        </Box>
+      </HStack>
+      <VStack w="full" gap={3} mt={2}>
+        {BADGE_CONFIGS.map(badge => (
+          <BadgeHistoryRow key={badge.key} badgeKey={badge.key} appId={appId} />
+        ))}
       </VStack>
     </BaseModal>
   )

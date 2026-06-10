@@ -3,8 +3,8 @@ import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FaRegStar, FaStar, FaStarHalfAlt, FaThumbsDown, FaThumbsUp } from "react-icons/fa"
-import { MdFrontHand } from "react-icons/md"
+import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa"
+import { LuHand, LuThumbsDown, LuThumbsUp } from "react-icons/lu"
 
 import { Review } from "../../../../../api/reviews/types"
 import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
@@ -66,22 +66,22 @@ const ReviewCard = ({ review }: { review: Review }) => {
             {formatDate(review.blockTimestamp)}
           </Text>
         </HStack>
-        <Box borderTopWidth={1} borderColor="gray.200" pt={2}>
-          <HStack justify="center" gap={6}>
-            <HStack gap={1}>
-              <FaThumbsUp size={13} />
-              <Text fontSize="xs">{`${upPct}%`}</Text>
+        <HStack borderTopWidth={1} mt={2} borderColor="gray.200" pt={3} alignItems="center" justifyContent={"flex-end"}>
+          <HStack justify="center" gap={4}>
+            <HStack gap={1} color="gray.500">
+              <LuThumbsUp size={16} />
+              <Text fontSize="sm" fontWeight="semibold">{`${upPct}%`}</Text>
             </HStack>
-            <HStack gap={1}>
-              <FaThumbsDown size={13} />
-              <Text fontSize="xs">{`${downPct}%`}</Text>
+            <HStack gap={1} color="gray.500">
+              <LuThumbsDown size={16} />
+              <Text fontSize="sm" fontWeight="semibold">{`${downPct}%`}</Text>
             </HStack>
-            <HStack gap={1}>
-              <MdFrontHand size={14} />
-              <Text fontSize="xs">{`${reportPct}%`}</Text>
+            <HStack gap={1} color="gray.500">
+              <LuHand size={16} />
+              <Text fontSize="sm" fontWeight="semibold">{`${reportPct}%`}</Text>
             </HStack>
           </HStack>
-        </Box>
+        </HStack>
       </Stack>
     </Box>
   )
