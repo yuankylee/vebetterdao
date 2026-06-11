@@ -1,5 +1,6 @@
 import { Box, Button, Card, HStack, Link, Skeleton, Stack, Text } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
+import { useQueryClient } from "@tanstack/react-query"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -91,6 +92,7 @@ export const AppRatingsAndReviews = () => {
   const { t } = useTranslation()
   const { app } = useCurrentAppInfo()
   const appId = app?.id ?? ""
+  const queryClient = useQueryClient()
   const { account } = useWallet()
   const { open: openWalletModal } = useWalletModal()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -99,9 +101,8 @@ export const AppRatingsAndReviews = () => {
     data: ratingSummary,
     isPending: ratingSummaryPending,
     isFetching: ratingSummaryFetching,
-    refetch: refetchRatingSummary,
   } = useAppRatingSummary(appId, account?.address)
-  const { data: reviewsData, isLoading: reviewsLoading, refetch } = useAppReviews(appId, { wallet: account?.address })
+  const { data: reviewsData, isLoading: reviewsLoading } = useAppReviews(appId, { wallet: account?.address })
 
   const average = ratingSummary?.average ?? 0
   const count = ratingSummary?.count ?? 0
@@ -164,7 +165,7 @@ export const AppRatingsAndReviews = () => {
                 {t("No reviews yet")}
               </Text>
             ) : (
-              visibleReviews.map((review: Review) => <ReviewCard key={review.id} review={review} />)
+              visibleReviews.map((review: Review) => <ReviewCard key={review.reviewId} review={review} />)
             )}
 
             <Button variant="primary" w="full" borderRadius="full" onClick={handleWriteReview}>
@@ -178,9 +179,11 @@ export const AppRatingsAndReviews = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         appId={appId}
-        onSuccess={() => {
-          void refetch()
-          void refetchRatingSummary()
+        onSuccess={async () => {
+          if (appId) {
+            await queryClient.invalidateQueries({ queryKey: ["appReviews", appId] })
+            await queryClient.invalidateQueries({ queryKey: ["appRatingSummary", appId] })
+          }
         }}
       />
     </>

@@ -1,5 +1,8 @@
 import { Button, Card, Grid, GridItem, Heading, Separator, SimpleGrid, VStack, useDisclosure } from "@chakra-ui/react"
-import { useWallet } from "@vechain/vechain-kit"
+import { getConfig } from "@repo/config"
+import { useQueryClient } from "@tanstack/react-query"
+import { X2EarnApps__factory } from "@vechain/vebetterdao-contracts/typechain-types"
+import { useWallet, getCallClauseQueryKeyWithArgs } from "@vechain/vechain-kit"
 import { useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
@@ -13,6 +16,7 @@ import { useTransactionModal } from "@/providers/TransactionModalProvider"
 import { DEPRECATED_IDS } from "@/types/appDetails"
 
 import { useAccountPermissions } from "../../../../../../api/contracts/account/hooks/useAccountPermissions"
+import { getXAppMetadataQueryKey } from "../../../../../../api/contracts/xApps/hooks/useXAppMetadata"
 import { CategorySelector } from "../../../../../../components/CategorySelector"
 import { SharedAppFormFields } from "../../../../../../components/SharedAppFormFields"
 import { SharedWalletAddressFields } from "../../../../../../components/SharedWalletAddressFields"
@@ -80,6 +84,7 @@ export type EditAppForm = {
     topDistributionPerformer: { isPrivate: boolean }
     navigatorsPick: { isPrivate: boolean }
   }
+  versionHistory: { version: string; notes: string; timestamp?: number }[]
 }
 
 enum EditAppPageStep {
@@ -92,6 +97,7 @@ const findUrlByName = (urls: { name: string; url: string }[] | undefined, name: 
 
 export const EditAppPageContent = () => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const { appMetadata } = useCurrentAppMetadata()
   const { logo } = useCurrentAppLogo()
   const { banner } = useCurrentAppBanner()
@@ -145,6 +151,7 @@ export const EditAppPageContent = () => {
         },
         navigatorsPick: { isPrivate: appMetadata?.badgeSettings?.navigatorsPick?.isPrivate ?? false },
       },
+      versionHistory: appMetadata?.version_history ?? [],
     },
   })
   const {
@@ -167,11 +174,21 @@ export const EditAppPageContent = () => {
     }
   }, [isAdminOrModerator, appId, router, permissions, goToAppPage])
 
-  const handleSuccess = useCallback(() => {
+  const handleSuccess = useCallback(async () => {
     onClose()
     onTxModalClose()
+    const x2EarnAppsAddress = getConfig().x2EarnAppsContractAddress as `0x${string}`
+    await queryClient.refetchQueries({
+      queryKey: getCallClauseQueryKeyWithArgs({
+        abi: X2EarnApps__factory.abi,
+        address: x2EarnAppsAddress,
+        method: "app",
+        args: [appId as `0x${string}`],
+      }),
+    })
+    await queryClient.invalidateQueries({ queryKey: getXAppMetadataQueryKey(appId) })
     goToAppPage()
-  }, [onClose, onTxModalClose, goToAppPage])
+  }, [onClose, onTxModalClose, goToAppPage, queryClient, appId])
 
   const updateAppDetailsMutation = useUpdateAppDetails({
     appId,
@@ -201,7 +218,7 @@ export const EditAppPageContent = () => {
           banner: data.ve_world_bannerImage,
           featured_image: data.ve_world_featured_image,
         },
-        version_history: appMetadata?.version_history,
+        version_history: data.versionHistory.length > 0 ? data.versionHistory : undefined,
         tutorial_video: data.tutorialMode === "video" ? data.tutorialVideo || undefined : undefined,
         tutorial_images:
           data.tutorialMode === "image" && data.tutorialImages.length > 0 ? data.tutorialImages : undefined,
@@ -220,7 +237,7 @@ export const EditAppPageContent = () => {
       })
       return metadataUri
     },
-    [uploadMetadataMutation, socialUrls, appMetadata?.version_history],
+    [uploadMetadataMutation, socialUrls],
   )
 
   const onSubmit = useCallback(
@@ -289,6 +306,7 @@ export const EditAppPageContent = () => {
           },
           navigatorsPick: { isPrivate: appMetadata.badgeSettings?.navigatorsPick?.isPrivate ?? false },
         },
+        versionHistory: appMetadata.version_history ?? [],
       })
     }
   }, [appMetadata, logo, banner, screenshots, veWorldBanner, veWorldFeaturedImage, form])
@@ -360,8 +378,8 @@ export const EditAppPageContent = () => {
         setActiveStep={() => {}}
         goToPrevious={() => {}}
       />
-      <Grid templateColumns="repeat(3, 1fr)" gap={[4, 4, 8]} w="full" as="form" onSubmit={handleSubmit(onSubmit)}>
-        <GridItem colSpan={[3, 3, 2]}>
+      <Grid templateColumns="repeat(3, 1fr)" gap={[4, 4, 8]} w="full">
+        <GridItem colSpan={[3, 3, 2]} as="form" onSubmit={handleSubmit(onSubmit)}>
           <Card.Root>
             <Card.Header>
               <Heading size="3xl">{t("Edit the App")}</Heading>
@@ -467,7 +485,7 @@ export const EditAppPageContent = () => {
           <VStack gap={4} w="full" align={"flex-start"} position="sticky" top={100} right={0}>
             <EditAppBadges form={form} />
             <EditSocialMediaUpdates form={form} />
-            <AppVersionNotes appId={appId} currentMetadata={appMetadata} />
+            <AppVersionNotes form={form} />
           </VStack>
         </GridItem>
       </Grid>

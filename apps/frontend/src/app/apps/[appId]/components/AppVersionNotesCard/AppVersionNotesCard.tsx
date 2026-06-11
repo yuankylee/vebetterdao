@@ -1,4 +1,4 @@
-import { Card, HStack, Link, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { Card, HStack, Link, Separator, Skeleton, Stack, Text } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next"
 import { useCurrentAppMetadata } from "../../hooks/useCurrentAppMetadata"
 
 import { AppVersionNotesModal } from "./AppVersionNotesModal"
+
+const CARD_VERSION_COUNT = 2
 
 const formatDate = (ts: number) =>
   new Date(ts).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
@@ -16,7 +18,7 @@ export const AppVersionNotesCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const versionHistory = appMetadata?.version_history ?? []
-  const latestVersion = versionHistory.length > 0 ? versionHistory[versionHistory.length - 1] : null
+  const displayedVersions = [...versionHistory].reverse().slice(0, CARD_VERSION_COUNT)
 
   if (appMetadataLoading) {
     return (
@@ -38,7 +40,7 @@ export const AppVersionNotesCard = () => {
               <Text fontWeight="bold" fontSize="lg">
                 {t("App Version Notes")}
               </Text>
-              {versionHistory.length > 0 && (
+              {versionHistory.length > CARD_VERSION_COUNT && (
                 <Link
                   textStyle="md"
                   fontWeight="normal"
@@ -50,25 +52,30 @@ export const AppVersionNotesCard = () => {
               )}
             </HStack>
 
-            {!latestVersion ? (
+            {displayedVersions.length === 0 ? (
               <Text color="gray.500" fontSize="sm">
                 {t(
                   "Add the app version number so users can stay informed about update content, resulting in a better user experience.",
                 )}
               </Text>
             ) : (
-              <Stack gap={1}>
-                <Text fontWeight="bold">
-                  {t("Version Number")}
-                  {": "}
-                  {latestVersion.version}
-                </Text>
-                {latestVersion.timestamp != null && (
-                  <Text color="gray.500" fontSize="sm">
-                    {formatDate(latestVersion.timestamp)}
-                  </Text>
-                )}
-                <Text fontSize="sm">{latestVersion.notes}</Text>
+              <Stack gap={0}>
+                {displayedVersions.map((entry, index) => (
+                  <Stack key={entry.version} gap={1}>
+                    {index > 0 && <Separator my={3} />}
+                    <Text fontWeight="bold">
+                      {t("Version Number")}
+                      {": "}
+                      {entry.version}
+                    </Text>
+                    {entry.timestamp != null && (
+                      <Text color="gray.500" fontSize="sm">
+                        {formatDate(entry.timestamp)}
+                      </Text>
+                    )}
+                    <Text fontSize="sm">{entry.notes}</Text>
+                  </Stack>
+                ))}
               </Stack>
             )}
           </Stack>

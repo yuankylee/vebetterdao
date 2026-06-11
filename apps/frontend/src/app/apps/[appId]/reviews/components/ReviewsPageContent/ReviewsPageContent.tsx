@@ -13,6 +13,7 @@ import {
   Text,
   Card,
 } from "@chakra-ui/react"
+import { useQueryClient } from "@tanstack/react-query"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
 import { useParams } from "next/navigation"
 import { useState } from "react"
@@ -34,6 +35,7 @@ const PAGE_SIZE = 10
 export const ReviewsPageContent = () => {
   const { t } = useTranslation()
   const { appId } = useParams<{ appId: string }>()
+  const queryClient = useQueryClient()
   const { account } = useWallet()
   const { open: openWalletModal } = useWalletModal()
 
@@ -182,8 +184,11 @@ export const ReviewsPageContent = () => {
         onClose={() => setIsModalOpen(false)}
         appId={appId}
         existingReview={modalExistingReview}
-        onSuccess={() => {
-          refetch()
+        onSuccess={async () => {
+          if (appId) {
+            await queryClient.invalidateQueries({ queryKey: ["appReviews", appId] })
+          }
+          setModalExistingReview(undefined)
           setIsModalOpen(false)
         }}
       />

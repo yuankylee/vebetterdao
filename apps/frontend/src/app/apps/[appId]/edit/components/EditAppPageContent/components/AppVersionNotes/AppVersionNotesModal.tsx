@@ -13,20 +13,11 @@ type Props = {
   version: string
   initialNotes?: string
   onSave: (notes: string) => void
-  isSaving: boolean
 }
 
 type FormValues = { notes: string }
 
-export const AppVersionNotesModal = ({
-  isOpen,
-  onClose,
-  mode,
-  version,
-  initialNotes = "",
-  onSave,
-  isSaving,
-}: Props) => {
+export const AppVersionNotesModal = ({ isOpen, onClose, mode, version, initialNotes = "", onSave }: Props) => {
   const { t } = useTranslation()
   const {
     register,
@@ -49,7 +40,15 @@ export const AppVersionNotesModal = ({
           <UilTimes size="24px" />
         </Box>
       </HStack>
-      <VStack as="form" onSubmit={handleSubmit(onSubmit)} gap={6} align="stretch">
+      <VStack
+        gap={6}
+        align="stretch"
+        as="form"
+        onSubmit={event => {
+          event.preventDefault()
+          event.stopPropagation()
+          void handleSubmit(onSubmit)(event)
+        }}>
         <VStack align="stretch" gap={3}>
           <Text textStyle="sm" color="text.subtle">
             {t(
@@ -81,6 +80,7 @@ export const AppVersionNotesModal = ({
 
         <HStack justify="flex-end" gap={3}>
           <Button
+            type="button"
             variant="subtle"
             colorPalette="blue"
             css={{
@@ -91,7 +91,14 @@ export const AppVersionNotesModal = ({
             onClick={onClose}>
             {t("Cancel")}
           </Button>
-          <Button variant="primary" borderRadius="full" px={10} type="submit" loading={isSaving}>
+          <Button
+            type="button"
+            variant="primary"
+            borderRadius="full"
+            px={10}
+            onClick={() => {
+              void handleSubmit(onSubmit)()
+            }}>
             {t("Save")}
           </Button>
         </HStack>

@@ -63,6 +63,8 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     form.watch("treasuryWalletAddress").toLowerCase() !== (app?.teamWalletAddress ?? "").toLowerCase()
   const isAdminAddressChanged =
     !!form.watch("adminAddress") && form.watch("adminAddress").toLowerCase() !== (admin ?? "").toLowerCase()
+  const isVersionHistoryChanged =
+    JSON.stringify(form.watch("versionHistory")) !== JSON.stringify(appMetadata?.version_history ?? [])
   return (
     isNameChanged ||
     isDescriptionChanged ||
@@ -84,6 +86,7 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     isTweetLinksChanged ||
     isBadgeSettingsChanged ||
     isTreasuryChanged ||
-    isAdminAddressChanged
+    isAdminAddressChanged ||
+    isVersionHistoryChanged
   )
 }

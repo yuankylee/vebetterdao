@@ -1,11 +1,10 @@
 import { Button, Card, HStack, Separator, Text, VStack } from "@chakra-ui/react"
 import { UilPlus } from "@iconscout/react-unicons"
 import { useState } from "react"
+import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { XAppMetadata } from "@/api/contracts/xApps/getXAppMetadata"
-import { useUpdateAppDetails } from "@/hooks/xApp/useUpdateAppDetails"
-import { useUploadAppMetadata } from "@/hooks/xApp/useUploadAppMetadata"
+import { EditAppForm } from "../EditAppPageContent"
 
 import { AppVersionNotesModal } from "./AppVersionNotesModal"
 
@@ -26,23 +25,17 @@ const formatDate = (timestamp?: number) => {
 type ModalState = { mode: "add" | "edit"; version: string; initialNotes: string }
 
 type Props = {
-  appId: string
-  currentMetadata: XAppMetadata | undefined
+  form: UseFormReturn<EditAppForm>
 }
 
-export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
+export const AppVersionNotes = ({ form }: Props) => {
   const { t } = useTranslation()
   const [modalState, setModalState] = useState<ModalState | null>(null)
+  const { watch, setValue } = form
+  const versionHistory = watch("versionHistory")
 
-  const { onMetadataUpload, metadataUploading } = useUploadAppMetadata()
-  const updateAppDetailsMutation = useUpdateAppDetails({
-    appId,
-    onSuccess: () => setModalState(null),
-    onFailure: () => {},
-  })
-
-  const versionHistory = [...(currentMetadata?.version_history ?? [])].reverse().slice(0, MAX_DISPLAYED_VERSIONS)
-  const latestEntry = (currentMetadata?.version_history ?? []).at(-1)
+  const displayedVersions = [...versionHistory].reverse().slice(0, MAX_DISPLAYED_VERSIONS)
+  const latestEntry = versionHistory.at(-1)
   const nextVersion = latestEntry ? incrementVersion(latestEntry.version) : "V1.0"
 
   const openAdd = () => setModalState({ mode: "add", version: nextVersion, initialNotes: "" })
@@ -51,22 +44,17 @@ export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
     setModalState({ mode: "edit", version: latestEntry.version, initialNotes: latestEntry.notes })
   }
 
-  const handleSave = async (notes: string) => {
-    if (!currentMetadata || !modalState) return
+  const handleSave = (notes: string) => {
+    if (!modalState) return
 
-    const existing = currentMetadata.version_history ?? []
     const updatedHistory =
       modalState.mode === "add"
-        ? [...existing, { version: modalState.version, notes, timestamp: Date.now() }]
-        : existing.map((entry, i) => (i === existing.length - 1 ? { ...entry, notes } : entry))
+        ? [...versionHistory, { version: modalState.version, notes, timestamp: Date.now() }]
+        : versionHistory.map((entry, i) => (i === versionHistory.length - 1 ? { ...entry, notes } : entry))
 
-    const metadataUri = await onMetadataUpload({ ...currentMetadata, version_history: updatedHistory }, false)
-    if (!metadataUri) return
-
-    updateAppDetailsMutation.sendTransaction({ metadataUri })
+    setValue("versionHistory", updatedHistory, { shouldDirty: true })
+    setModalState(null)
   }
-
-  const isSaving = metadataUploading
 
   return (
     <>
@@ -84,9 +72,9 @@ export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
               </Text>
             </VStack>
 
-            {versionHistory.length > 0 ? (
+            {displayedVersions.length > 0 ? (
               <VStack align="stretch" gap={0}>
-                {versionHistory.map((entry, index) => {
+                {displayedVersions.map((entry, index) => {
                   const isLatest = index === 0
                   return (
                     <VStack key={entry.version} align="stretch" gap={0}>
@@ -143,7 +131,6 @@ export const AppVersionNotes = ({ appId, currentMetadata }: Props) => {
         version={modalState?.version ?? nextVersion}
         initialNotes={modalState?.initialNotes ?? ""}
         onSave={handleSave}
-        isSaving={isSaving}
       />
     </>
   )
