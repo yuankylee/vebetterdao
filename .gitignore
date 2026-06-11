@@ -182,5 +182,10 @@ tasks/
 
 # Temporary e2e test cases
 packages/e2e/src/temporary_test_cases
+.playwright-cli
+.junie
 
 .yalc/
+
+# MSW — local custom handlers (seeded from index.example.ts on yarn install)
+apps/frontend/src/mocks/custom-handlers/index.ts
