@@ -20,6 +20,8 @@ export const AppVersionNotesCard = () => {
   const versionHistory = appMetadata?.version_history ?? []
   const displayedVersions = [...versionHistory].reverse().slice(0, CARD_VERSION_COUNT)
 
+  if (versionHistory.length == 0) return null
+
   if (appMetadataLoading) {
     return (
       <Card.Root w="full" borderRadius="xl">
@@ -36,30 +38,31 @@ export const AppVersionNotesCard = () => {
       <Card.Root w="full" borderRadius="xl">
         <Card.Body p={0}>
           <Stack gap={3}>
-            <HStack justify="space-between" align="center">
-              <Text fontWeight="bold" fontSize="lg">
-                {t("App Version Notes")}
-              </Text>
-              {versionHistory.length > CARD_VERSION_COUNT && (
-                <Link
-                  textStyle="md"
-                  fontWeight="normal"
-                  color="actions.secondary.text-lighter"
-                  onClick={() => setIsModalOpen(true)}>
-                  {t("More")}
-                  <UilArrowUpRight />
-                </Link>
-              )}
-            </HStack>
-
-            {displayedVersions.length === 0 ? (
+            <Stack gap={2}>
+              <HStack justify="space-between" align="center">
+                <Text fontWeight="bold" fontSize="lg">
+                  {t("App Version Notes")}
+                </Text>
+                {versionHistory.length > CARD_VERSION_COUNT && (
+                  <Link
+                    textStyle="md"
+                    fontWeight="normal"
+                    color="actions.secondary.text-lighter"
+                    onClick={() => setIsModalOpen(true)}>
+                    {t("More")}
+                    <UilArrowUpRight />
+                  </Link>
+                )}
+              </HStack>
               <Text color="gray.500" fontSize="sm">
                 {t(
                   "Add the app version number so users can stay informed about update content, resulting in a better user experience.",
                 )}
               </Text>
-            ) : (
-              <Stack gap={0}>
+            </Stack>
+
+            {displayedVersions.length > 0 && (
+              <Stack gap={0} mt={3}>
                 {displayedVersions.map((entry, index) => (
                   <Stack key={entry.version} gap={1}>
                     {index > 0 && <Separator my={3} />}

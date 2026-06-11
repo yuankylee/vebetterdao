@@ -70,11 +70,11 @@ export const AppDetailPageContent = () => {
             endorsementThreshold={maxPointsPerAppValue?.toString()}
             isEndorsementStatusLoading={isEndorsementStatusLoading}
           />
-          {shouldRenderBalance && <AppBalanceCard />}
           {shouldRenderCreationSteps ? <AppCreationSteps /> : null}
           <AppTutorial />
           <AppSocialMediaUpdates />
           <AppRewardStatsCard />
+          {shouldRenderBalance && <AppBalanceCard />}
         </Stack>
       </GridItem>
 

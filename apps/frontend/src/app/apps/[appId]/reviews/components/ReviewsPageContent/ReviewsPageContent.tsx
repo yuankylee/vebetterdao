@@ -15,10 +15,10 @@ import {
 } from "@chakra-ui/react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
+import { NavArrowLeft, NavArrowRight } from "iconoir-react"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu"
 
 import { ReviewsPageBanner } from "@/app/components/ActionBanners/components/ReviewsPageBanner"
 
@@ -145,27 +145,40 @@ export const ReviewsPageContent = () => {
                   </Stack>
                 )}
 
-                {totalPages > PAGE_SIZE && (
+                {totalPages > 1 && (
                   <Pagination.Root
-                    count={totalPages}
+                    w={"auto"}
+                    mx={{ base: "auto", md: "unset" }}
+                    count={totalReviews ?? 1}
                     pageSize={PAGE_SIZE}
                     page={currentPage}
+                    display="flex"
+                    flexWrap="wrap"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    gap="4"
+                    siblingCount={1}
                     onPageChange={e => setCurrentPage(e.page)}>
-                    <HStack justify="center" mt={2}>
-                      <ButtonGroup variant="ghost" size="sm">
-                        <Pagination.PrevTrigger asChild>
-                          <IconButton variant="ghost" size="sm" aria-label="previous page">
-                            <LuChevronLeft />
+                    <Pagination.PageText format="compact" textStyle="sm" />
+                    <ButtonGroup variant="ghost" size="xs" flexWrap="wrap">
+                      <Pagination.PrevTrigger asChild>
+                        <IconButton>
+                          <NavArrowLeft />
+                        </IconButton>
+                      </Pagination.PrevTrigger>
+                      <Pagination.Items
+                        render={page => (
+                          <IconButton rounded="full" variant={{ base: "ghost", _selected: "surface" }}>
+                            {page.value}
                           </IconButton>
-                        </Pagination.PrevTrigger>
-                        <Pagination.PageText format="compact" />
-                        <Pagination.NextTrigger asChild>
-                          <IconButton variant="ghost" size="sm" aria-label="next page">
-                            <LuChevronRight />
-                          </IconButton>
-                        </Pagination.NextTrigger>
-                      </ButtonGroup>
-                    </HStack>
+                        )}
+                      />
+                      <Pagination.NextTrigger asChild>
+                        <IconButton>
+                          <NavArrowRight />
+                        </IconButton>
+                      </Pagination.NextTrigger>
+                    </ButtonGroup>
                   </Pagination.Root>
                 )}
               </Stack>

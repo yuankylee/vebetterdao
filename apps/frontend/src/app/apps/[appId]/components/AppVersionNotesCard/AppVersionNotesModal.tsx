@@ -1,4 +1,5 @@
-import { Box, CloseButton, HStack, Stack, Text } from "@chakra-ui/react"
+import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react"
+import { UilTimes } from "@iconscout/react-unicons"
 import { useTranslation } from "react-i18next"
 
 import { BaseModal } from "../../../../../components/BaseModal"
@@ -26,33 +27,32 @@ export const AppVersionNotesModal = ({ isOpen, onClose, versions }: Props) => {
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      showCloseButton={false}
-      modalContentProps={{ maxW: "600px" }}
+      isCloseable
+      modalContentProps={{ maxW: "682px" }}
       modalBodyProps={{ p: 6 }}>
-      <Stack gap={5}>
-        <HStack justify="space-between" align="center">
-          <Text fontWeight="bold" fontSize="xl">
-            {t("Version Update Details")}
-          </Text>
-          <CloseButton onClick={onClose} size="sm" />
-        </HStack>
-
+      <HStack justify="space-between" align="center" pb={6}>
+        <Heading size="xl">{t("Version Update Details")}</Heading>
+        <Box cursor="pointer" onClick={onClose} display={{ base: "none", lg: "block" }}>
+          <UilTimes size="24px" />
+        </Box>
+      </HStack>
+      <Stack gap={3}>
         <Stack gap={3}>
           {reversed.map((entry, idx) => (
-            <Box key={idx} borderWidth={1} borderColor="gray.200" borderRadius="xl" p={4}>
+            <Box key={idx} borderWidth={1} borderColor="gray.200" bg={"#F9F9FA"} borderRadius="xl" p={4}>
               <Stack gap={1}>
-                <Text fontWeight="bold">
+                <Text fontWeight="bold" fontStyle="sm">
                   {t("Version Number")}
                   {": "}
                   {entry.version}
                 </Text>
                 {entry.timestamp != null && (
-                  <Text color="gray.500" fontSize="sm">
+                  <Text color="gray.700" fontSize="sm">
                     {formatDate(entry.timestamp)}
                   </Text>
                 )}
                 {entry.notes && (
-                  <Text fontSize="sm" color="gray.700">
+                  <Text color="gray.700" fontSize="sm">
                     {entry.notes}
                   </Text>
                 )}

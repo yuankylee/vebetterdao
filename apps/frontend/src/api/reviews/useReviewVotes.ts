@@ -12,8 +12,7 @@ type UseReviewVotesOptions = {
 
 const fetchReviewVotes = async (reviewId: number, options: UseReviewVotesOptions): Promise<VoteHistoryResponse> => {
   const { search, page = 0, size = 50 } = options
-  const params = new URLSearchParams({ page: String(page), size: String(size) })
-  if (search) params.set("search", search)
+  const params = new URLSearchParams({ search: String(search), page: String(page), size: String(size) })
   const res = await reviewsFetch(`/api/v1/xapp/reviews/${reviewId}/votes?${params}`)
   if (!res.ok) throw new Error(`Vote history fetch error: ${res.status}`)
   return res.json()
