@@ -1,16 +1,19 @@
 "use client"
 
-import { Box, Heading, HStack, List, Progress, SimpleGrid, Text, VStack } from "@chakra-ui/react"
+import { Box, Heading, HStack, List, Progress, SimpleGrid, Skeleton, Text, VStack } from "@chakra-ui/react"
 import { UilTimes } from "@iconscout/react-unicons"
 import { useTranslation } from "react-i18next"
 
+import type { AppScoreViewModel } from "@/api/indexer/xapps/mapXAppPreviousRoundScore"
 import { BaseModal } from "@/components/BaseModal"
 
-import { APP_SCORE_ACCENT_HEX, APP_SCORE_MOCK } from "./appScoreMockData"
+import { APP_SCORE_ACCENT_HEX } from "./appScoreConstants"
 
 type AppScoreDetailsModalProps = {
   isOpen: boolean
   onClose: () => void
+  scoreData: AppScoreViewModel
+  isLoading: boolean
 }
 
 const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) => (
@@ -23,7 +26,7 @@ const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) =
         {value.toFixed(2)}
       </Text>
     </HStack>
-    <Progress.Root value={value} max={100} size="sm" w="full">
+    <Progress.Root value={value} max={20} size="sm" w="full">
       <Progress.Track rounded="full" bg="bg.muted">
         <Progress.Range bg={APP_SCORE_ACCENT_HEX} rounded="full" />
       </Progress.Track>
@@ -31,9 +34,8 @@ const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) =
   </VStack>
 )
 
-export const AppScoreDetailsModal = ({ isOpen, onClose }: AppScoreDetailsModalProps) => {
+export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: AppScoreDetailsModalProps) => {
   const { t } = useTranslation()
-  const m = APP_SCORE_MOCK
 
   return (
     <BaseModal
@@ -51,26 +53,37 @@ export const AppScoreDetailsModal = ({ isOpen, onClose }: AppScoreDetailsModalPr
       <VStack gap={6}>
         <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 8, md: 10 }} w="full" alignItems="start">
           <VStack align="flex-start" gap={6}>
-            <Text textStyle="4xl" fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
-              {m.score.toFixed(2)}
-            </Text>
-            <VStack align="flex-start" gap={0}>
-              <Text textStyle="lg" fontWeight="bold" color="text.default">
-                {"#"}
-                {m.ranking}
+            <Skeleton loading={isLoading}>
+              <Text textStyle="4xl" fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
+                {scoreData.scoreDisplay}
               </Text>
+            </Skeleton>
+            <VStack align="flex-start" gap={0}>
+              <Skeleton loading={isLoading}>
+                <Text textStyle="lg" fontWeight="bold" color="text.default">
+                  {"#"}
+                  {scoreData.rankDisplay}
+                </Text>
+              </Skeleton>
               <Text textStyle="sm" color="text.subtle">
                 {t("Ranking")}
               </Text>
             </VStack>
-            <Text textStyle="md" fontWeight="semibold" color="text.default">
-              {t("{{date}} (Round #{{round}})", { date: m.roundDate, round: m.roundNumber })}
-            </Text>
+            <Skeleton loading={isLoading}>
+              <Text textStyle="md" fontWeight="semibold" color="text.default">
+                {t("{{date}} (Round #{{round}})", {
+                  date: scoreData.roundDateDisplay,
+                  round: scoreData.roundDisplay,
+                })}
+              </Text>
+            </Skeleton>
           </VStack>
 
           <VStack align="stretch" gap={3} w="full">
-            {m.breakdown.map(row => (
-              <ScoreBreakdownRow key={row.labelKey} label={t(row.labelKey)} value={row.value} />
+            {scoreData.breakdown.map(row => (
+              <Skeleton key={row.labelKey} loading={isLoading}>
+                <ScoreBreakdownRow label={t(row.labelKey)} value={row.value} />
+              </Skeleton>
             ))}
           </VStack>
         </SimpleGrid>

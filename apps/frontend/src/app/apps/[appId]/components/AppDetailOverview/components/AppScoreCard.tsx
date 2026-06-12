@@ -1,23 +1,24 @@
 "use client"
 
-import { Card, Image, Link, Stack, Text, useDisclosure } from "@chakra-ui/react"
+import { Card, Image, Link, Skeleton, Stack, Text, useDisclosure } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
+import { useParams } from "next/navigation"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { mapXAppPreviousRoundScore } from "@/api/indexer/xapps/mapXAppPreviousRoundScore"
+import { useXAppPreviousRoundScore } from "@/api/indexer/xapps/useXAppPreviousRoundScore"
 import { LightMode } from "@/components/ui/color-mode"
 
+import { APP_SCORE_ACCENT_HEX } from "./appScoreConstants"
 import { AppScoreDetailsModal } from "./AppScoreDetailsModal"
-import { APP_SCORE_ACCENT_HEX, APP_SCORE_MOCK } from "./appScoreMockData"
-// TODO: replace with real data from backend API
-// const MOCK_SCORE = 85.12
-// const MOCK_RANKING = 20
-// const MOCK_ROUND_DATE = "9 Dec, 2025"
-// const MOCK_ROUND_NUMBER = 77
 
 export const AppScoreCard = () => {
+  const { appId } = useParams<{ appId: string }>()
   const { t } = useTranslation()
   const { open: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure()
-  const m = APP_SCORE_MOCK
+  const { data, isLoading } = useXAppPreviousRoundScore(appId ?? "")
+  const scoreData = useMemo(() => mapXAppPreviousRoundScore(data), [data])
 
   return (
     <>
@@ -55,32 +56,41 @@ export const AppScoreCard = () => {
               <UilArrowUpRight />
             </Link>
             <Stack gap={0} mb={12}>
-              <Text textStyle="4xl" mb={1} fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
-                {m.score.toFixed(2)}
-              </Text>
+              <Skeleton loading={isLoading}>
+                <Text textStyle="4xl" mb={1} fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
+                  {scoreData.scoreDisplay}
+                </Text>
+              </Skeleton>
               <Text textStyle="sm" color="text.subtle">
                 {t("App Score")}
               </Text>
             </Stack>
             <Stack>
               <Stack gap={1} mb={6}>
-                <Text textStyle="lg" fontWeight="bold" color="text.default">
-                  {"#"}
-                  {m.ranking}
-                </Text>
+                <Skeleton loading={isLoading}>
+                  <Text textStyle="lg" fontWeight="bold" color="text.default">
+                    {"#"}
+                    {scoreData.rankDisplay}
+                  </Text>
+                </Skeleton>
                 <Text textStyle="sm" color="text.subtle">
                   {t("Ranking")}
                 </Text>
               </Stack>
-              <Text textStyle="lg" fontWeight="semibold" color="text.default">
-                {t("{{date}} (Round #{{round}})", { date: m.roundDate, round: m.roundNumber })}
-              </Text>
+              <Skeleton loading={isLoading}>
+                <Text textStyle="lg" fontWeight="semibold" color="text.default">
+                  {t("{{date}} (Round #{{round}})", {
+                    date: scoreData.roundDateDisplay,
+                    round: scoreData.roundDisplay,
+                  })}
+                </Text>
+              </Skeleton>
             </Stack>
           </Card.Body>
         </Card.Root>
       </LightMode>
 
-      <AppScoreDetailsModal isOpen={isModalOpen} onClose={onCloseModal} />
+      <AppScoreDetailsModal isOpen={isModalOpen} onClose={onCloseModal} scoreData={scoreData} isLoading={isLoading} />
     </>
   )
 }
