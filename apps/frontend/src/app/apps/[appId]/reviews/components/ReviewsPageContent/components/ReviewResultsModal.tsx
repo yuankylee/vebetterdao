@@ -74,9 +74,9 @@ const StackedBar = ({ upPct, downPct, reportPct }: { upPct: number; downPct: num
   if (upPct + downPct + reportPct === 0) return <Box h={2} borderRadius="full" bg="gray.200" w="full" />
   return (
     <Box h={2.5} borderRadius="full" overflow="hidden" w="full" display="flex">
-      {upPct > 0 && <Box bg="green.400" h="full" style={{ width: `${upPct}%` }} />}
-      {downPct > 0 && <Box bg="yellow.400" h="full" style={{ width: `${downPct}%` }} />}
-      {reportPct > 0 && <Box bg="red.400" h="full" style={{ width: `${reportPct}%` }} />}
+      {upPct > 0 && <Box bg="#3DBA67" h="full" style={{ width: `${upPct}%` }} />}
+      {downPct > 0 && <Box bg="#C53030" h="full" style={{ width: `${downPct}%` }} />}
+      {reportPct > 0 && <Box bg="#F2A54E" h="full" style={{ width: `${reportPct}%` }} />}
     </Box>
   )
 }
