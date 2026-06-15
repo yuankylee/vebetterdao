@@ -157,7 +157,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
               {t("Acquisition Records")}
             </Heading>
             <VStack align="stretch" gap={0}>
-              <HStack justify="space-between" pb={2} borderBottomWidth="1px">
+              <HStack justify="space-between" pb={2}>
                 <Text textStyle="sm" fontWeight="bold" flex={1}>
                   {t("Round")}
                 </Text>
@@ -176,7 +176,7 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                 </Text>
               ) : (
                 records.map(record => (
-                  <HStack key={record.round} justify="space-between" py={2} borderBottomWidth="1px">
+                  <HStack key={record.round} justify="space-between" py={2}>
                     <Text textStyle="sm" flex={1}>
                       {"# "}
                       {record.round}
