@@ -1,6 +1,19 @@
-// TODO: wire to real API endpoint when available
+import { useMemo } from "react"
+
+import { useXAppBadgeStats } from "@/api/indexer/xapps/useXAppBadgeStats"
+
+import { mapBadgeStatsSummary } from "./mapBadgeStats"
 import { BadgeKey, BadgeStats } from "./types"
 
-export const useBadgeStats = (_appId: string, _badgeKey: BadgeKey): BadgeStats => {
-  return { totalEarned: 25, latestRank: 9, isLoading: false }
+type UseBadgeStatsOptions = { enabled?: boolean }
+
+export const useBadgeStats = (appId: string, badgeKey: BadgeKey, options?: UseBadgeStatsOptions): BadgeStats => {
+  const { data, isLoading } = useXAppBadgeStats(appId, badgeKey, options)
+  const summary = useMemo(() => mapBadgeStatsSummary(data), [data])
+
+  return {
+    totalEarned: summary.totalEarned,
+    latestRank: summary.latestRank,
+    isLoading,
+  }
 }

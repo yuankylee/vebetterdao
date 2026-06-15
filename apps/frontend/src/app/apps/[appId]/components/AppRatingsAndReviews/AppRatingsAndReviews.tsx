@@ -10,6 +10,7 @@ import { LuHand, LuThumbsDown, LuThumbsUp } from "react-icons/lu"
 import { Review } from "../../../../../api/reviews/types"
 import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
+import { displayRatingForStars } from "../../../../../utils/displayRatingForStars"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
 import { WriteReviewModal } from "./WriteReviewModal"
@@ -30,7 +31,7 @@ const formatDate = (ts: number) =>
 const STAR_COLOR = "#FFB566"
 
 const StarRating = ({ average }: { average: number }) => {
-  const rating = average
+  const rating = displayRatingForStars(average)
   return (
     <HStack gap={0.5}>
       {Array.from({ length: 5 }, (_, i) => {

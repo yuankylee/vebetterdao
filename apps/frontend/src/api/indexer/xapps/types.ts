@@ -17,3 +17,59 @@ export type XAppPreviousRoundScore = {
   community?: number
   health?: number
 }
+
+export type XAppBadgeType = "topEcosystemDapp" | "topDistributionPerformer" | "navigatorsPick"
+
+export type XAppBadgeStatsRound = {
+  round: number
+  rank?: number
+  date: number
+}
+
+/** GET /api/v1/xapp/apps/{appId}/badges/stats */
+export type XAppBadgeStats = {
+  badgeType: XAppBadgeType
+  totalBadgesEarned: number
+  latestBadges?: number
+  rounds: XAppBadgeStatsRound[]
+}
+
+/** GET /api/v1/xapp/apps/{appId}/badges/roundRank */
+export type XAppBadgeRoundRank = {
+  appId: string
+  badgeType: XAppBadgeType
+  round: number
+  rank?: number
+  totalBadgesEarned: number
+  latestBadges?: number
+}
+
+export type XAppPreviousRoundBadge = {
+  badgeType: XAppBadgeType
+  badgeName: string
+  rank?: number
+  earned: number
+}
+
+/** GET /api/v1/xapp/apps/{appId}/badges/previousRound */
+export type XAppPreviousRoundBadges = {
+  appId: string
+  round: number
+  roundTimestamp?: number
+  badges: XAppPreviousRoundBadge[]
+}
+
+export type XAppEarnedBadge = {
+  badgeType: XAppBadgeType
+  badgeName: string
+  isPublished: boolean
+  totalBadgesEarned: number
+  latestBadges?: number
+  earned: number
+}
+
+/** GET /api/v1/xapp/apps/{appId}/badges/earned */
+export type XAppEarnedBadges = {
+  appId: string
+  badges: XAppEarnedBadge[]
+}

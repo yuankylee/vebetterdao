@@ -1,4 +1,4 @@
-import { Box, HStack, Heading, Image, SimpleGrid, Switch, Text, VStack } from "@chakra-ui/react"
+import { Box, HStack, Heading, Image, SimpleGrid, Skeleton, Switch, Text, VStack } from "@chakra-ui/react"
 import { UilCheckCircle, UilClock, UilTimes } from "@iconscout/react-unicons"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -20,8 +20,9 @@ type Props = {
 
 export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props) => {
   const { t } = useTranslation()
-  const { totalEarned, latestRank } = useBadgeStats(appId, badge.key)
-  const { records } = useAcquisitionRecords(appId, badge.key)
+  const { totalEarned, latestRank, isLoading: isStatsLoading } = useBadgeStats(appId, badge.key, { enabled: isOpen })
+  const { records, isLoading: isRecordsLoading } = useAcquisitionRecords(appId, badge.key, { enabled: isOpen })
+  const isLoading = isStatsLoading || isRecordsLoading
 
   const badgeSettings = form.watch("badgeSettings")
   const isPrivate = badgeSettings?.[badge.key]?.isPrivate ?? false
@@ -114,9 +115,11 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                 p={{ base: 4, md: 0 }}>
                 <Image src="/assets/images/badges/badge-left.webp" alt="" w="20px" h="36px" objectFit="contain" />
                 <VStack gap={1} align="center">
-                  <Text textStyle="2xl" fontWeight="bold" color="white">
-                    {totalEarned}
-                  </Text>
+                  <Skeleton loading={isLoading}>
+                    <Text textStyle="2xl" fontWeight="bold" color="white">
+                      {totalEarned}
+                    </Text>
+                  </Skeleton>
                   <Text textStyle="xs" color="whiteAlpha.800" textAlign="center">
                     {t("Total Badges Earned")}
                   </Text>
@@ -132,10 +135,11 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                 p={{ base: 4, md: 0 }}>
                 <Image src="/assets/images/badges/badge-left.webp" alt="" w="20px" h="36px" objectFit="contain" />
                 <VStack gap={1} align="center">
-                  <Text textStyle="2xl" fontWeight="bold" color="white">
-                    {"#"}
-                    {latestRank}
-                  </Text>
+                  <Skeleton loading={isLoading}>
+                    <Text textStyle="2xl" fontWeight="bold" color="white">
+                      {latestRank != null ? `#${latestRank}` : "-"}
+                    </Text>
+                  </Skeleton>
                   <Text textStyle="xs" color="whiteAlpha.800" textAlign="center">
                     {t("Latest Badges")}
                   </Text>
@@ -164,20 +168,28 @@ export const BadgeDetailModal = ({ isOpen, onClose, badge, form, appId }: Props)
                   {t("Date")}
                 </Text>
               </HStack>
-              {records.map(record => (
-                <HStack key={record.round} justify="space-between" py={2} borderBottomWidth="1px">
-                  <Text textStyle="sm" flex={1}>
-                    {"# "}
-                    {record.round}
-                  </Text>
-                  <Text textStyle="sm" flex={1}>
-                    {record.ranking ?? t("Not Ranked")}
-                  </Text>
-                  <Text textStyle="sm" flex={1} textAlign="right">
-                    {record.date}
-                  </Text>
-                </HStack>
-              ))}
+              {isLoading ? (
+                <Skeleton h="80px" borderRadius="md" />
+              ) : records.length === 0 ? (
+                <Text textStyle="sm" color="text.subtle">
+                  {t("No rounds available")}
+                </Text>
+              ) : (
+                records.map(record => (
+                  <HStack key={record.round} justify="space-between" py={2} borderBottomWidth="1px">
+                    <Text textStyle="sm" flex={1}>
+                      {"# "}
+                      {record.round}
+                    </Text>
+                    <Text textStyle="sm" flex={1}>
+                      {record.ranking ?? t("Not Ranked")}
+                    </Text>
+                    <Text textStyle="sm" flex={1} textAlign="right">
+                      {record.date}
+                    </Text>
+                  </HStack>
+                ))
+              )}
             </VStack>
           </Box>
         </VStack>

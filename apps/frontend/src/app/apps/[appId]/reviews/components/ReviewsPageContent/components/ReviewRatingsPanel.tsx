@@ -11,20 +11,10 @@ import { useUserRating } from "../../../../../../../api/contracts/xApps/hooks/us
 import { useAppRatingSummary } from "../../../../../../../api/reviews/useAppRatingSummary"
 import { useSubmitRating } from "../../../../../../../hooks/xApp/useSubmitRating"
 import { useUpdateRating } from "../../../../../../../hooks/xApp/useUpdateRating"
+import { displayRatingForStars } from "../../../../../../../utils/displayRatingForStars"
 
 const STAR_COLOR = "#FFB566"
 const STAR_EMPTY_COLOR = "#D2D5D9"
-
-/** If rating is strictly between two whole numbers (e.g. 3 < n < 4), show as k+0.5 (3.5 stars); whole numbers unchanged. */
-function displayRatingForStars(n: number): number {
-  if (!Number.isFinite(n) || n <= 0) return 0
-  const clamped = Math.min(5, Math.max(0, n))
-  const lo = Math.floor(clamped)
-  const hi = Math.ceil(clamped)
-  if (lo === hi) return clamped
-  if (clamped > lo && clamped < hi) return lo + 0.5
-  return clamped
-}
 
 const InteractiveStars = ({
   value,
