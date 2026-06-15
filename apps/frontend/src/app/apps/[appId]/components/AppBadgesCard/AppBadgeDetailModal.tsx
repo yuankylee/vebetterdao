@@ -17,7 +17,7 @@ type Props = {
 
 export const AppBadgeDetailModal = ({ isOpen, onClose, badge, appId }: Props) => {
   const { t } = useTranslation()
-  const { totalEarned, latestRank, isLoading } = useBadgeRoundRank(appId, badge.key, { enabled: isOpen })
+  const { totalEarned, latestRank, isLoading, rank } = useBadgeRoundRank(appId, badge.key, { enabled: isOpen })
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} isCloseable modalBodyProps={{ p: 0 }}>
@@ -34,13 +34,15 @@ export const AppBadgeDetailModal = ({ isOpen, onClose, badge, appId }: Props) =>
           mb={{ base: 2, sm: 6 }}
           bg="linear-gradient(180deg, #9BBBF9 0%, #82A6F7 100%)"
           rounded="xl"
-          p={5}>
+          pt={0}
+          pb={5}
+          px={5}>
           <VStack align="center" gap={0} mb={4}>
             <VStack align="center" w="170px" h="170px" position="relative">
               <Image src={badge.imageBg} alt={badge.title} boxSize="170px" position="absolute" objectFit="contain" />
               <Box position="absolute" top={4} left="12px" w="140px" h="140px" zIndex={2}>
                 <Image src={badge.image} alt={badge.title} w="full" h="full" objectFit="contain" />
-                {totalEarned > 0 && (
+                {rank > 0 && (
                   <Box
                     position="absolute"
                     bottom="16px"
@@ -51,7 +53,7 @@ export const AppBadgeDetailModal = ({ isOpen, onClose, badge, appId }: Props) =>
                     fontWeight="bold"
                     lineHeight="1"
                     whiteSpace="nowrap">
-                    {totalEarned}
+                    {rank}
                   </Box>
                 )}
               </Box>
