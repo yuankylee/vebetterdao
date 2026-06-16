@@ -2,6 +2,7 @@ import { Box, Button, Card, HStack, Link, Skeleton, Stack, Text } from "@chakra-
 import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useQueryClient } from "@tanstack/react-query"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
+import dayjs from "dayjs"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa"
@@ -11,7 +12,6 @@ import { Review } from "../../../../../api/reviews/types"
 import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
 import { displayRatingForStars } from "../../../../../utils/displayRatingForStars"
-import { formatLocalizedLongDateFromSeconds } from "../../../../../utils/formatLocalizedLongDate"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
 import { WriteReviewModal } from "./WriteReviewModal"
@@ -42,7 +42,6 @@ const StarRating = ({ average }: { average: number }) => {
 }
 
 const ReviewCard = ({ review }: { review: Review }) => {
-  const { i18n } = useTranslation()
   const upPct = Math.round(review.upvotes.percentage)
   const downPct = Math.round(review.downvotes.percentage)
   const reportPct = Math.round(review.reports.percentage)
@@ -64,7 +63,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
             </Text>
           </HStack>
           <Text fontSize="xs" color="gray.500">
-            {formatLocalizedLongDateFromSeconds(review.blockTimestamp, i18n.language)}
+            {dayjs.unix(Number(review.blockTimestamp)).format("MMM D, YYYY")}
           </Text>
         </HStack>
         <HStack borderTopWidth={1} mt={2} borderColor="gray.200" pt={3} alignItems="center" justifyContent={"flex-end"}>

@@ -1,5 +1,6 @@
 import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
+import dayjs from "dayjs"
 import { type ReactNode, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { LuThumbsUp, LuThumbsDown, LuHand, LuChartBar } from "react-icons/lu"
@@ -9,7 +10,6 @@ import { toaster } from "@/components/ui/toaster"
 
 import { Review } from "../../../../../../../api/reviews/types"
 import { type ReviewVoteType } from "../../../../../../../hooks/xApp/useVoteOnReview"
-import { formatLocalizedLongDateFromSeconds } from "../../../../../../../utils/formatLocalizedLongDate"
 
 import { ReviewResultsModal } from "./ReviewResultsModal"
 
@@ -31,7 +31,7 @@ type Props = {
 }
 
 export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { account } = useWallet()
   const { open: openWalletModal } = useWalletModal()
   const [isResultsOpen, setIsResultsOpen] = useState(false)
@@ -113,7 +113,7 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
             </Text>
           </HStack>
           <Text fontSize="xs" color="gray.500">
-            {formatLocalizedLongDateFromSeconds(review.blockTimestamp, i18n.language)}
+            {dayjs.unix(Number(review.blockTimestamp)).format("MMM D, YYYY")}
           </Text>
         </HStack>
 

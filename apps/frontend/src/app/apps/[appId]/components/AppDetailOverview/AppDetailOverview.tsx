@@ -15,11 +15,11 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { UilArrowUpRight, UilDownloadAlt, UilExternalLinkAlt } from "@iconscout/react-unicons"
+import dayjs from "dayjs"
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAppEarnings } from "@/api/indexer/xallocations/useAppEarnings"
-import { formatLocalizedShortDateFromSeconds } from "@/utils/formatLocalizedLongDate"
 import { convertUriToUrl } from "@/utils/uri"
 
 import { XAppStatus } from "../../../../../types/appDetails"
@@ -34,7 +34,6 @@ import { AppDetailSocials } from "./components/AppDetailSocials"
 import { AppScoreCard } from "./components/AppScoreCard"
 import { EditAppPageButton } from "./components/EditAppPageButton"
 import { MoreAppDetailsModal } from "./components/MoreAppDetailsModal"
-
 export const AppDetailOverview = ({
   endorsementStatus,
   isEndorsementStatusLoading,
@@ -42,7 +41,7 @@ export const AppDetailOverview = ({
   endorsementStatus: XAppStatus
   isEndorsementStatusLoading: boolean
 }) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { open: isMoreDetailsOpen, onOpen: onOpenMoreDetails, onClose: onCloseMoreDetails } = useDisclosure()
   const { app } = useCurrentAppInfo()
   const { appMetadata, appMetadataLoading, appMetadataError } = useCurrentAppMetadata()
@@ -155,7 +154,7 @@ export const AppDetailOverview = ({
                           </Text>
                           <HStack>
                             <Text textStyle={"md"}>
-                              {formatLocalizedShortDateFromSeconds(Number(app.createdAtTimestamp) || 0, i18n.language)}
+                              {dayjs.unix(Number(app.createdAtTimestamp)).format("MMM D, YYYY")}
                             </Text>
                             {firstRoundId != null && (
                               <Text textStyle={"md"}>

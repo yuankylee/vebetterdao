@@ -1,10 +1,9 @@
 import { Button, Card, HStack, Separator, Text, VStack } from "@chakra-ui/react"
 import { UilPlus } from "@iconscout/react-unicons"
+import dayjs from "dayjs"
 import { useState } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-
-import { formatLocalizedLongDate } from "@/utils/formatLocalizedLongDate"
 
 import { EditAppForm } from "../EditAppPageContent"
 
@@ -19,9 +18,9 @@ const incrementVersion = (v: string): string => {
   return `V${major}.${minor + 1}`
 }
 
-const formatDate = (timestamp: number | undefined, language: string) => {
+const formatDate = (timestamp: number | undefined) => {
   if (!timestamp) return ""
-  return formatLocalizedLongDate(timestamp, language)
+  return dayjs(Number(timestamp)).format("MMM D, YYYY")
 }
 
 type ModalState = { mode: "add" | "edit"; version: string; initialNotes: string }

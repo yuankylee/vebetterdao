@@ -1,9 +1,9 @@
 import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react"
 import { UilTimes } from "@iconscout/react-unicons"
+import dayjs from "dayjs"
 import { useTranslation } from "react-i18next"
 
 import { BaseModal } from "../../../../../components/BaseModal"
-import { formatLocalizedLongDate } from "../../../../../utils/formatLocalizedLongDate"
 
 type VersionEntry = {
   version: string
@@ -17,10 +17,8 @@ type Props = {
   versions: VersionEntry[]
 }
 
-const formatDate = (ts: number, language: string) => formatLocalizedLongDate(ts, language)
-
 export const AppVersionNotesModal = ({ isOpen, onClose, versions }: Props) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const reversed = [...versions].reverse()
 
   return (
@@ -48,7 +46,7 @@ export const AppVersionNotesModal = ({ isOpen, onClose, versions }: Props) => {
                 </Text>
                 {entry.timestamp != null && (
                   <Text color="gray.700" fontSize="sm">
-                    {formatDate(entry.timestamp, i18n.language)}
+                    {dayjs(Number(entry.timestamp)).format("MMM D, YYYY")}
                   </Text>
                 )}
                 {entry.notes && (

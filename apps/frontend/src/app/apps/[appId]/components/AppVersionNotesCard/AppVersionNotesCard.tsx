@@ -1,9 +1,9 @@
 import { Card, HStack, Link, Separator, Skeleton, Stack, Text } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
+import dayjs from "dayjs"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { formatLocalizedLongDate } from "../../../../../utils/formatLocalizedLongDate"
 import { useCurrentAppMetadata } from "../../hooks/useCurrentAppMetadata"
 
 import { AppVersionNotesModal } from "./AppVersionNotesModal"
@@ -11,7 +11,7 @@ import { AppVersionNotesModal } from "./AppVersionNotesModal"
 const CARD_VERSION_COUNT = 2
 
 export const AppVersionNotesCard = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { appMetadata, appMetadataLoading } = useCurrentAppMetadata()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -71,7 +71,7 @@ export const AppVersionNotesCard = () => {
                     </Text>
                     {entry.timestamp != null && (
                       <Text color="gray.500" fontSize="sm">
-                        {formatLocalizedLongDate(entry.timestamp, i18n.language)}
+                        {dayjs(Number(entry.timestamp)).format("MMM D, YYYY")}
                       </Text>
                     )}
                     <Text fontSize="sm">{entry.notes}</Text>

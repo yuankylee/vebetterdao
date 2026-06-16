@@ -2,6 +2,7 @@
 
 import { Card, Image, Link, Skeleton, Stack, Text, useDisclosure } from "@chakra-ui/react"
 import { UilArrowUpRight } from "@iconscout/react-unicons"
+import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -9,14 +10,13 @@ import { useTranslation } from "react-i18next"
 import { mapXAppPreviousRoundScore } from "@/api/indexer/xapps/mapXAppPreviousRoundScore"
 import { useXAppPreviousRoundScore } from "@/api/indexer/xapps/useXAppPreviousRoundScore"
 import { LightMode } from "@/components/ui/color-mode"
-import { formatLocalizedShortDateFromSeconds } from "@/utils/formatLocalizedLongDate"
 
 import { APP_SCORE_ACCENT_HEX } from "./appScoreConstants"
 import { AppScoreDetailsModal } from "./AppScoreDetailsModal"
 
 export const AppScoreCard = () => {
   const { appId } = useParams<{ appId: string }>()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { open: isModalOpen, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure()
   const { data, isLoading } = useXAppPreviousRoundScore(appId ?? "")
   const scoreData = useMemo(() => mapXAppPreviousRoundScore(data), [data])
@@ -82,9 +82,7 @@ export const AppScoreCard = () => {
                 <Text textStyle="lg" fontWeight="semibold" color="text.default">
                   {t("{{date}} (Round #{{round}})", {
                     date:
-                      scoreData.roundDate != null
-                        ? formatLocalizedShortDateFromSeconds(scoreData.roundDate, i18n.language)
-                        : "-",
+                      scoreData.roundDate != null ? dayjs.unix(Number(scoreData.roundDate)).format("MMM D, YYYY") : "-",
                     round: scoreData.roundDisplay,
                   })}
                 </Text>

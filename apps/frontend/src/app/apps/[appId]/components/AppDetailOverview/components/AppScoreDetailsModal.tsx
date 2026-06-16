@@ -2,11 +2,11 @@
 
 import { Box, Heading, HStack, List, Progress, SimpleGrid, Skeleton, Text, VStack } from "@chakra-ui/react"
 import { UilTimes } from "@iconscout/react-unicons"
+import dayjs from "dayjs"
 import { useTranslation } from "react-i18next"
 
 import type { AppScoreViewModel } from "@/api/indexer/xapps/mapXAppPreviousRoundScore"
 import { BaseModal } from "@/components/BaseModal"
-import { formatLocalizedShortDateFromSeconds } from "@/utils/formatLocalizedLongDate"
 
 import { APP_SCORE_ACCENT_HEX } from "./appScoreConstants"
 
@@ -36,7 +36,7 @@ const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) =
 )
 
 export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: AppScoreDetailsModalProps) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   return (
     <BaseModal
@@ -74,9 +74,7 @@ export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: 
               <Text textStyle="md" fontWeight="semibold" color="text.default">
                 {t("{{date}} (Round #{{round}})", {
                   date:
-                    scoreData.roundDate != null
-                      ? formatLocalizedShortDateFromSeconds(scoreData.roundDate, i18n.language)
-                      : "-",
+                    scoreData.roundDate != null ? dayjs.unix(Number(scoreData.roundDate)).format("MMM D, YYYY") : "-",
                   round: scoreData.roundDisplay,
                 })}
               </Text>
