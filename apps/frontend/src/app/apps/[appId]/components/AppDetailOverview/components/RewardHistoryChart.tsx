@@ -217,6 +217,7 @@ export const RewardHistoryChart = ({
       */}
 
         <Box
+          mt={2}
           w="full"
           h="220px"
           css={{

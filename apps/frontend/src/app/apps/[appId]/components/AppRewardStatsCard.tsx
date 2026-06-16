@@ -74,7 +74,7 @@ export const AppRewardStatsCard = () => {
 
         <Card.Body>
           <VStack align="stretch" gap={3} w="full">
-            <Text textStyle="md">
+            <Text textStyle="sm">
               {t("Total Users")}
               {": "}
               <Text as="span" color="blue.600" fontWeight="semibold">

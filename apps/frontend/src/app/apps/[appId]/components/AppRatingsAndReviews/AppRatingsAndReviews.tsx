@@ -16,9 +16,6 @@ import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
 import { WriteReviewModal } from "./WriteReviewModal"
 
-const AUTHOR_COLORS = ["red.400", "blue.400", "green.400", "purple.400", "orange.400", "teal.400"]
-const getAuthorColor = (address: string) => AUTHOR_COLORS[parseInt(address.slice(2, 4), 16) % AUTHOR_COLORS.length]
-
 const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
 const formatCount = (n: number) => {
@@ -57,7 +54,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
         </Text>
         <HStack justify="space-between">
           <HStack gap={1.5}>
-            <Box w={3} h={3} borderRadius="full" bg={getAuthorColor(review.author)} flexShrink={0} />
+            <Box w={3} h={3} borderRadius="full" bg={"red"} flexShrink={0} />
             <Text fontSize="xs" color="gray.600">
               {truncateAddress(review.author)}
             </Text>

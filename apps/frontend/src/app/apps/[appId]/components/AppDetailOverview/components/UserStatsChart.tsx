@@ -162,7 +162,7 @@ export const UserStatsChart = ({
   }
 
   return (
-    <VStack w="full" align="stretch" gap={3}>
+    <VStack w="full" align="stretch" gap={3} mt={2}>
       {hideLegend ? null : <UserStatsLegend />}
 
       <Box
@@ -182,7 +182,7 @@ export const UserStatsChart = ({
           <BarChart
             accessibilityLayer={false}
             data={chartData}
-            margin={{ top: 8, right: 8, left: 4, bottom: 0 }}
+            margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
             barCategoryGap="18%">
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
             <XAxis

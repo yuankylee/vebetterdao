@@ -13,9 +13,6 @@ import { type ReviewVoteType } from "../../../../../../../hooks/xApp/useVoteOnRe
 
 import { ReviewResultsModal } from "./ReviewResultsModal"
 
-// const AUTHOR_COLORS = ["red.400", "blue.400", "green.400", "purple.400", "orange.400", "teal.400"]
-// const getAuthorColor = (address: string) => AUTHOR_COLORS[parseInt(address.slice(2, 4), 16) % AUTHOR_COLORS.length]
-
 const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
 const UP_COLOR = "#3DBA67"
