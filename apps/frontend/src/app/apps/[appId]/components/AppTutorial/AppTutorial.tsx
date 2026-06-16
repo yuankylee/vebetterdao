@@ -41,7 +41,7 @@ export const AppTutorial = () => {
 
   return (
     <Card.Root w="full" borderRadius="xl">
-      <Card.Body p={5}>
+      <Card.Body>
         <Stack gap={4}>
           <Text fontWeight="bold" fontSize="lg">
             {t("App Tutorial")}
