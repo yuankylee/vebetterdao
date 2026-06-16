@@ -5,6 +5,7 @@ import { useXAppBadgeRoundRank } from "@/api/indexer/xapps/useXAppBadgeRoundRank
 import { BadgeKey } from "./types"
 
 export type BadgeRoundRank = {
+  rank: number
   totalEarned: number
   latestRank: number | null
   isLoading: boolean
@@ -21,6 +22,7 @@ export const useBadgeRoundRank = (
 
   return useMemo(
     () => ({
+      rank: data?.rank ?? 0,
       totalEarned: data?.totalBadgesEarned ?? 0,
       latestRank: data?.latestBadges ?? null,
       isLoading,

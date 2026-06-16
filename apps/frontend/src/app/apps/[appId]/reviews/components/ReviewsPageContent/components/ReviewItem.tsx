@@ -13,8 +13,8 @@ import { formatLocalizedLongDateFromSeconds } from "../../../../../../../utils/f
 
 import { ReviewResultsModal } from "./ReviewResultsModal"
 
-const AUTHOR_COLORS = ["red.400", "blue.400", "green.400", "purple.400", "orange.400", "teal.400"]
-const getAuthorColor = (address: string) => AUTHOR_COLORS[parseInt(address.slice(2, 4), 16) % AUTHOR_COLORS.length]
+// const AUTHOR_COLORS = ["red.400", "blue.400", "green.400", "purple.400", "orange.400", "teal.400"]
+// const getAuthorColor = (address: string) => AUTHOR_COLORS[parseInt(address.slice(2, 4), 16) % AUTHOR_COLORS.length]
 
 const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
@@ -107,7 +107,7 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
 
         <HStack justify="space-between" align="center">
           <HStack gap={2}>
-            <Box w={3} h={3} borderRadius="full" bg={getAuthorColor(review.author)} flexShrink={0} />
+            <Box w={3} h={3} borderRadius="full" bg={"red"} flexShrink={0} />
             <Text fontSize="xs" color="gray.600">
               {truncateAddress(review.author)}
             </Text>

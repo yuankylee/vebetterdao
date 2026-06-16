@@ -1,7 +1,6 @@
 "use client"
 
 import { Badge, Button, Code, Input, Stack, Text } from "@chakra-ui/react"
-import { getConfig } from "@repo/config"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -10,7 +9,7 @@ import { normalizeTxId, useReviewManagerTx } from "@/hooks/xApp/useReviewManager
 /** Local env, or any env when the page URL has `?tx_debug=1` (or `&tx_debug=1`). */
 export function useShowReviewTxDebug(): boolean {
   const searchParams = useSearchParams()
-  return getConfig().environment === "local" || searchParams.get("tx_debug") === "1"
+  return searchParams.get("tx_debug") === "1"
 }
 
 type Props = {

@@ -15,7 +15,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react"
-import { UilPlus, UilTimes, UilTrash, UilUpload } from "@iconscout/react-unicons"
+import { UilDraggabledots, UilPlus, UilTimes, UilTrash, UilUpload } from "@iconscout/react-unicons"
 import { Reorder, useDragControls } from "framer-motion"
 import { ChangeEvent, useCallback, useRef, useState } from "react"
 import { UseFormReturn } from "react-hook-form"
@@ -357,13 +357,33 @@ const AppRoadmapSection = ({ form }: Props) => {
               <Spinner />
             </HStack>
           ) : (
-            <HStack justify="center">
+            <HStack justify="center" style={{ position: "relative" }}>
               <Image
                 src={displayUrl ?? notFoundImage}
                 alt={t("App Roadmap")}
                 style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
                 objectFit="cover"
               />
+              {roadmapImage && !uploading && (
+                <HStack
+                  bg="rgba(0,0,0,0.25)"
+                  width="44px"
+                  height="44px"
+                  position="absolute"
+                  top={4}
+                  justifyContent="center"
+                  borderRadius={"full"}
+                  style={{ touchAction: "none" }}>
+                  <IconButton
+                    aria-label={t("Delete")}
+                    variant="ghost"
+                    color="status.negative.primary"
+                    rounded="full"
+                    onClick={handleDelete}>
+                    <UilTrash size="16px" />
+                  </IconButton>
+                </HStack>
+              )}
             </HStack>
           )}
 
@@ -383,16 +403,6 @@ const AppRoadmapSection = ({ form }: Props) => {
               <UilUpload />
               {t("Upload")}
             </Button>
-            {roadmapImage && !uploading && (
-              <IconButton
-                aria-label={t("Delete")}
-                variant="ghost"
-                color="status.negative.primary"
-                rounded="full"
-                onClick={handleDelete}>
-                <UilTrash size="16px" />
-              </IconButton>
-            )}
           </HStack>
 
           <Textarea
@@ -534,6 +544,7 @@ const DraggablePartner = ({
   index: number
   onRemove: (index: number) => void
 }) => {
+  const { t } = useTranslation()
   const dragControls = useDragControls()
 
   return (
@@ -549,8 +560,18 @@ const DraggablePartner = ({
         height="30px"
         position="absolute"
         top={0}
-        justifyContent="flex-end"
+        justifyContent="space-between"
         style={{ touchAction: "none", zIndex: 2 }}>
+        <IconButton
+          rounded="full"
+          color="white"
+          bgColor="transparent"
+          _hover={{ bgColor: "gray.600" }}
+          aria-label={t("Drag image")}
+          size="2xs"
+          onPointerDown={event => dragControls.start(event)}>
+          <UilDraggabledots />
+        </IconButton>
         <IconButton
           rounded="full"
           color="#D23F63"
