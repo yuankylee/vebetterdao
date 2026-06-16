@@ -119,24 +119,19 @@ const TutorialVideo = ({ form }: Props) => {
         <HStack justify="center" w="full" style={{ position: "relative" }}>
           {/*eslint-disable-next-line jsx-a11y/media-has-caption*/}
           <video src={displayUrl} controls style={{ maxHeight: 280, width: "100%", borderRadius: 12 }} />
-          <HStack
-            bg="rgba(0,0,0,0.25)"
-            width="44px"
-            height="44px"
+          <IconButton
             position="absolute"
             justifyContent="center"
-            borderRadius={"full"}
-            style={{ touchAction: "none" }}>
-            <IconButton
-              aria-label={t("Delete video")}
-              variant="ghost"
-              color="status.negative.primary"
-              rounded="full"
-              size="sm"
-              onClick={handleDelete}>
-              <UilTrash size="16px" />
-            </IconButton>
-          </HStack>
+            bgColor="#FCEEF1"
+            _hover={{ bgColor: "#FCEEF1DD" }}
+            aria-label={t("Delete video")}
+            variant="ghost"
+            color="status.negative.primary"
+            rounded="full"
+            size="sm"
+            onClick={handleDelete}>
+            <UilTrash size="16px" />
+          </IconButton>
         </HStack>
       ) : (
         <Button
