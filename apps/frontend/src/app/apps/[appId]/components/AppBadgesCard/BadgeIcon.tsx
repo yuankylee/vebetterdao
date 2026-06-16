@@ -1,4 +1,5 @@
 import { Box, Image } from "@chakra-ui/react"
+import { useTranslation } from "react-i18next"
 
 import { BADGE_CONFIGS } from "@/api/badges/badgeConfigs"
 import { BadgeKey } from "@/api/badges/types"
@@ -12,6 +13,7 @@ type Props = {
 }
 
 export const BadgeIcon = ({ badgeKey, earned, rank, onClick, size = "sm" }: Props) => {
+  const { t } = useTranslation()
   const config = BADGE_CONFIGS.find(b => b.key === badgeKey)!
   const boxSize = size === "md" ? "80px" : "64px"
   const bottom = size === "md" ? "6px" : "4px"
@@ -29,7 +31,7 @@ export const BadgeIcon = ({ badgeKey, earned, rank, onClick, size = "sm" }: Prop
       <Image
         flex={1}
         src={size === "md" && !earned ? config.greyImage : config.image}
-        alt={config.title}
+        alt={t(config.title)}
         boxSize={boxSize}
         objectFit="contain"
         filter={earned ? undefined : "grayscale(1) opacity(0.35)"}

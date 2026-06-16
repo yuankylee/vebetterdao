@@ -3,6 +3,7 @@ import { UilTimes } from "@iconscout/react-unicons"
 import { useTranslation } from "react-i18next"
 
 import { BaseModal } from "../../../../../components/BaseModal"
+import { formatLocalizedLongDate } from "../../../../../utils/formatLocalizedLongDate"
 
 type VersionEntry = {
   version: string
@@ -16,11 +17,10 @@ type Props = {
   versions: VersionEntry[]
 }
 
-const formatDate = (ts: number) =>
-  new Date(ts).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+const formatDate = (ts: number, language: string) => formatLocalizedLongDate(ts, language)
 
 export const AppVersionNotesModal = ({ isOpen, onClose, versions }: Props) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const reversed = [...versions].reverse()
 
   return (
@@ -48,7 +48,7 @@ export const AppVersionNotesModal = ({ isOpen, onClose, versions }: Props) => {
                 </Text>
                 {entry.timestamp != null && (
                   <Text color="gray.700" fontSize="sm">
-                    {formatDate(entry.timestamp)}
+                    {formatDate(entry.timestamp, i18n.language)}
                   </Text>
                 )}
                 {entry.notes && (

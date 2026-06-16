@@ -90,9 +90,9 @@ export const AppRewardStatsCard = () => {
                 value={userStatsPeriod}
                 onValueChange={e => setUserStatsPeriod(e.value as Period)}>
                 <SegmentGroup.Indicator borderRadius="lg" />
-                {["3M", "6M", "1Y", "All"].map(item => (
+                {(["3M", "6M", "1Y", "All"] as const).map(item => (
                   <SegmentGroup.Item key={item} value={item}>
-                    <SegmentGroup.ItemText>{item}</SegmentGroup.ItemText>
+                    <SegmentGroup.ItemText>{t(item)}</SegmentGroup.ItemText>
                     <SegmentGroup.ItemHiddenInput />
                   </SegmentGroup.Item>
                 ))}

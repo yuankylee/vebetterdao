@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 
 import type { AppScoreViewModel } from "@/api/indexer/xapps/mapXAppPreviousRoundScore"
 import { BaseModal } from "@/components/BaseModal"
+import { formatLocalizedShortDateFromSeconds } from "@/utils/formatLocalizedLongDate"
 
 import { APP_SCORE_ACCENT_HEX } from "./appScoreConstants"
 
@@ -35,7 +36,7 @@ const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) =
 )
 
 export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: AppScoreDetailsModalProps) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   return (
     <BaseModal
@@ -72,7 +73,10 @@ export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: 
             <Skeleton loading={isLoading}>
               <Text textStyle="md" fontWeight="semibold" color="text.default">
                 {t("{{date}} (Round #{{round}})", {
-                  date: scoreData.roundDateDisplay,
+                  date:
+                    scoreData.roundDate != null
+                      ? formatLocalizedShortDateFromSeconds(scoreData.roundDate, i18n.language)
+                      : "-",
                   round: scoreData.roundDisplay,
                 })}
               </Text>

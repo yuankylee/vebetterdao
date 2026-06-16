@@ -11,6 +11,7 @@ import { Review } from "../../../../../api/reviews/types"
 import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
 import { displayRatingForStars } from "../../../../../utils/displayRatingForStars"
+import { formatLocalizedLongDateFromSeconds } from "../../../../../utils/formatLocalizedLongDate"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
 import { WriteReviewModal } from "./WriteReviewModal"
@@ -24,9 +25,6 @@ const formatCount = (n: number) => {
   if (n >= 1000) return `${(n / 1000).toFixed(0)}k`
   return n.toString()
 }
-
-const formatDate = (ts: number) =>
-  new Date(ts * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
 
 const STAR_COLOR = "#FFB566"
 
@@ -44,6 +42,7 @@ const StarRating = ({ average }: { average: number }) => {
 }
 
 const ReviewCard = ({ review }: { review: Review }) => {
+  const { i18n } = useTranslation()
   const upPct = Math.round(review.upvotes.percentage)
   const downPct = Math.round(review.downvotes.percentage)
   const reportPct = Math.round(review.reports.percentage)
@@ -65,7 +64,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
             </Text>
           </HStack>
           <Text fontSize="xs" color="gray.500">
-            {formatDate(review.blockTimestamp)}
+            {formatLocalizedLongDateFromSeconds(review.blockTimestamp, i18n.language)}
           </Text>
         </HStack>
         <HStack borderTopWidth={1} mt={2} borderColor="gray.200" pt={3} alignItems="center" justifyContent={"flex-end"}>

@@ -46,23 +46,27 @@ function distributionPerformanceYAxisMax(values: number[]): number {
 
 const BAR_COLOR_KEY = "purple.500"
 
-const PeriodSelector = ({ period, onPeriodChange }: { period: Period; onPeriodChange: (period: Period) => void }) => (
-  <SegmentGroup.Root
-    alignSelf="flex-start"
-    w="fit-content"
-    size={{ base: "sm" }}
-    borderRadius="lg"
-    value={period}
-    onValueChange={e => onPeriodChange(e.value as Period)}>
-    <SegmentGroup.Indicator borderRadius="lg" />
-    {(["3M", "6M", "1Y", "All"] as const).map(item => (
-      <SegmentGroup.Item key={item} value={item}>
-        <SegmentGroup.ItemText>{item}</SegmentGroup.ItemText>
-        <SegmentGroup.ItemHiddenInput />
-      </SegmentGroup.Item>
-    ))}
-  </SegmentGroup.Root>
-)
+const PeriodSelector = ({ period, onPeriodChange }: { period: Period; onPeriodChange: (period: Period) => void }) => {
+  const { t } = useTranslation()
+
+  return (
+    <SegmentGroup.Root
+      alignSelf="flex-start"
+      w="fit-content"
+      size={{ base: "sm" }}
+      borderRadius="lg"
+      value={period}
+      onValueChange={e => onPeriodChange(e.value as Period)}>
+      <SegmentGroup.Indicator borderRadius="lg" />
+      {(["3M", "6M", "1Y", "All"] as const).map(item => (
+        <SegmentGroup.Item key={item} value={item}>
+          <SegmentGroup.ItemText>{t(item)}</SegmentGroup.ItemText>
+          <SegmentGroup.ItemHiddenInput />
+        </SegmentGroup.Item>
+      ))}
+    </SegmentGroup.Root>
+  )
+}
 
 /*
 const metricOptions = [

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next"
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 import type { AppRoundUserStats } from "@/api/indexer/actions/useAppRoundUserStats"
+import { toIntlLocale } from "@/utils/formatLocalizedLongDate"
 
 const compact = getCompactFormatter(1)
 
@@ -52,7 +53,7 @@ const UserStatsTooltip = ({
 
   const datePart =
     d.roundDate > 0
-      ? new Intl.DateTimeFormat(i18n.language, {
+      ? new Intl.DateTimeFormat(toIntlLocale(i18n.language), {
           day: "numeric",
           month: "short",
           year: "numeric",
@@ -75,14 +76,14 @@ const UserStatsTooltip = ({
         {titleLine}
       </Text>
       <Text textStyle="xs" color="text.subtle" mb={1}>
-        {t("New Users")}
-        {": "}
-        {compact.format(d.newUsers)}
-      </Text>
-      <Text textStyle="xs" color="text.subtle">
         {t("Active Users")}
         {": "}
         {compact.format(d.activeUsers)}
+      </Text>
+      <Text textStyle="xs" color="text.subtle">
+        {t("New Users")}
+        {": "}
+        {compact.format(d.newUsers)}
       </Text>
     </Box>
   )

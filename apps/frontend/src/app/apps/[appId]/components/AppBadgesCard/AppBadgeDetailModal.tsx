@@ -37,9 +37,9 @@ export const AppBadgeDetailModal = ({ isOpen, onClose, badge, appId }: Props) =>
           p={5}>
           <VStack align="center" gap={0} mb={4}>
             <VStack align="center" w="170px" h="170px" position="relative">
-              <Image src={badge.imageBg} alt={badge.title} boxSize="170px" position="absolute" objectFit="contain" />
+              <Image src={badge.imageBg} alt={t(badge.title)} boxSize="170px" position="absolute" objectFit="contain" />
               <Box position="absolute" top={4} left="12px" w="140px" h="140px" zIndex={2}>
-                <Image src={badge.image} alt={badge.title} w="full" h="full" objectFit="contain" />
+                <Image src={badge.image} alt={t(badge.title)} w="full" h="full" objectFit="contain" />
                 {totalEarned > 0 && (
                   <Box
                     position="absolute"
@@ -59,10 +59,10 @@ export const AppBadgeDetailModal = ({ isOpen, onClose, badge, appId }: Props) =>
 
             <VStack gap={3}>
               <Text textStyle="lg" fontWeight="bold" color="white" textAlign="center">
-                {badge.title}
+                {t(badge.title)}
               </Text>
               <Text textStyle="sm" color="whiteAlpha.900" textAlign="center">
-                {badge.description}
+                {t(badge.description)}
               </Text>
             </VStack>
           </VStack>

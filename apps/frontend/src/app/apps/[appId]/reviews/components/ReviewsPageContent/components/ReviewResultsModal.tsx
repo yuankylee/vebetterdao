@@ -6,24 +6,24 @@ import { LuThumbsUp, LuThumbsDown, LuHand, LuSearch } from "react-icons/lu"
 import { Review, VoteEntry } from "../../../../../../../api/reviews/types"
 import { useReviewVotes } from "../../../../../../../api/reviews/useReviewVotes"
 import { BaseModal } from "../../../../../../../components/BaseModal"
+import { toIntlLocale } from "../../../../../../../utils/formatLocalizedLongDate"
 
-const formatNumber = (n: number) => n.toLocaleString("en-US")
+const formatNumber = (n: number, language: string) => n.toLocaleString(toIntlLocale(language))
 
-const timeAgo = (ts: number) => {
+const timeAgo = (ts: number, t: (key: string, options?: Record<string, unknown>) => string) => {
   const diff = Math.floor(Date.now() / 1000) - ts
-  if (diff < 60) return "just now"
-  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`
+  if (diff < 60) return t("just now")
+  if (diff < 3600) return t("{{count}} min ago", { count: Math.floor(diff / 60) })
+  if (diff < 86400) return t("{{count}}h ago", { count: Math.floor(diff / 3600) })
+  if (diff < 2592000) return t("{{count}}d ago", { count: Math.floor(diff / 86400) })
   const months = Math.floor(diff / 2592000)
-  return months === 1 ? "a month ago" : `${months} months ago`
+  return months === 1 ? t("a month ago") : t("{{count}} months ago", { count: months })
 }
 
 const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
 const VOTE_CONFIG = {
   1: {
-    label: "Upvote",
     icon: LuThumbsUp,
     iconColor: "#3DBA67",
     color: "green.600",
@@ -31,7 +31,6 @@ const VOTE_CONFIG = {
     bg: "green.50",
   },
   2: {
-    label: "Downvote",
     icon: LuThumbsDown,
     iconColor: "#C53030",
     color: "red.500",
@@ -39,7 +38,6 @@ const VOTE_CONFIG = {
     bg: "red.50",
   },
   3: {
-    label: "Report content",
     icon: LuHand,
     iconColor: "#F2A54E",
     color: "orange.600",
@@ -48,7 +46,14 @@ const VOTE_CONFIG = {
   },
 } as const
 
+const voteTypeLabelKey = (voteType: 1 | 2 | 3) => {
+  if (voteType === 1) return "Upvote"
+  if (voteType === 2) return "Downvote"
+  return "Report content"
+}
+
 const VoteBadge = ({ voteType }: { voteType: 1 | 2 | 3 }) => {
+  const { t } = useTranslation()
   const cfg = VOTE_CONFIG[voteType]
   const Icon = cfg.icon
   return (
@@ -64,7 +69,7 @@ const VoteBadge = ({ voteType }: { voteType: 1 | 2 | 3 }) => {
       w="fit-content">
       <Icon size={16} color={cfg.iconColor} />
       <Text fontSize="xs" color={cfg.color} fontWeight="medium">
-        {cfg.label}
+        {t(voteTypeLabelKey(voteType))}
       </Text>
     </HStack>
   )
@@ -88,7 +93,7 @@ type Props = {
 }
 
 export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
 
@@ -159,7 +164,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       </Text>
                     </HStack>
                   </Table.Cell>
-                  <Table.Cell>{formatNumber(review.upvotes.count)}</Table.Cell>
+                  <Table.Cell>{formatNumber(review.upvotes.count, i18n.language)}</Table.Cell>
                   <Table.Cell textAlign="right">{`${upPct}%`}</Table.Cell>
                 </Table.Row>
                 <Table.Row>
@@ -169,7 +174,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       <Text fontSize="sm">{t("Downvote")}</Text>
                     </HStack>
                   </Table.Cell>
-                  <Table.Cell>{formatNumber(review.downvotes.count)}</Table.Cell>
+                  <Table.Cell>{formatNumber(review.downvotes.count, i18n.language)}</Table.Cell>
                   <Table.Cell textAlign="right">{`${downPct}%`}</Table.Cell>
                 </Table.Row>
                 <Table.Row>
@@ -179,12 +184,12 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       <Text fontSize="sm">{t("Report content")}</Text>
                     </HStack>
                   </Table.Cell>
-                  <Table.Cell>{formatNumber(review.reports.count)}</Table.Cell>
+                  <Table.Cell>{formatNumber(review.reports.count, i18n.language)}</Table.Cell>
                   <Table.Cell textAlign="right">{`${reportPct}%`}</Table.Cell>
                 </Table.Row>
                 <Table.Row fontWeight="semibold">
                   <Table.Cell>{t("Total")}</Table.Cell>
-                  <Table.Cell>{formatNumber(total)}</Table.Cell>
+                  <Table.Cell>{formatNumber(total, i18n.language)}</Table.Cell>
                   <Table.Cell textAlign="right">{"100%"}</Table.Cell>
                 </Table.Row>
               </Table.Body>
@@ -224,7 +229,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeader fontWeight="semibold">{t("Voters")}</Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold">{t("Voted Options")}</Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold">{t("Voted Option")}</Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" textAlign="right">
                       {t("Voting Time")}
                     </Table.ColumnHeader>
@@ -243,7 +248,7 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                       </Table.Cell>
                       <Table.Cell textAlign="right">
                         <Text fontSize="sm" color="gray.500">
-                          {timeAgo(vote.timestamp)}
+                          {timeAgo(vote.timestamp, t)}
                         </Text>
                       </Table.Cell>
                     </Table.Row>

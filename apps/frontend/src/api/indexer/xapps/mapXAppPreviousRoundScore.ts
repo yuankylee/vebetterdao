@@ -1,5 +1,3 @@
-import dayjs from "dayjs"
-
 import type { XAppPreviousRoundScore } from "./types"
 
 export type AppScoreBreakdownRow = {
@@ -10,7 +8,8 @@ export type AppScoreBreakdownRow = {
 export type AppScoreViewModel = {
   scoreDisplay: string
   rankDisplay: string
-  roundDateDisplay: string
+  /** Unix seconds for the round date; format at render time with the active locale. */
+  roundDate?: number
   roundDisplay: string
   breakdown: AppScoreBreakdownRow[]
 }
@@ -18,7 +17,7 @@ export type AppScoreViewModel = {
 export const mapXAppPreviousRoundScore = (data: XAppPreviousRoundScore | null | undefined): AppScoreViewModel => {
   const scoreDisplay = data?.score != null ? data.score.toFixed(2) : "-"
   const rankDisplay = data?.rank != null ? String(data.rank) : "-"
-  const roundDateDisplay = data?.roundDate != null ? dayjs(data.roundDate * 1000).format("D MMM, YYYY") : "-"
+  const roundDate = data?.roundDate
   const roundDisplay = data?.round != null ? String(data.round) : "-"
 
   const breakdown: AppScoreBreakdownRow[] = [
@@ -28,5 +27,5 @@ export const mapXAppPreviousRoundScore = (data: XAppPreviousRoundScore | null | 
     { labelKey: "Profile Completeness", value: data?.health ?? 0 },
   ]
 
-  return { scoreDisplay, rankDisplay, roundDateDisplay, roundDisplay, breakdown }
+  return { scoreDisplay, rankDisplay, roundDate, roundDisplay, breakdown }
 }

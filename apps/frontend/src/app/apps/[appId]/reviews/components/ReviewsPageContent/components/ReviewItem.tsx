@@ -9,6 +9,7 @@ import { toaster } from "@/components/ui/toaster"
 
 import { Review } from "../../../../../../../api/reviews/types"
 import { type ReviewVoteType } from "../../../../../../../hooks/xApp/useVoteOnReview"
+import { formatLocalizedLongDateFromSeconds } from "../../../../../../../utils/formatLocalizedLongDate"
 
 import { ReviewResultsModal } from "./ReviewResultsModal"
 
@@ -16,9 +17,6 @@ const AUTHOR_COLORS = ["red.400", "blue.400", "green.400", "purple.400", "orange
 const getAuthorColor = (address: string) => AUTHOR_COLORS[parseInt(address.slice(2, 4), 16) % AUTHOR_COLORS.length]
 
 const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
-
-const formatDate = (ts: number) =>
-  new Date(ts * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
 
 const UP_COLOR = "#3DBA67"
 const DOWN_COLOR = "#C53030"
@@ -33,7 +31,7 @@ type Props = {
 }
 
 export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { account } = useWallet()
   const { open: openWalletModal } = useWalletModal()
   const [isResultsOpen, setIsResultsOpen] = useState(false)
@@ -115,7 +113,7 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
             </Text>
           </HStack>
           <Text fontSize="xs" color="gray.500">
-            {formatDate(review.blockTimestamp)}
+            {formatLocalizedLongDateFromSeconds(review.blockTimestamp, i18n.language)}
           </Text>
         </HStack>
 

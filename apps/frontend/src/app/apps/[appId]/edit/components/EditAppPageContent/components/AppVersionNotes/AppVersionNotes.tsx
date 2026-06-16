@@ -4,6 +4,8 @@ import { useState } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
+import { formatLocalizedLongDate } from "@/utils/formatLocalizedLongDate"
+
 import { EditAppForm } from "../EditAppPageContent"
 
 import { AppVersionNotesModal } from "./AppVersionNotesModal"
@@ -17,9 +19,9 @@ const incrementVersion = (v: string): string => {
   return `V${major}.${minor + 1}`
 }
 
-const formatDate = (timestamp?: number) => {
+const formatDate = (timestamp: number | undefined, language: string) => {
   if (!timestamp) return ""
-  return new Date(timestamp).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+  return formatLocalizedLongDate(timestamp, language)
 }
 
 type ModalState = { mode: "add" | "edit"; version: string; initialNotes: string }
@@ -29,7 +31,7 @@ type Props = {
 }
 
 export const AppVersionNotes = ({ form }: Props) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [modalState, setModalState] = useState<ModalState | null>(null)
   const { watch, setValue } = form
   const versionHistory = watch("versionHistory")
@@ -93,7 +95,7 @@ export const AppVersionNotes = ({ form }: Props) => {
                       </HStack>
                       {entry.timestamp && (
                         <Text textStyle="sm" color="text.subtle" mt={1}>
-                          {formatDate(entry.timestamp)}
+                          {formatDate(entry.timestamp, i18n.language)}
                         </Text>
                       )}
                       <Text textStyle="sm" color="text.default" mt={2}>

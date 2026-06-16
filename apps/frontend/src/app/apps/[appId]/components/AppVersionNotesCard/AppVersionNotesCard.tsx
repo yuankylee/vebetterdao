@@ -3,17 +3,15 @@ import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { formatLocalizedLongDate } from "../../../../../utils/formatLocalizedLongDate"
 import { useCurrentAppMetadata } from "../../hooks/useCurrentAppMetadata"
 
 import { AppVersionNotesModal } from "./AppVersionNotesModal"
 
 const CARD_VERSION_COUNT = 2
 
-const formatDate = (ts: number) =>
-  new Date(ts).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-
 export const AppVersionNotesCard = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { appMetadata, appMetadataLoading } = useCurrentAppMetadata()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -73,7 +71,7 @@ export const AppVersionNotesCard = () => {
                     </Text>
                     {entry.timestamp != null && (
                       <Text color="gray.500" fontSize="sm">
-                        {formatDate(entry.timestamp)}
+                        {formatLocalizedLongDate(entry.timestamp, i18n.language)}
                       </Text>
                     )}
                     <Text fontSize="sm">{entry.notes}</Text>
