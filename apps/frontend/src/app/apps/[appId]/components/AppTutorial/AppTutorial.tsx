@@ -67,8 +67,8 @@ export const AppTutorial = () => {
                 {images.map((uri, idx) => (
                   <Box
                     key={idx}
-                    minW="260px"
-                    h="160px"
+                    w="320px"
+                    h="220px"
                     borderRadius="xl"
                     overflow="hidden"
                     bg="gray.100"
@@ -76,7 +76,7 @@ export const AppTutorial = () => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center">
-                    <Image src={safeUrl(uri)} alt={`Tutorial ${idx + 1}`} w="full" h="full" objectFit="cover" />
+                    <Image src={safeUrl(uri)} alt={`Tutorial ${idx + 1}`} h="full" objectFit="contain" />
                   </Box>
                 ))}
               </HStack>

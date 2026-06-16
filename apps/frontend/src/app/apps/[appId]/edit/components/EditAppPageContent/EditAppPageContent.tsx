@@ -73,6 +73,7 @@ export type EditAppForm = {
   tutorialVideo: string
   tutorialImages: string[]
   whitepaperFile: string
+  whitepaperFileName: string
   moreDetailsEnabled: boolean
   teamBackground: { photo: string; title: string; description: string }[]
   appRoadmapImage: string
@@ -138,6 +139,7 @@ export const EditAppPageContent = () => {
       ve_world_featured_image: veWorldFeaturedImage,
       categories: (appMetadata?.categories ?? []).filter(id => !DEPRECATED_IDS.includes(id)), // remove the deprecated categories
       whitepaperFile: appMetadata?.whitepaper ?? "",
+      whitepaperFileName: appMetadata?.whitepaper_filename ?? "",
       moreDetailsEnabled: !!appMetadata?.more_details,
       teamBackground: appMetadata?.more_details?.team_background ?? [],
       appRoadmapImage: appMetadata?.more_details?.app_roadmap?.image ?? "",
@@ -223,6 +225,7 @@ export const EditAppPageContent = () => {
         tutorial_images:
           data.tutorialMode === "image" && data.tutorialImages.length > 0 ? data.tutorialImages : undefined,
         whitepaper: data.whitepaperFile || undefined,
+        whitepaper_filename: data.whitepaperFileName || undefined,
         more_details: data.moreDetailsEnabled
           ? {
               team_background: data.teamBackground.length > 0 ? data.teamBackground : undefined,
@@ -293,6 +296,7 @@ export const EditAppPageContent = () => {
         ve_world_featured_image: veWorldFeaturedImage || "",
         categories: (appMetadata.categories ?? []).filter(id => !DEPRECATED_IDS.includes(id)),
         whitepaperFile: appMetadata.whitepaper ?? "",
+        whitepaperFileName: appMetadata.whitepaper_filename ?? "",
         moreDetailsEnabled: !!appMetadata.more_details,
         teamBackground: appMetadata.more_details?.team_background ?? [],
         appRoadmapImage: appMetadata.more_details?.app_roadmap?.image ?? "",

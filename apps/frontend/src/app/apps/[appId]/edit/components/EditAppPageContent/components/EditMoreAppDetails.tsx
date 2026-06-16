@@ -365,24 +365,19 @@ const AppRoadmapSection = ({ form }: Props) => {
                 objectFit="cover"
               />
               {roadmapImage && !uploading && (
-                <HStack
-                  bg="rgba(0,0,0,0.25)"
-                  width="44px"
-                  height="44px"
+                <IconButton
                   position="absolute"
-                  top={4}
                   justifyContent="center"
-                  borderRadius={"full"}
-                  style={{ touchAction: "none" }}>
-                  <IconButton
-                    aria-label={t("Delete")}
-                    variant="ghost"
-                    color="status.negative.primary"
-                    rounded="full"
-                    onClick={handleDelete}>
-                    <UilTrash size="16px" />
-                  </IconButton>
-                </HStack>
+                  bgColor="#FCEEF1"
+                  _hover={{ bgColor: "#FCEEF1DD" }}
+                  aria-label={t("Delete")}
+                  variant="ghost"
+                  color="status.negative.primary"
+                  rounded="full"
+                  size="sm"
+                  onClick={handleDelete}>
+                  <UilTrash size="16px" />
+                </IconButton>
               )}
             </HStack>
           )}

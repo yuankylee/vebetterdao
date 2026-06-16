@@ -43,6 +43,7 @@ export type XAppMetadata = {
   tutorial_video?: string
   tutorial_images?: string[]
   whitepaper?: string
+  whitepaper_filename?: string
   more_details?: {
     team_background?: { photo: string; title: string; description: string }[]
     app_roadmap?: { image: string; description: string }

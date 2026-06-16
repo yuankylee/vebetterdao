@@ -1,4 +1,4 @@
-import { Button, HStack, Heading, IconButton, Image, Input, RadioGroup, Spinner, Text, VStack } from "@chakra-ui/react"
+import { Button, HStack, Heading, IconButton, Image, Input, RadioGroup, Box, Text, VStack } from "@chakra-ui/react"
 import { UilDraggabledots, UilTrash, UilUpload } from "@iconscout/react-unicons"
 import { Reorder, useDragControls } from "framer-motion"
 import { ChangeEvent, useCallback, useRef, useState } from "react"
@@ -31,9 +31,9 @@ export const EditAppTutorial = ({ form }: Props) => {
   const mode = form.watch("tutorialMode")
 
   return (
-    <VStack align="stretch" gap={4}>
+    <VStack align="stretch" gap={4} w={"full"}>
       <VStack align="flex-start" gap={1}>
-        <Heading size="l">{t("App Tutorial")}</Heading>
+        <Heading size="lg">{t("App Tutorial")}</Heading>
         <Text textStyle="sm" color="text.subtle">
           {t("Provide app tutorials to help users get started quickly and easily understand the App's features.")}
         </Text>
@@ -115,12 +115,18 @@ const TutorialVideo = ({ form }: Props) => {
     <VStack align="flex-start" gap={4}>
       <Input ref={inputRef} type="file" display="none" accept="video/mp4,video/*" onChange={handleChange} />
 
-      {displayUrl ? (
-        <VStack align="stretch" w="full" gap={2}>
-          <HStack justify="space-between">
-            <Text textStyle="sm" color="text.subtle">
-              {uploading ? t("Uploading…") : t("Video uploaded")}
-            </Text>
+      {displayUrl && !uploading ? (
+        <HStack justify="center" w="full" style={{ position: "relative" }}>
+          {/*eslint-disable-next-line jsx-a11y/media-has-caption*/}
+          <video src={displayUrl} controls style={{ maxHeight: 280, width: "100%", borderRadius: 12 }} />
+          <HStack
+            bg="rgba(0,0,0,0.25)"
+            width="44px"
+            height="44px"
+            position="absolute"
+            justifyContent="center"
+            borderRadius={"full"}
+            style={{ touchAction: "none" }}>
             <IconButton
               aria-label={t("Delete video")}
               variant="ghost"
@@ -131,15 +137,7 @@ const TutorialVideo = ({ form }: Props) => {
               <UilTrash size="16px" />
             </IconButton>
           </HStack>
-          {uploading ? (
-            <HStack justify="center" p={8}>
-              <Spinner />
-            </HStack>
-          ) : (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={displayUrl} controls style={{ maxHeight: 280, width: "100%", borderRadius: 12 }} />
-          )}
-        </VStack>
+        </HStack>
       ) : (
         <Button
           variant="outline"
@@ -227,15 +225,6 @@ const TutorialImages = ({ form }: Props) => {
 
   return (
     <VStack align="flex-start" gap={4} w="full">
-      <Input ref={inputRef} type="file" display="none" accept="image/*" multiple onChange={handleChange} />
-
-      {!atMax && (
-        <Button variant="tertiary" rounded="full" onClick={() => inputRef.current?.click()} loading={uploading}>
-          <UilUpload size="16px" />
-          {t("Upload")}
-        </Button>
-      )}
-
       {tutorialImages.length === 0 && (
         <Text color="text.subtle" textStyle="sm">
           {t("No images added yet")}
@@ -253,6 +242,15 @@ const TutorialImages = ({ form }: Props) => {
           <DraggableImage key={url} url={url} displayUrl={getDisplayUrl(url)} index={index} onDelete={handleDelete} />
         ))}
       </Reorder.Group>
+
+      <Input ref={inputRef} type="file" display="none" accept="image/*" multiple onChange={handleChange} />
+
+      {!atMax && (
+        <Button variant="tertiary" rounded="full" onClick={() => inputRef.current?.click()} loading={uploading}>
+          <UilUpload size="16px" />
+          {t("Upload")}
+        </Button>
+      )}
     </VStack>
   )
 }
@@ -275,7 +273,7 @@ const DraggableImage = ({
     <Reorder.Item
       value={url}
       as="div"
-      style={{ display: "inline-block", width: "auto", height: 200, margin: "0 4px", position: "relative" }}
+      style={{ display: "inline-block", width: 320, height: 220, margin: "0 4px", position: "relative" }}
       dragListener={false}
       dragControls={dragControls}>
       <HStack
@@ -306,7 +304,18 @@ const DraggableImage = ({
           <UilTrash size="20px" />
         </IconButton>
       </HStack>
-      <Image src={displayUrl} alt={`Tutorial image ${index + 1}`} h="full" objectFit="contain" draggable="false" />
+      <Box
+        w="320px"
+        h="220px"
+        borderRadius="xl"
+        overflow="hidden"
+        bg="gray.100"
+        flexShrink={0}
+        display="flex"
+        alignItems="center"
+        justifyContent="center">
+        <Image src={displayUrl} alt={`Tutorial image ${index + 1}`} h="full" objectFit="contain" draggable="false" />
+      </Box>
     </Reorder.Item>
   )
 }

@@ -74,7 +74,7 @@ export const EditScreenshots = ({ form }: Props) => {
     <VStack align="stretch" gap={4} w={"full"}>
       <HStack flexWrap={"wrap"} justify={"space-between"}>
         <VStack align="flex" gap={1}>
-          <Heading size="l">{t("Edit screenshots")}</Heading>
+          <Heading size="lg">{t("Edit screenshots")}</Heading>
           <Text textStyle="sm" color={invalidFormat ? "red" : "gray"}>
             {invalidFormat ? invalidMessage : t(SCREENSHOT_UPLOAD_GUIDELINES)}
           </Text>

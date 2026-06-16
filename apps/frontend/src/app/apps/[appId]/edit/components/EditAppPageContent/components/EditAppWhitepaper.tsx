@@ -29,6 +29,7 @@ export const EditAppWhitepaper = ({ form }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const whitepaperFile = form.watch("whitepaperFile")
+  const fileName = form.watch("whitepaperFileName")
 
   const viewUrl = whitepaperFile ? safeConvertUri(whitepaperFile) : null
 
@@ -53,6 +54,7 @@ export const EditAppWhitepaper = ({ form }: Props) => {
         setUploading(true)
         const cid = await uploadBlobToIPFS(file, file.name)
         form.setValue("whitepaperFile", `ipfs://${cid}`)
+        form.setValue("whitepaperFileName", file.name)
       } catch {
         toaster.error({ title: t("Upload failed. Please try again."), duration: 4000, closable: true })
       } finally {
@@ -65,13 +67,13 @@ export const EditAppWhitepaper = ({ form }: Props) => {
 
   const handleDelete = useCallback(() => {
     form.setValue("whitepaperFile", "")
+    form.setValue("whitepaperFileName", "")
     if (inputRef.current) inputRef.current.value = ""
   }, [form])
-
   return (
     <VStack align="stretch" gap={4}>
       <VStack align="flex-start" gap={1}>
-        <Heading size="l">{t("Application Whitepaper")}</Heading>
+        <Heading size="lg">{t("Application Whitepaper")}</Heading>
         <Text textStyle="sm" color="text.subtle">
           {t("PDF only, max 100MB")}
         </Text>
@@ -83,12 +85,13 @@ export const EditAppWhitepaper = ({ form }: Props) => {
         <HStack justify="space-between" w="full">
           <HStack gap={2}>
             {uploading ? <Spinner size="sm" /> : <UilFileAlt size="20px" />}
-            <Text textStyle="sm" color="text.subtle">
-              {uploading ? t("Uploading…") : t("PDF uploaded")}
-            </Text>
-            {!uploading && viewUrl && (
-              <Link href={viewUrl} target="_blank" rel="noopener noreferrer" variant="underline" textStyle="sm">
-                {t("View")}
+            {uploading ? (
+              <Text textStyle="sm" color="text.subtle">
+                {t("Uploading…")}
+              </Text>
+            ) : (
+              <Link href={viewUrl ?? ""} target="_blank" rel="noopener noreferrer" variant="underline" textStyle="sm">
+                {fileName || "whitepaper.pdf"}
               </Link>
             )}
           </HStack>
