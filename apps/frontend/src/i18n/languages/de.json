@@ -1950,7 +1950,7 @@
   "Payout exceeds Treasury's per-transfer B3TR limit ({{limit}} B3TR). An admin must raise the Treasury limit before Pay devs can succeed.": "Auszahlung überschreitet das Treasury-Limit pro Transfer für B3TR ({{limit}} B3TR). Ein Admin muss das Treasury-Limit anheben, bevor „Pay devs“ ausgeführt werden kann.",
   "Payout recipient": "Auszahlungsempfänger",
   "Payout recipients": "Auszahlungsempfänger",
-  "PDF only, max 100MB": "Nur PDF, max. 100 MB",
+  "Only PDF files are supported (less than 100MB)": "Nur PDF-Dateien werden unterstützt (weniger als 100 MB)",
   "PDF uploaded": "PDF hochgeladen",
   "PDF, JPG, JPEG, PNG, less than 5MB": "PDF, JPG, JPEG, PNG, weniger als 5MB",
   "Penalty per reported round": "Strafe pro gemeldeter Runde",

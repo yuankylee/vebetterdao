@@ -1950,7 +1950,7 @@
   "Payout exceeds Treasury's per-transfer B3TR limit ({{limit}} B3TR). An admin must raise the Treasury limit before Pay devs can succeed.": "Khoản chi trả vượt quá giới hạn chuyển B3TR mỗi lần của Treasury ({{limit}} B3TR). Quản trị viên phải nâng giới hạn Treasury trước khi Pay devs có thể thành công.",
   "Payout recipient": "Người nhận thanh toán",
   "Payout recipients": "Người nhận thanh toán",
-  "PDF only, max 100MB": "Chỉ PDF, tối đa 100MB",
+  "Only PDF files are supported (less than 100MB)": "Chỉ hỗ trợ tệp PDF (dưới 100MB)",
   "PDF uploaded": "PDF đã tải lên",
   "PDF, JPG, JPEG, PNG, less than 5MB": "PDF, JPG, JPEG, PNG, dưới 5MB",
   "Penalty per reported round": "Hình phạt cho mỗi vòng được báo cáo",

@@ -1950,7 +1950,7 @@
   "Payout exceeds Treasury's per-transfer B3TR limit ({{limit}} B3TR). An admin must raise the Treasury limit before Pay devs can succeed.": "款項超過 Treasury 每次轉帳的 B3TR 上限（{{limit}} B3TR）。Pay devs 成功之前，管理員必須先提高 Treasury 上限。",
   "Payout recipient": "付款接收者",
   "Payout recipients": "付款接收者",
-  "PDF only, max 100MB": "僅 PDF，最大 100MB",
+  "Only PDF files are supported (less than 100MB)": "僅支援 PDF 文件（小於 100MB）",
   "PDF uploaded": "PDF 已上傳",
   "PDF, JPG, JPEG, PNG, less than 5MB": "PDF、JPG、JPEG、PNG，少於5MB",
   "Penalty per reported round": "每個被舉報輪次的處罰",

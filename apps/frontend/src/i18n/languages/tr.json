@@ -1950,7 +1950,7 @@
   "Payout exceeds Treasury's per-transfer B3TR limit ({{limit}} B3TR). An admin must raise the Treasury limit before Pay devs can succeed.": "Ödeme, Treasury'nin çağrı başına B3TR transfer limitini ({{limit}} B3TR) aşıyor. Pay devs başarılı olmadan önce bir yöneticinin Treasury limitini yükseltmesi gerekir.",
   "Payout recipient": "Ödeme alıcısı",
   "Payout recipients": "Ödeme alıcıları",
-  "PDF only, max 100MB": "Yalnızca PDF, maks. 100MB",
+  "Only PDF files are supported (less than 100MB)": "Yalnızca PDF dosyaları desteklenir (100MB'den az)",
   "PDF uploaded": "PDF yüklendi",
   "PDF, JPG, JPEG, PNG, less than 5MB": "PDF, JPG, JPEG, PNG, 5MB'den az",
   "Penalty per reported round": "Bildirilen tur başına ceza",
