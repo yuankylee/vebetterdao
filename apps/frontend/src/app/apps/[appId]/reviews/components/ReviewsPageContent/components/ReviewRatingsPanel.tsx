@@ -9,6 +9,7 @@ import { toaster } from "@/components/ui/toaster"
 
 import { useUserRating } from "../../../../../../../api/contracts/xApps/hooks/useUserRating"
 import { useAppRatingSummary } from "../../../../../../../api/reviews/useAppRatingSummary"
+import { useCheckAppReviewEligibility } from "../../../../../../../hooks/xApp/useCheckAppReviewEligibility"
 import { useSubmitRating } from "../../../../../../../hooks/xApp/useSubmitRating"
 import { useUpdateRating } from "../../../../../../../hooks/xApp/useUpdateRating"
 import { displayRatingForStars } from "../../../../../../../utils/displayRatingForStars"
@@ -100,6 +101,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
 
   const submitRating = useSubmitRating({ onSuccess: handleSuccess })
   const updateRating = useUpdateRating({ onSuccess: handleSuccess })
+  const { checkEligibility } = useCheckAppReviewEligibility()
 
   useEffect(() => {
     const fromUpdate = updateRating.txReceipt?.meta?.txID
@@ -108,12 +110,14 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
     if (raw) setLastRatingTxId(String(raw))
   }, [updateRating.txReceipt?.meta?.txID, submitRating.txReceipt?.meta?.txID])
 
-  const handleLeaveRating = () => {
+  const handleLeaveRating = async () => {
     if (!account?.address) {
       openWalletModal()
       return
     }
     if (selectedRating === 0) return
+    const eligible = await checkEligibility(appId, account.address)
+    if (!eligible) return
     submitRating.sendTransaction({ appId, rating: selectedRating })
   }
 

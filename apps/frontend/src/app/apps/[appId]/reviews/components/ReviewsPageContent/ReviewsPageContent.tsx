@@ -24,6 +24,7 @@ import { ReviewsPageBanner } from "@/app/components/ActionBanners/components/Rev
 
 import { Review } from "../../../../../../api/reviews/types"
 import { useAppReviews } from "../../../../../../api/reviews/useAppReviews"
+import { useCheckAppReviewEligibility } from "../../../../../../hooks/xApp/useCheckAppReviewEligibility"
 import { useVoteOnReview } from "../../../../../../hooks/xApp/useVoteOnReview"
 import { WriteReviewModal } from "../../../components/AppRatingsAndReviews/WriteReviewModal"
 
@@ -63,11 +64,16 @@ export const ReviewsPageContent = () => {
   const reviews = reviewsData?.data ?? []
   const totalReviews = reviewsData?.pagination?.total ?? 0
   const totalPages = reviewsData?.pagination?.totalPages ?? 0
+  const { checkEligibility } = useCheckAppReviewEligibility()
 
-  const handleWriteReview = (existingReview?: Review | null) => {
+  const handleWriteReview = async (existingReview?: Review | null) => {
     if (!account?.address) {
       openWalletModal()
       return
+    }
+    if (!existingReview) {
+      const eligible = await checkEligibility(appId, account.address)
+      if (!eligible) return
     }
     setModalExistingReview(existingReview ?? null)
     setIsModalOpen(true)

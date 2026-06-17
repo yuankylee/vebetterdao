@@ -9,6 +9,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import type { AppRoundUserStats } from "@/api/indexer/actions/useAppRoundUserStats"
 import { toIntlLocale } from "@/utils/formatLocalizedLongDate"
 
+import { rechartsYAxisWidth } from "./rechartsYAxisWidth"
+
 const compact = getCompactFormatter(1)
 
 /** Design-spec bar colors (user statistics) */
@@ -138,13 +140,19 @@ export const UserStatsChart = ({
       }))
   }, [stats])
 
-  const { userStatsYDomainMax, userStatsYTicks } = useMemo(() => {
+  const { userStatsYDomainMax, userStatsYTicks, userStatsYAxisWidth } = useMemo(() => {
     let raw = 0
     for (const d of chartData) {
       raw = Math.max(raw, d.activeUsers, d.newUsers)
     }
     const domainMax = Math.max(1, Math.ceil(raw * 1.05))
-    return { userStatsYDomainMax: domainMax, userStatsYTicks: userStatsIntegerYTicks(domainMax) }
+    const ticks = userStatsIntegerYTicks(domainMax)
+    const tickLabels = ticks.map(t => String(Math.round(t)))
+    return {
+      userStatsYDomainMax: domainMax,
+      userStatsYTicks: ticks,
+      userStatsYAxisWidth: rechartsYAxisWidth(tickLabels),
+    }
   }, [chartData])
 
   if (isLoading && !chartData.length && !fetchCompletedOnceRef.current) {
@@ -194,6 +202,7 @@ export const UserStatsChart = ({
               tickLine={false}
             />
             <YAxis
+              width={userStatsYAxisWidth}
               domain={[0, userStatsYDomainMax]}
               ticks={userStatsYTicks}
               tick={{ fontSize: 11 }}
@@ -201,6 +210,7 @@ export const UserStatsChart = ({
               stroke="#a0aec0"
               axisLine={false}
               tickLine={false}
+              tickMargin={4}
             />
             <Tooltip content={<UserStatsTooltip />} />
             <Bar dataKey="activeUsers" name={t("Active Users")} fill={USER_STATS_ACTIVE_HEX} radius={[4, 4, 0, 0]} />

@@ -8,6 +8,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 
 import type { AppDistributionPerformanceRow } from "@/api/indexer/xallocations/useAppDistributionPerformance"
 
+import { rechartsLinearTicks, rechartsYAxisWidth } from "./rechartsYAxisWidth"
+
 const compact = getCompactFormatter(1)
 
 export type Period = "3M" | "6M" | "1Y" | "All"
@@ -187,6 +189,16 @@ export const RewardHistoryChart = ({
     return `${Math.round(n)}%`
   }
 
+  const { distributionYTicks, distributionYAxisWidth } = useMemo(() => {
+    const ticks = rechartsLinearTicks(distributionYMax)
+    const tickLabels = ticks.map(v => {
+      if (distributionYMax <= 1) return `${v.toFixed(2)}%`
+      if (distributionYMax <= 10) return `${v.toFixed(1)}%`
+      return `${Math.round(v)}%`
+    })
+    return { distributionYTicks: ticks, distributionYAxisWidth: rechartsYAxisWidth(tickLabels) }
+  }, [distributionYMax])
+
   const chartArea =
     isLoading && !chartData.length && !fetchCompletedOnceRef.current ? (
       <Skeleton w="full" h="220px" borderRadius="xl" />
@@ -242,12 +254,15 @@ export const RewardHistoryChart = ({
                 tickLine={false}
               />
               <YAxis
+                width={distributionYAxisWidth}
                 domain={[0, distributionYMax]}
+                ticks={distributionYTicks}
                 tick={{ fontSize: 11 }}
                 tickFormatter={distributionYTickFormatter}
                 stroke="#a0aec0"
                 axisLine={false}
                 tickLine={false}
+                tickMargin={4}
               />
               <Tooltip content={<DistributionTooltip />} />
               <Bar

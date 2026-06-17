@@ -25,6 +25,16 @@ export type ReviewsResponse = {
   pagination: { hasNext: boolean; cursor?: string }
 }
 
+/** GET /api/v1/xapp/apps/{appId}/eligibility */
+export type AppReviewEligibilityResponse = {
+  appId: string
+  wallet: string
+  eligible: boolean
+  totalRewardAmount?: number | null
+  actionsRewarded?: number | null
+  reason?: string | null
+}
+
 /** GET /api/v1/xapp/apps/{appId}/rating */
 export type AppRatingSummaryResponse = {
   appId: string

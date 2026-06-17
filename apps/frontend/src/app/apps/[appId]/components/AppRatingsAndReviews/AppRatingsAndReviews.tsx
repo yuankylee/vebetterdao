@@ -11,6 +11,7 @@ import { LuHand, LuThumbsDown, LuThumbsUp } from "react-icons/lu"
 import { Review } from "../../../../../api/reviews/types"
 import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
+import { useCheckAppReviewEligibility } from "../../../../../hooks/xApp/useCheckAppReviewEligibility"
 import { displayRatingForStars } from "../../../../../utils/displayRatingForStars"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
@@ -106,12 +107,15 @@ export const AppRatingsAndReviews = () => {
 
   const visibleReviews = (reviewsData?.data ?? []).filter(r => !r.isHidden).slice(0, 2)
   const isLoading = ratingSummaryPending || ratingSummaryFetching || reviewsLoading
+  const { checkEligibility } = useCheckAppReviewEligibility()
 
-  const handleWriteReview = () => {
+  const handleWriteReview = async () => {
     if (!account?.address) {
       openWalletModal()
       return
     }
+    const eligible = await checkEligibility(appId, account.address)
+    if (!eligible) return
     setIsModalOpen(true)
   }
 
