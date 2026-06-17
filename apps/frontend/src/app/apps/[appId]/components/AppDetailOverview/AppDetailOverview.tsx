@@ -124,7 +124,7 @@ export const AppDetailOverview = ({
                     {/* Description + More link */}
                     <Stack gap={2} mt={2}>
                       <Skeleton loading={appMetadataLoading || !appMetadata}>
-                        <Text textStyle={"md"}>
+                        <Text textStyle={"md"} whiteSpace="pre-wrap" lineClamp="2">
                           {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
                         </Text>
                       </Skeleton>

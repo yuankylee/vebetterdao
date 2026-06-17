@@ -20,10 +20,18 @@ class TweetErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
   }
 }
 
+const extractTweetId = (urlOrId: string): string | null => {
+  if (/^\d+$/.test(urlOrId)) return urlOrId
+  const match = urlOrId.match(/\/status\/(\d+)/)
+  return match ? match[1] : null
+}
+
 export const AppSocialMediaUpdates = () => {
   const { t } = useTranslation()
   const { appMetadata, appMetadataLoading } = useCurrentAppMetadata()
-  const tweetIds = appMetadata?.tweets?.filter(Boolean) ?? []
+  const tweetIds = (appMetadata?.tweets?.filter(Boolean) ?? [])
+    .map(extractTweetId)
+    .filter((id): id is string => id !== null)
   const tweetQueries = useTweets(tweetIds)
 
   if (appMetadataLoading) {

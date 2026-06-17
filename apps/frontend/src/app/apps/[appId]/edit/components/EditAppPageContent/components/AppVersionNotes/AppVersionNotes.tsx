@@ -18,11 +18,6 @@ const incrementVersion = (v: string): string => {
   return `V${major}.${minor + 1}`
 }
 
-const formatDate = (timestamp: number | undefined) => {
-  if (!timestamp) return ""
-  return dayjs(Number(timestamp)).format("MMM D, YYYY")
-}
-
 type ModalState = { mode: "add" | "edit"; version: string; initialNotes: string }
 
 type Props = {
@@ -30,7 +25,7 @@ type Props = {
 }
 
 export const AppVersionNotes = ({ form }: Props) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [modalState, setModalState] = useState<ModalState | null>(null)
   const { watch, setValue } = form
   const versionHistory = watch("versionHistory")
@@ -94,10 +89,10 @@ export const AppVersionNotes = ({ form }: Props) => {
                       </HStack>
                       {entry.timestamp && (
                         <Text textStyle="sm" color="text.subtle" mt={1}>
-                          {formatDate(entry.timestamp, i18n.language)}
+                          {dayjs(Number(entry.timestamp)).format("MMM D, YYYY")}
                         </Text>
                       )}
-                      <Text textStyle="sm" color="text.default" mt={2}>
+                      <Text textStyle="sm" color="text.default" mt={2} whiteSpace="pre-wrap">
                         {entry.notes}
                       </Text>
                     </VStack>

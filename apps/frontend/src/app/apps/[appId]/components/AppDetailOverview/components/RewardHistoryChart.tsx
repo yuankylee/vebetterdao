@@ -123,7 +123,7 @@ const DistributionTooltip = ({
       <Text textStyle="xs" color="text.subtle" mb={1}>
         {t("Distribution Performance")}
         {": "}
-        {d.distributionPerformance.toFixed(4)}
+        {d.distributionPerformance}
         {t("%")}
       </Text>
       <Text textStyle="xs" color="text.subtle" mb={1}>

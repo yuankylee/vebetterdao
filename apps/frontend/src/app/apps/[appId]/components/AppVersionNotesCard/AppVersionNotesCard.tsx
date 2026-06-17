@@ -74,7 +74,9 @@ export const AppVersionNotesCard = () => {
                         {dayjs(Number(entry.timestamp)).format("MMM D, YYYY")}
                       </Text>
                     )}
-                    <Text fontSize="sm">{entry.notes}</Text>
+                    <Text fontSize="sm" whiteSpace="pre-wrap">
+                      {entry.notes}
+                    </Text>
                   </Stack>
                 ))}
               </Stack>

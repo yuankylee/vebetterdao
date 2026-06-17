@@ -75,7 +75,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
           </VStack>
         </HStack>
         <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
-          <Text textStyle="xs" as="span" wordBreak="break-word" whiteSpace="normal">
+          <Text textStyle="sm" as="span" wordBreak="break-word" whiteSpace="pre-wrap">
             {appMetadata?.description ?? ""}
           </Text>
         </Skeleton>
@@ -148,7 +148,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
                   />
                 ) : null}
                 {(roadmap?.description ?? "").trim() ? (
-                  <Text textStyle="md" color="text.subtle" whiteSpace="pre-wrap">
+                  <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap">
                     {roadmap?.description}
                   </Text>
                 ) : null}

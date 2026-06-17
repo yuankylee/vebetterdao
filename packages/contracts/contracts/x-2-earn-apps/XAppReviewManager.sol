@@ -25,6 +25,7 @@ pragma solidity 0.8.20;
 
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import { IVeBetterPassport } from "../interfaces/IVeBetterPassport.sol";
 
 /// @title XAppReviewManager
 /// @notice Handles user reviews and ratings for X2Earn apps in the VeBetterDAO ecosystem.
@@ -85,6 +86,8 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     error AlreadyVoted(uint256 reviewId, address voter, VoteType existingVote);
     error UnauthorizedUser(address user);
     error AlreadyRated(bytes32 appId, address rater);
+    error NotEligible(bytes32 appId, address user);
+    error PassportNotSet();
 
     // ---------------- Events ----------------
     event ReviewCreated(
@@ -102,6 +105,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     event ReviewUnhidden(uint256 indexed reviewId);
     event RatingSubmitted(bytes32 indexed appId, address indexed rater, uint8 rating);
     event RatingUpdated(bytes32 indexed appId, address indexed rater, uint8 rating);
+    event VeBetterPassportUpdated(IVeBetterPassport indexed passport);
 
     // ---------------- Storage ----------------
     /// @custom:storage-location erc7201:b3tr.storage.XAppReviewManager
@@ -119,6 +123,8 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         mapping(bytes32 => mapping(address => uint8)) userRatings;
         // appId => number of unique raters
         mapping(bytes32 => uint256) appRatingCount;
+        // VeBetterPassport used to verify a user has received rewards from an app
+        IVeBetterPassport veBetterPassport;
     }
 
     // keccak256(abi.encode(uint256(keccak256("b3tr.storage.XAppReviewManager")) - 1)) & ~bytes32(uint256(0xff))
@@ -169,13 +175,25 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) {}
 
     function version() public pure returns (string memory) {
-        return "2";
+        return "3";
+    }
+
+    /// @notice Reverts if the caller has not received a reward from the app.
+    /// @dev Eligibility is read from the linked VeBetterPassport, which records a unique
+    /// app interaction for a user every time X2EarnRewardsPool distributes a reward to them.
+    /// Until [setVeBetterPassport] is called the check fails closed with [PassportNotSet].
+    /// @param appId The app the caller wants to rate or review.
+    /// @param user The caller address.
+    function _requireEligible(bytes32 appId, address user) internal view {
+        XAppReviewManagerStorage storage $ = _getStorage();
+        if (address($.veBetterPassport) == address(0)) revert PassportNotSet();
+        if (!$.veBetterPassport.userUniqueAppInteraction(user, appId)) revert NotEligible(appId, user);
     }
 
     // ---------------- External: Review CRUD ----------------
 
-    /// @notice Creates a review for an app. Caller must have received rewards from the app
-    /// (eligibility is verified off-chain via the indexer before the transaction).
+    /// @notice Creates a review for an app. Caller must have received rewards from the app;
+    /// eligibility is enforced on-chain via VeBetterPassport (see [_requireEligible]).
     /// @param appId The hashed app ID from X2EarnApps.
     /// @param title Review title (max 200 chars).
     /// @param content Review content (max 2000 chars).
@@ -185,6 +203,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         string calldata title,
         string calldata content
     ) external returns (uint256 reviewId) {
+        _requireEligible(appId, msg.sender);
         if (bytes(title).length > MAX_TITLE_LENGTH) revert TitleTooLong(bytes(title).length, MAX_TITLE_LENGTH);
         if (bytes(content).length > MAX_CONTENT_LENGTH) revert ContentTooLong(bytes(content).length, MAX_CONTENT_LENGTH);
 
@@ -239,9 +258,11 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     // ---------------- External: Rating ----------------
 
     /// @notice Submits a rating for an app. Each user can rate an app once; subsequent calls revert.
+    /// The caller must have received rewards from the app (see [_requireEligible]).
     /// @param appId The hashed app ID from X2EarnApps.
     /// @param rating Star rating (1-5).
     function submitRating(bytes32 appId, uint8 rating) external {
+        _requireEligible(appId, msg.sender);
         if (rating < MIN_RATING || rating > MAX_RATING) revert InvalidRating(rating);
 
         XAppReviewManagerStorage storage $ = _getStorage();
@@ -330,6 +351,26 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         if (review.id == 0) revert ReviewNotFound(reviewId);
         review.hidden = false;
         emit ReviewUnhidden(reviewId);
+    }
+
+    // ---------------- Configuration ----------------
+
+    /// @notice Sets the VeBetterPassport used for reward-eligibility checks.
+    /// @dev Must be called right after an upgrade; otherwise rating and review creation
+    /// revert with [PassportNotSet] for everyone.
+    /// @param _veBetterPassport The VeBetterPassport contract address.
+    function setVeBetterPassport(IVeBetterPassport _veBetterPassport) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(
+            address(_veBetterPassport) != address(0),
+            "XAppReviewManager: veBetterPassport is the zero address"
+        );
+        _getStorage().veBetterPassport = _veBetterPassport;
+        emit VeBetterPassportUpdated(_veBetterPassport);
+    }
+
+    /// @notice Returns the VeBetterPassport used for eligibility checks.
+    function veBetterPassport() external view returns (IVeBetterPassport) {
+        return _getStorage().veBetterPassport;
     }
 
     // ---------------- Getters ----------------
