@@ -55,7 +55,7 @@ export const EditVeWorldBanner = ({ form }: Props) => {
 
   return (
     <VStack gap={2} align={"start"} w="full">
-      <Heading size="lg">
+      <Heading size="sm">
         <Text css={{ color: "red", display: "inline" }}>{"*"}</Text> {t("Veworld Banner")}
       </Heading>
 

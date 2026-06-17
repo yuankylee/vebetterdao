@@ -104,7 +104,7 @@ export const CategorySelector = <T extends FieldValues>({
 
   return (
     <Field.Root invalid={!!error}>
-      <Field.Label textStyle="md">
+      <Field.Label textStyle="sm">
         <RequiredAsterisk />
         {t("App Categories")}
       </Field.Label>

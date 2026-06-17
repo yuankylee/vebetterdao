@@ -112,10 +112,12 @@ export const AppDetailOverview = ({
                           </Skeleton>
                         </Stack>
                       </HStack>
-                      <HStack gap={2}>
+                      <HStack gap={2} flexWrap="wrap">
                         <AppDetailSocials socialUrls={appMetadata?.social_urls || []} />
-                        <EditAppPageButton />
-                        <AdminAppPageButton />
+                        <HStack>
+                          <EditAppPageButton />
+                          <AdminAppPageButton />
+                        </HStack>
                       </HStack>
                     </HStack>
 
@@ -166,7 +168,7 @@ export const AppDetailOverview = ({
                           </HStack>
                         </VStack>
                       )}
-                      <HStack gap={3} w={{ base: "full", md: "auto" }} mt={{ base: 4, md: 0 }}>
+                      <HStack gap={3} w={{ base: "full", md: "auto" }} mt={{ base: 4, md: 0 }} flexWrap="wrap">
                         {appMetadata?.whitepaper && (
                           <Button variant={"secondary"} onClick={downloadWhitepaper} w={{ base: "full", md: "auto" }}>
                             {t("Whitepaper")}

@@ -91,7 +91,7 @@ export const EditAppSocialUrls = ({ form }: Props) => {
 
   return (
     <VStack align={"stretch"} gap={4} w="full">
-      <Text textStyle="md" fontWeight="semibold">
+      <Text textStyle="sm" fontWeight="semibold">
         {t("Social media links")}
       </Text>
       <SimpleGrid columns={[1, 2]} gap={4} w="full">

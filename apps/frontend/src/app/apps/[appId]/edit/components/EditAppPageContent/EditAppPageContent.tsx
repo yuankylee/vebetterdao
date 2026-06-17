@@ -386,7 +386,7 @@ export const EditAppPageContent = () => {
         <GridItem colSpan={[3, 3, 2]} as="form" onSubmit={handleSubmit(onSubmit)}>
           <Card.Root>
             <Card.Header>
-              <Heading size="3xl">{t("Edit the App")}</Heading>
+              <Heading size="xl">{t("Edit the App")}</Heading>
             </Card.Header>
             <Card.Body>
               <VStack gap={8} w="full" align="flex-start">

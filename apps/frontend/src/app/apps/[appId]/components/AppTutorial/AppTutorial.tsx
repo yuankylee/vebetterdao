@@ -1,4 +1,4 @@
-import { Box, Card, HStack, Image, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { Box, Card, HStack, Image, Skeleton, Stack, Heading } from "@chakra-ui/react"
 import { useTranslation } from "react-i18next"
 
 import { convertUriToUrl } from "@/utils/uri"
@@ -43,9 +43,7 @@ export const AppTutorial = () => {
     <Card.Root w="full" borderRadius="xl">
       <Card.Body>
         <Stack gap={4}>
-          <Text fontWeight="bold" fontSize="lg">
-            {t("App Tutorial")}
-          </Text>
+          <Heading size="xl">{t("App Tutorial")}</Heading>
 
           {hasVideo ? (
             // eslint-disable-next-line jsx-a11y/media-has-caption

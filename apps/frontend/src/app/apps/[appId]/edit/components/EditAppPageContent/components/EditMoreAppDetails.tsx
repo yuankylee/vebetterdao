@@ -49,7 +49,7 @@ export const EditMoreAppDetails = ({ form }: Props) => {
 
   return (
     <VStack align="stretch" gap={4}>
-      <Heading size="2xl">{t("More App Details")}</Heading>
+      <Heading size="xl">{t("More App Details")}</Heading>
       <Switch.Root
         checked={enabled}
         onCheckedChange={({ checked }) => form.setValue("moreDetailsEnabled", checked)}
@@ -102,8 +102,8 @@ const TeamBackgroundSection = ({ form }: Props) => {
         <VStack align="stretch" gap={4}>
           <HStack justify="space-between" align="flex-start">
             <VStack align="flex-start" gap={1} flex={1}>
-              <Heading size="md">{t("Team Background")}</Heading>
-              <Text textStyle="sm" color="text.subtle">
+              <Heading size="sm">{t("Team Background")}</Heading>
+              <Text textStyle="xs" color="text.subtle">
                 {t(
                   "Provide team and founder information so users can gain in-depth understanding of the stories and professional backgrounds behind the project, thereby building a deeper sense of trust. (Recommended size: 200*200px)",
                 )}
@@ -236,7 +236,7 @@ const TeamMemberCard = ({
               size="md"
               onClick={() => inputRef.current?.click()}
               loading={uploading}
-              px={8}
+              px={{ md: 8, base: 4 }}
               css={{
                 _icon: {
                   width: "4",
@@ -341,8 +341,8 @@ const AppRoadmapSection = ({ form }: Props) => {
       <Card.Body>
         <VStack align="stretch" gap={4}>
           <VStack align="flex-start" gap={1}>
-            <Heading size="md">{t("App Roadmap")}</Heading>
-            <Text textStyle="sm" color="text.subtle">
+            <Heading size="sm">{t("App Roadmap")}</Heading>
+            <Text textStyle="xs" color="text.subtle">
               {t(
                 "Provide a clear app roadmap so users can always stay informed about the product's future plans and development direction.",
               )}
@@ -468,8 +468,8 @@ const EcosystemPartnersSection = ({ form }: Props) => {
         <VStack align="stretch" gap={4}>
           <HStack justify="space-between" align="flex-start">
             <VStack align="flex-start" gap={1} flex={1}>
-              <Heading size="md">{t("Ecosystem Partners")}</Heading>
-              <Text textStyle="sm" color="text.subtle">
+              <Heading size="sm">{t("Ecosystem Partners")}</Heading>
+              <Text textStyle="xs" color="text.subtle">
                 {t(
                   "Displaying partner information can effectively enhance users' sense of trust in the application. (Suggested size: 512×512 pixels, keep a 1:1 square image)",
                 )}

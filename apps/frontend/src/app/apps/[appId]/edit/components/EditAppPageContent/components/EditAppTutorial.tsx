@@ -33,7 +33,7 @@ export const EditAppTutorial = ({ form }: Props) => {
   return (
     <VStack align="stretch" gap={4} w={"full"}>
       <VStack align="flex-start" gap={1}>
-        <Heading size="lg">{t("App Tutorial")}</Heading>
+        <Heading size="sm">{t("App Tutorial")}</Heading>
         <Text textStyle="sm" color="text.subtle">
           {t("Provide app tutorials to help users get started quickly and easily understand the App's features.")}
         </Text>

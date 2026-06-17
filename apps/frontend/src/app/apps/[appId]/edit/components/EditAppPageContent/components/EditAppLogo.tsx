@@ -61,7 +61,7 @@ export const EditAppLogo = ({ form }: Props) => {
 
   return (
     <VStack gap={2} align={"start"}>
-      <Text textStyle="md" fontWeight="semibold">
+      <Text textStyle="sm" fontWeight="semibold">
         <RequiredAsterisk />
         {t("Logo")}
       </Text>
