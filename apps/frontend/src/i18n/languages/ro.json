@@ -1916,6 +1916,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "Opțional. Adaugă URL-uri de profil GitHub sau X (Twitter) ale tuturor celor care contribuie la implementare. Afișate public ca rând de avatare pe pagina propunerii.",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "Opțional. Plafon maxim (în B3TR) care poate fi plătit ulterior dezvoltatorilor selectați după finalizarea propunerii.",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "Optional alege un relayer preferat pentru a prioritiza gestionarea voturilor si revendicarilor tale de recompense.",
+  "Operation succeeded": "Operațiune reușită",
   "Options": "Opțiuni",
   "or you receive someone else’s voting qualification.": "sau primești calificarea de vot a altcuiva.",
   "Other": "Altele",

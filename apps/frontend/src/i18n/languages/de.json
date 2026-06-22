@@ -1917,6 +1917,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "Optional. Fügen Sie GitHub- oder X (Twitter)-Profil-URLs aller Mitwirkenden an der Umsetzung hinzu. Diese werden öffentlich als Avatar-Reihe auf der Vorschlagsseite angezeigt.",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "Optional. Obergrenze (in B3TR), die nach Abschluss des Vorschlags an ausgewählte Entwickler ausgezahlt werden kann.",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "Optional einen bevorzugten Relayer wählen, der Ihre Abstimmungen und Belohnungsansprüche priorisiert bearbeitet.",
+  "Operation succeeded": "Vorgang erfolgreich",
   "Options": "Optionen",
   "or you receive someone else’s voting qualification.": "oder Sie eine andere Wahlqualifikation erhalten.",
   "Other": "Andere",

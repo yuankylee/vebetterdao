@@ -1917,6 +1917,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "任意。実装に貢献する全員のGitHubまたはX (Twitter)プロフィールURLを追加。提案ページにアバター行として公開表示。",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "任意。提案完了後、選ばれた開発者に後日支払われる可能性のある上限（B3TR）。",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "投票と報酬請求の処理を優先する優先リレイヤーをオプションで選択できます。",
+  "Operation succeeded": "操作が成功しました",
   "Options": "オプション",
   "or you receive someone else’s voting qualification.": "または他の人の投票資格を受け取るまで。",
   "Other": "その他",

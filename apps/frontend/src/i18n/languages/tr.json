@@ -1917,6 +1917,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "İsteğe bağlı. Uygulamaya katkıda bulunan herkesin GitHub veya X (Twitter) profil URL'lerini ekleyin. Teklif sayfasında avatar satırı olarak herkese açık gösterilir.",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "İsteğe bağlı. Teklif tamamlandığında seçilen geliştiricilere daha sonra ödenebilecek üst limit (B3TR cinsinden).",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "Oylarınızı ve ödül taleplerinizi öncelikli olarak işlemesi için isteğe bağlı olarak tercih edilen bir relayer seçin.",
+  "Operation succeeded": "İşlem başarılı",
   "Options": "Seçenekler",
   "or you receive someone else’s voting qualification.": "veya başkasının oy yetkisini alana kadar.",
   "Other": "Diğer",

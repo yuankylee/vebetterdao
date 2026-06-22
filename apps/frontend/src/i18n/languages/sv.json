@@ -1917,6 +1917,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "Valfritt. Lägg till GitHub- eller X (Twitter)-profil-URL:er för alla som bidrar till implementeringen. Visas offentligt som avatar-rad på förslagssidan.",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "Valfritt. Tak (i B3TR) som senare kan betalas ut till utvalda utvecklare när förslaget är klart.",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "Välj valfritt en föredragen relayer för att prioritera hanteringen av dina röster och belöningsanspråk.",
+  "Operation succeeded": "Åtgärden lyckades",
   "Options": "Alternativ",
   "or you receive someone else’s voting qualification.": "eller du mottar någon annans röstningskvalifikation.",
   "Other": "Annat",

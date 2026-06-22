@@ -1917,6 +1917,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "選填。新增所有實施貢獻者的 GitHub 或 X (Twitter) 個人檔案 URL。公開顯示於提案頁面的頭像列。",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "選填。提案完成後可能支付給選定開發者的上限（B3TR）。",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "可選擇一個首選中繼者，優先處理您的投票和獎勵領取。",
+  "Operation succeeded": "操作成功",
   "Options": "選項",
   "or you receive someone else’s voting qualification.": "或者您收到他人的投票資格。",
   "Other": "其他",

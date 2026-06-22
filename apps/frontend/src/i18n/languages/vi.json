@@ -1917,6 +1917,7 @@
   "Optional. Add GitHub or X (Twitter) profile URLs of everyone who is contributing to the implementation. These are shown publicly as an avatar row on the proposal page.": "Tùy chọn. Thêm URL hồ sơ GitHub hoặc X (Twitter) của tất cả người đóng góp triển khai. Hiển thị công khai dưới dạng hàng avatar trên trang đề xuất.",
   "Optional. Hard cap (in B3TR) that may later be paid out to selected developers once the proposal is completed.": "Tùy chọn. Giới hạn tối đa (bằng B3TR) có thể trả cho nhà phát triển được chọn sau khi hoàn thành đề xuất.",
   "Optionally choose a preferred relayer to prioritize for handling your votes and reward claims.": "Tùy chọn chọn một relayer ưu tiên để ưu tiên xử lý phiếu bầu và yêu cầu phần thưởng của bạn.",
+  "Operation succeeded": "Thao tác thành công",
   "Options": "Tùy chọn",
   "or you receive someone else’s voting qualification.": "hoặc bạn nhận được tiêu chuẩn bỏ phiếu của người khác.",
   "Other": "Khác",
