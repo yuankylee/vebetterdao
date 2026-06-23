@@ -132,7 +132,7 @@ export const EditAppPageContent = () => {
       youtubeUrl: findUrlByName(appMetadata?.social_urls, "Youtube"),
       mediumUrl: findUrlByName(appMetadata?.social_urls, "Medium"),
       instagramUrl: findUrlByName(appMetadata?.social_urls, "Instagram"),
-      tutorialMode: appMetadata?.tutorial_video ? "video" : "image",
+      tutorialMode: appMetadata?.tutorial_mode ?? (appMetadata?.tutorial_video ? "video" : "image"),
       tutorialVideo: appMetadata?.tutorial_video ?? "",
       tutorialImages: appMetadata?.tutorial_images ?? [],
       ve_world_bannerImage: veWorldBanner,
@@ -140,7 +140,7 @@ export const EditAppPageContent = () => {
       categories: (appMetadata?.categories ?? []).filter(id => !DEPRECATED_IDS.includes(id)), // remove the deprecated categories
       whitepaperFile: appMetadata?.whitepaper ?? "",
       whitepaperFileName: appMetadata?.whitepaper_filename ?? "",
-      moreDetailsEnabled: !!appMetadata?.more_details,
+      moreDetailsEnabled: appMetadata?.more_details_enabled ?? !!appMetadata?.more_details,
       teamBackground: appMetadata?.more_details?.team_background ?? [],
       appRoadmapImage: appMetadata?.more_details?.app_roadmap?.image ?? "",
       appRoadmapDescription: appMetadata?.more_details?.app_roadmap?.description ?? "",
@@ -221,21 +221,27 @@ export const EditAppPageContent = () => {
           featured_image: data.ve_world_featured_image,
         },
         version_history: data.versionHistory.length > 0 ? data.versionHistory : undefined,
+        tutorial_mode: data.tutorialMode,
         tutorial_video: data.tutorialMode === "video" ? data.tutorialVideo || undefined : undefined,
         tutorial_images:
           data.tutorialMode === "image" && data.tutorialImages.length > 0 ? data.tutorialImages : undefined,
         whitepaper: data.whitepaperFile || undefined,
         whitepaper_filename: data.whitepaperFileName || undefined,
-        more_details: data.moreDetailsEnabled
-          ? {
-              team_background: data.teamBackground.length > 0 ? data.teamBackground : undefined,
-              app_roadmap:
-                data.appRoadmapImage || data.appRoadmapDescription
-                  ? { image: data.appRoadmapImage, description: data.appRoadmapDescription }
-                  : undefined,
-              ecosystem_partners: data.ecosystemPartners.length > 0 ? data.ecosystemPartners : undefined,
-            }
-          : undefined,
+        more_details_enabled: data.moreDetailsEnabled,
+        more_details:
+          data.teamBackground.length > 0 ||
+          data.appRoadmapImage ||
+          data.appRoadmapDescription ||
+          data.ecosystemPartners.length > 0
+            ? {
+                team_background: data.teamBackground.length > 0 ? data.teamBackground : undefined,
+                app_roadmap:
+                  data.appRoadmapImage || data.appRoadmapDescription
+                    ? { image: data.appRoadmapImage, description: data.appRoadmapDescription }
+                    : undefined,
+                ecosystem_partners: data.ecosystemPartners.length > 0 ? data.ecosystemPartners : undefined,
+              }
+            : undefined,
         badgeSettings: data.badgeSettings,
       })
       return metadataUri
@@ -286,7 +292,7 @@ export const EditAppPageContent = () => {
         youtubeUrl: findUrlByName(appMetadata.social_urls, "Youtube"),
         mediumUrl: findUrlByName(appMetadata.social_urls, "Medium"),
         instagramUrl: findUrlByName(appMetadata.social_urls, "Instagram"),
-        tutorialMode: appMetadata.tutorial_video ? "video" : "image",
+        tutorialMode: appMetadata.tutorial_mode ?? (appMetadata.tutorial_video ? "video" : "image"),
         tutorialVideo: appMetadata.tutorial_video ?? "",
         tutorialImages: appMetadata.tutorial_images ?? [],
         logoImage: logo || "",
@@ -297,7 +303,7 @@ export const EditAppPageContent = () => {
         categories: (appMetadata.categories ?? []).filter(id => !DEPRECATED_IDS.includes(id)),
         whitepaperFile: appMetadata.whitepaper ?? "",
         whitepaperFileName: appMetadata.whitepaper_filename ?? "",
-        moreDetailsEnabled: !!appMetadata.more_details,
+        moreDetailsEnabled: appMetadata.more_details_enabled ?? !!appMetadata.more_details,
         teamBackground: appMetadata.more_details?.team_background ?? [],
         appRoadmapImage: appMetadata.more_details?.app_roadmap?.image ?? "",
         appRoadmapDescription: appMetadata.more_details?.app_roadmap?.description ?? "",

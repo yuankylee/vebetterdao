@@ -35,11 +35,14 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
   const isDistributionStrategyChanged =
     form.watch("distribution_strategy") !== appMetadata?.distribution_strategy && !!form.watch("distribution_strategy")
   const isCategoriesChanged = form.watch("categories") !== appMetadata?.categories && !!form.watch("categories")
+  const isTutorialModeChanged =
+    form.watch("tutorialMode") !== (appMetadata?.tutorial_mode ?? (appMetadata?.tutorial_video ? "video" : "image"))
   const isTutorialVideoChanged = form.watch("tutorialVideo") !== (appMetadata?.tutorial_video ?? "")
   const isTutorialImagesChanged =
     JSON.stringify(form.watch("tutorialImages")) !== JSON.stringify(appMetadata?.tutorial_images ?? [])
   const isWhitepaperChanged = form.watch("whitepaperFile") !== (appMetadata?.whitepaper ?? "")
-  const isMoreDetailsEnabledChanged = form.watch("moreDetailsEnabled") !== !!appMetadata?.more_details
+  const isMoreDetailsEnabledChanged =
+    form.watch("moreDetailsEnabled") !== (appMetadata?.more_details_enabled ?? !!appMetadata?.more_details)
   const isTeamBackgroundChanged =
     JSON.stringify(form.watch("teamBackground")) !== JSON.stringify(appMetadata?.more_details?.team_background ?? [])
   const isAppRoadmapChanged =
@@ -76,6 +79,7 @@ export const useIsFormChanged = (form: UseFormReturn<EditAppForm, any, EditAppFo
     isVeWorldBannerChanged ||
     isDistributionStrategyChanged ||
     isCategoriesChanged ||
+    isTutorialModeChanged ||
     isTutorialVideoChanged ||
     isTutorialImagesChanged ||
     isWhitepaperChanged ||

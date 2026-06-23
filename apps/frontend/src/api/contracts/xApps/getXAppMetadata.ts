@@ -40,10 +40,12 @@ export type XAppMetadata = {
     notes: string
     timestamp?: number
   }[]
+  tutorial_mode?: "video" | "image"
   tutorial_video?: string
   tutorial_images?: string[]
   whitepaper?: string
   whitepaper_filename?: string
+  more_details_enabled?: boolean
   more_details?: {
     team_background?: { photo: string; title: string; description: string }[]
     app_roadmap?: { image: string; description: string }

@@ -13,25 +13,21 @@ const distributionHelpContent = (t: (key: string) => string) => (
         {t("Distribution Performance")}
         {": "}
       </Text>
-      {t(
-        "Distribution Performance is the percentage of B3TR rewards distributed to users relative to the allocation received.",
-      )}
+      {t("Percentage of B3TR rewards distributed to users relative to the allocation received.")}
     </Text>
     <Text color="text.subtle">
       <Text as="span" fontWeight="semibold" color="text.default">
         {t("Allocation Earnings")}
         {": "}
       </Text>
-      {t(
-        "Allocation Earnings are the allocation received by the dApp from VeBetterDAO based on voting results from previous weeks.",
-      )}
+      {t("Allocation received by the dApps from VeBetterDAO based on voting results from previous weeks.")}
     </Text>
     <Text color="text.subtle">
       <Text as="span" fontWeight="semibold" color="text.default">
         {t("B3TR Distributed")}
         {": "}
       </Text>
-      {t("B3TR Distributed is the amount of B3TR rewards distributed to users.")}
+      {t("The amount of B3TR rewards distributed to users.")}
     </Text>
   </VStack>
 )
