@@ -60,7 +60,7 @@ export const DistributionPerformanceInfoPopover = () => {
         justifyContent="center"
         color="text.subtle"
         flexShrink={0}
-        cursor="help"
+        cursor="pointer"
         lineHeight={1}
         aria-label={t("Distribution performance chart help")}>
         <Icon as={LuInfo} boxSize={5} />

@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Card, HStack, Skeleton, Stack, Text } from "@chakra-ui/react"
+import { Box, Card, HStack, Skeleton, Stack, Heading } from "@chakra-ui/react"
 import { Component, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { TweetSkeleton } from "react-tweet"
@@ -55,9 +55,7 @@ export const AppSocialMediaUpdates = () => {
     <Card.Root w="full" variant="primary">
       <Card.Body>
         <Stack gap={4}>
-          <Text fontWeight="bold" fontSize="lg">
-            {t("Social Media Updates")}
-          </Text>
+          <Heading size="xl">{t("Social Media Updates")}</Heading>
           <Box
             overflowX="auto"
             pb={2}
@@ -70,7 +68,7 @@ export const AppSocialMediaUpdates = () => {
               {tweetQueries.map((q, idx) => (
                 <Box
                   key={tweetIds[idx]}
-                  minW="280px"
+                  w="320px"
                   maxW="320px"
                   h="362px"
                   flexShrink={0}

@@ -14,17 +14,11 @@ const BadgeHistoryRow = ({ badge, isLoading }: { badge: EarnedBadgeSummary; isLo
   return (
     <HStack gap={2} p={4} border="1px solid" bg="#F9F9FA" borderColor="#E7E9EB" rounded="xl" w="full">
       <Box flexShrink={0}>
-        <Image
-          src={badge.earned ? config.image : config.greyImage}
-          alt={t(config.title)}
-          boxSize="61px"
-          objectFit="contain"
-          filter={badge.earned ? undefined : "grayscale(1) opacity(0.35)"}
-        />
+        <Image src={config.image} alt={config.title} boxSize="61px" objectFit="contain" />
       </Box>
       <VStack align="flex-start" gap={0.5}>
         <Text textStyle="md" fontWeight="semibold">
-          {t(config.title)}
+          {config.title}
         </Text>
         <HStack gap={4} flexWrap="wrap">
           <Text textStyle="sm" color="text.subtle">

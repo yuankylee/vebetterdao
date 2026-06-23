@@ -41,7 +41,7 @@ import { EditAppSocialUrls } from "./components/EditAppSocialUrls"
 import { EditAppTutorial } from "./components/EditAppTutorial"
 import { EditAppWhitepaper } from "./components/EditAppWhitepaper"
 import { EditMoreAppDetails } from "./components/EditMoreAppDetails"
-import { EditScreenshots } from "./components/EditScreenshots"
+// import { EditScreenshots } from "./components/EditScreenshots"
 import { EditSocialMediaUpdates } from "./components/EditSocialMediaUpdates"
 import { EditVeWorldBanner } from "./components/EditVeWorldBanner"
 import { EditVeWorldFeatureImage } from "./components/EditVeWorldFeatureImage"
@@ -472,10 +472,9 @@ export const EditAppPageContent = () => {
                 <Separator />
                 <EditAppSocialUrls form={form} />
                 <Separator />
-                <EditScreenshots form={form} />
+                <EditAppWhitepaper form={form} />
                 <Separator />
                 <EditAppTutorial form={form} />
-                <EditAppWhitepaper form={form} />
               </VStack>
             </Card.Body>
           </Card.Root>
