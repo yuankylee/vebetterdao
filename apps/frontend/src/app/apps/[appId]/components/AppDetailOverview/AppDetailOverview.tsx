@@ -128,15 +128,17 @@ export const AppDetailOverview = ({
                           {appMetadata?.description ?? appMetadataError?.message ?? "Error loading description"}
                         </Text>
                       </Skeleton>
-                      <Link
-                        textStyle="md"
-                        mt={8}
-                        fontWeight="normal"
-                        color="actions.secondary.text-lighter"
-                        onClick={onOpenMoreDetails}>
-                        {t("More")}
-                        <UilArrowUpRight />
-                      </Link>
+                      {appMetadata?.more_details_enabled && appMetadata.more_details && (
+                        <Link
+                          textStyle="md"
+                          mt={8}
+                          fontWeight="normal"
+                          color="actions.secondary.text-lighter"
+                          onClick={onOpenMoreDetails}>
+                          {t("More")}
+                          <UilArrowUpRight />
+                        </Link>
+                      )}
                     </Stack>
 
                     {/* Bottom row: Member since | Whitepaper + Go to Website */}
