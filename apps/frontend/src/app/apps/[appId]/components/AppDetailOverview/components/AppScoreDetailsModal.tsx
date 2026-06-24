@@ -17,7 +17,7 @@ type AppScoreDetailsModalProps = {
   isLoading: boolean
 }
 
-const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) => (
+const ScoreBreakdownRow = ({ label, value, max }: { label: string; value: number; max: number }) => (
   <VStack align="stretch" gap={1} w="full">
     <HStack justify="space-between" w="full" align="baseline" gap={3}>
       <Text textStyle="sm" color="text.default">
@@ -27,7 +27,7 @@ const ScoreBreakdownRow = ({ label, value }: { label: string; value: number }) =
         {value.toFixed(2)}
       </Text>
     </HStack>
-    <Progress.Root value={value} max={20} size="sm" w="full">
+    <Progress.Root value={value} max={max} size="sm" w="full">
       <Progress.Track rounded="full" bg="bg.muted">
         <Progress.Range bg={APP_SCORE_ACCENT_HEX} rounded="full" />
       </Progress.Track>
@@ -84,7 +84,7 @@ export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: 
           <VStack align="stretch" gap={3} w="full">
             {scoreData.breakdown.map(row => (
               <Skeleton key={row.labelKey} loading={isLoading}>
-                <ScoreBreakdownRow label={t(row.labelKey)} value={row.value} />
+                <ScoreBreakdownRow label={t(row.labelKey)} value={row.value} max={row.max} />
               </Skeleton>
             ))}
           </VStack>

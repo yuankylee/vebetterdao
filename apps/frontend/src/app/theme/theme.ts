@@ -363,6 +363,7 @@ const config = defineConfig({
           youtube: { value: { base: "#FF0000", _dark: "#FF0000" } },
           medium: { value: { base: "black", _dark: "black" } },
           twitter: { value: { base: "black", _dark: "black" } },
+          instagram: { value: { base: "#E4405F", _dark: "#E4405F" } },
         },
       },
       animations: {
