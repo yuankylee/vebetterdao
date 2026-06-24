@@ -1,6 +1,7 @@
-import { Box, Card, HStack, Image, Skeleton, Stack, Heading } from "@chakra-ui/react"
+import { Box, Card, HStack, Skeleton, Stack, Heading } from "@chakra-ui/react"
 import { useTranslation } from "react-i18next"
 
+import { ExpandableImage } from "@/components/ExpandableImage"
 import { convertUriToUrl } from "@/utils/uri"
 
 import { useCurrentAppMetadata } from "../../hooks/useCurrentAppMetadata"
@@ -74,7 +75,7 @@ export const AppTutorial = () => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center">
-                    <Image src={safeUrl(uri)} alt={`Tutorial ${idx + 1}`} h="full" objectFit="contain" />
+                    <ExpandableImage src={safeUrl(uri)} alt={`Tutorial ${idx + 1}`} />
                   </Box>
                 ))}
               </HStack>

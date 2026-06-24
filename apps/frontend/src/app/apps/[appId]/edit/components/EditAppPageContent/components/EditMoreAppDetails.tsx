@@ -20,6 +20,7 @@ import { Reorder, useDragControls } from "framer-motion"
 import { ChangeEvent, useCallback, useRef, useState } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { IoMdAdd } from "react-icons/io"
 
 const notFoundImage = "/assets/images/image-not-found.webp"
 import { toaster } from "@/components/ui/toaster"
@@ -208,71 +209,81 @@ const TeamMemberCard = ({
   }
 
   return (
-    <Box bg="white" borderRadius="xl" p={4}>
+    <Box bg="white" borderRadius="xl" style={{ position: "relative" }}>
+      <IconButton
+        zIndex={99}
+        position="absolute"
+        right={1}
+        top={1}
+        justifyContent="center"
+        aria-label={t("Remove member")}
+        variant="outline"
+        rounded="full"
+        size="md"
+        ml="auto"
+        onClick={() => onRemove(index)}>
+        <UilTimes size="16px" />
+      </IconButton>
       <Input ref={inputRef} type="file" display="none" accept="image/*" onChange={handlePhotoChange} />
-      <VStack align="stretch" gap={3}>
+      <VStack align="stretch" gap={3} p={4}>
         {/* Photo row */}
-        <HStack gap={3} justify={"space-between"} align="center" w="full">
+        <VStack gap={3} justify={"center"} align="center" w="full">
           <Box
-            w="40px"
-            h="40px"
-            borderRadius="full"
+            w="full"
+            h="100px"
             overflow="hidden"
             flexShrink={0}
-            bg="bg.tertiary"
             display="flex"
             alignItems="center"
             justifyContent="center">
             {uploading ? (
               <Spinner size="sm" />
             ) : displayUrl ? (
-              <Image src={displayUrl} alt={`Member ${index + 1}`} w="full" h="full" objectFit="cover" />
+              <VStack justify="center">
+                <Image
+                  src={displayUrl}
+                  alt={`Member ${index + 1}`}
+                  style={{ height: 88, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+                  objectFit="cover"
+                />
+                {member.photo && !uploading && (
+                  <IconButton
+                    position="absolute"
+                    justifyContent="center"
+                    aria-label={t("Delete photo")}
+                    variant="ghost"
+                    color="status.negative.primary"
+                    bgColor="#FCEEF1"
+                    _hover={{ bgColor: "#FCEEF1DD" }}
+                    rounded="full"
+                    size="md"
+                    onClick={() => {
+                      onUpdate(index, "photo", "")
+                      if (inputRef.current) inputRef.current.value = ""
+                    }}>
+                    <UilTrash size="16px" />
+                  </IconButton>
+                )}
+              </VStack>
             ) : (
-              <Box w="full" h="full" bg="gray.200" />
+              <VStack
+                borderRadius="xl"
+                borderWidth="1px"
+                borderColor="gray.200"
+                cursor={"pointer"}
+                w="100px"
+                h="100px"
+                gap={1}
+                justify={"center"}
+                align="center"
+                bg="gray.50"
+                onClick={() => inputRef.current?.click()}>
+                <IoMdAdd />
+                <Text textStyle="xs">{t("Upload")}</Text>
+              </VStack>
             )}
           </Box>
-          <HStack justify={"space-between"}>
-            <Button
-              variant="tertiary"
-              rounded="full"
-              size="md"
-              onClick={() => inputRef.current?.click()}
-              loading={uploading}
-              px={{ md: 8, base: 4 }}
-              css={{
-                _icon: {
-                  width: "4",
-                  height: "4",
-                },
-              }}>
-              <UilUpload />
-              {t("Upload")}
-            </Button>
-            {member.photo && !uploading && (
-              <IconButton
-                aria-label={t("Delete photo")}
-                variant="outline"
-                color="status.negative.primary"
-                rounded="full"
-                size="md"
-                onClick={() => {
-                  onUpdate(index, "photo", "")
-                  if (inputRef.current) inputRef.current.value = ""
-                }}>
-                <UilTrash size="16px" />
-              </IconButton>
-            )}
-            <IconButton
-              aria-label={t("Remove member")}
-              variant="outline"
-              rounded="full"
-              size="md"
-              ml="auto"
-              onClick={() => onRemove(index)}>
-              <UilTimes size="16px" />
-            </IconButton>
-          </HStack>
-        </HStack>
+        </VStack>
 
         {/* Title */}
         <Field.Root invalid={!!titleError}>

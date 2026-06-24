@@ -5,6 +5,7 @@ import { UilTimes } from "@iconscout/react-unicons"
 import { useTranslation } from "react-i18next"
 
 import { BaseModal } from "@/components/BaseModal"
+import { ExpandableImage } from "@/components/ExpandableImage"
 import { convertUriToUrl } from "@/utils/uri"
 
 import { useCurrentAppLogo } from "../../../hooks/useCurrentAppLogo"
@@ -49,7 +50,6 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
 
   const teamToShow = team.filter(hasTeamMemberContent)
   const logoSrc = logo ? safeConvertUri(logo) : notFoundImage
-
   return (
     <BaseModal
       isOpen={isOpen}
@@ -80,7 +80,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
           </Text>
         </Skeleton>
         <VStack align="stretch" gap={4} w="full">
-          {partners.length > 0 && (
+          {appMetadata.more_details_enabled && partners.length > 0 && (
             <SectionPanel title={t("Ecosystem Partners")}>
               <HStack gap={3} overflowX="auto" pb={1} align="stretch">
                 {partners.map((url, index) => (
@@ -101,7 +101,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
             </SectionPanel>
           )}
 
-          {teamToShow.length > 0 && (
+          {appMetadata.more_details_enabled && teamToShow.length > 0 && (
             <SectionPanel title={t("Team Background")}>
               <SimpleGrid columns={{ base: 1, md: 2 }} gap={4} w="full">
                 {teamToShow.map(member => {
@@ -109,15 +109,23 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
                   const memberKey = [member.title, member.photo ?? "", member.description ?? ""].join("\u0001")
                   return (
                     <Box key={memberKey} bg="white" borderRadius="xl" p={4}>
-                      <HStack gap={3} align="flex-start" mb={3}>
-                        <Box w="48px" h="48px" borderRadius="full" overflow="hidden" flexShrink={0} bg="bg.tertiary">
-                          {photoUrl ? <Image src={photoUrl} alt="" w="full" h="full" objectFit="cover" /> : null}
+                      <VStack gap={2} align="flex-start">
+                        <Box w="full" h="88px" borderRadius="xl" overflow="hidden" flexShrink={0} bg="bg.tertiary">
+                          {photoUrl ? (
+                            <ExpandableImage
+                              src={photoUrl}
+                              alt=""
+                              thumbnailProps={{ w: "full", h: "full", objectFit: "cover" }}
+                            />
+                          ) : null}
                         </Box>
-                        <Heading size="sm">{member.title}</Heading>
-                      </HStack>
-                      <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap">
-                        {member.description}
-                      </Text>
+                        <Heading size="md" fontWeight="600">
+                          {member.title}
+                        </Heading>
+                        <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap" wordBreak="break-word">
+                          {member.description}
+                        </Text>
+                      </VStack>
                     </Box>
                   )
                 })}
@@ -125,29 +133,30 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
             </SectionPanel>
           )}
 
-          {roadmap?.image ||
-            ((roadmap?.description ?? "").trim() && (
-              <SectionPanel title={t("App Roadmap")}>
-                <VStack align="stretch" gap={4} w="full">
-                  {roadmap?.image ? (
-                    <Image
-                      src={safeConvertUri(roadmap.image)}
-                      alt={t("App Roadmap")}
-                      w="full"
-                      maxH="420px"
-                      objectFit="contain"
-                      borderRadius="lg"
-                      bg="white"
-                    />
-                  ) : null}
-                  {(roadmap?.description ?? "").trim() ? (
-                    <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap">
-                      {roadmap?.description}
-                    </Text>
-                  ) : null}
-                </VStack>
-              </SectionPanel>
-            ))}
+          {appMetadata.more_details_enabled &&
+            (roadmap?.image ||
+              ((roadmap?.description ?? "").trim() && (
+                <SectionPanel title={t("App Roadmap")}>
+                  <VStack align="stretch" gap={4} w="full">
+                    {roadmap?.image ? (
+                      <Image
+                        src={safeConvertUri(roadmap.image)}
+                        alt={t("App Roadmap")}
+                        w="full"
+                        maxH="420px"
+                        objectFit="contain"
+                        borderRadius="lg"
+                        bg="white"
+                      />
+                    ) : null}
+                    {(roadmap?.description ?? "").trim() ? (
+                      <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap" wordBreak="break-word">
+                        {roadmap?.description}
+                      </Text>
+                    ) : null}
+                  </VStack>
+                </SectionPanel>
+              )))}
         </VStack>
       </VStack>
     </BaseModal>

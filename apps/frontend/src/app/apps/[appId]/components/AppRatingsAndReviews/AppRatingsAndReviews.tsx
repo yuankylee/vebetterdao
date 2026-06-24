@@ -143,7 +143,7 @@ export const AppRatingsAndReviews = () => {
               <Skeleton h="60px" borderRadius="md" />
             ) : (
               <HStack justify="space-between" align="center">
-                <Text fontSize="4xl" fontWeight="700" lineHeight={1}>
+                <Text fontSize="3xl" fontWeight="700" lineHeight={1}>
                   {ratingDisplay}
                 </Text>
                 <Stack align="flex-end" gap={1}>

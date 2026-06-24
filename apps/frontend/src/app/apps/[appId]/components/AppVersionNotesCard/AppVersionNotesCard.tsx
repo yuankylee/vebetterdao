@@ -52,11 +52,6 @@ export const AppVersionNotesCard = () => {
                   </Link>
                 )}
               </HStack>
-              <Text color="gray.500" fontSize="sm">
-                {t(
-                  "Add the app version number so users can stay informed about update content, resulting in a better user experience.",
-                )}
-              </Text>
             </Stack>
 
             {displayedVersions.length > 0 && (
