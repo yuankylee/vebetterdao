@@ -44,6 +44,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
   const partners = more?.ecosystem_partners ?? []
   const team = more?.team_background ?? []
   const roadmap = more?.app_roadmap
+  const moreDetailsEnabled = appMetadata?.more_details_enabled ?? false
 
   const hasTeamMemberContent = (m: { photo?: string; title?: string; description?: string }) =>
     Boolean((m.title ?? "").trim() || (m.description ?? "").trim() || (m.photo ?? "").trim())
@@ -80,7 +81,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
           </Text>
         </Skeleton>
         <VStack align="stretch" gap={4} w="full">
-          {appMetadata.more_details_enabled && partners.length > 0 && (
+          {moreDetailsEnabled && partners.length > 0 && (
             <SectionPanel title={t("Ecosystem Partners")}>
               <HStack gap={3} overflowX="auto" pb={1} align="stretch">
                 {partners.map((url, index) => (
@@ -101,7 +102,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
             </SectionPanel>
           )}
 
-          {appMetadata.more_details_enabled && teamToShow.length > 0 && (
+          {moreDetailsEnabled && teamToShow.length > 0 && (
             <SectionPanel title={t("Team Background")}>
               <SimpleGrid columns={{ base: 1, md: 2 }} gap={4} w="full">
                 {teamToShow.map(member => {
@@ -133,7 +134,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
             </SectionPanel>
           )}
 
-          {appMetadata.more_details_enabled && (roadmap?.image || (roadmap?.description ?? "").trim()) && (
+          {moreDetailsEnabled && (roadmap?.image || (roadmap?.description ?? "").trim()) && (
             <SectionPanel title={t("App Roadmap")}>
               <VStack align="stretch" gap={4} w="full">
                 {roadmap?.image ? (
