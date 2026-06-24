@@ -47,7 +47,12 @@ export const FormItem = ({
     <Field.Root p={1} invalid={!!error} h={type === "textarea" ? "full" : "auto"}>
       {label && (
         <HStack justify="space-between" w="full">
-          <Field.Label textStyle="sm" color="text.default" mb={description ? 0 : undefined} htmlFor={register.name}>
+          <Field.Label
+            textStyle="md"
+            fontWeight="600"
+            color="text.default"
+            mb={description ? 0 : undefined}
+            htmlFor={register.name}>
             {required && <RequiredAsterisk />}
             {label}
           </Field.Label>

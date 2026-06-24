@@ -8,7 +8,7 @@ import { useCurrentAppMetadata } from "../../hooks/useCurrentAppMetadata"
 
 import { AppVersionNotesModal } from "./AppVersionNotesModal"
 
-const CARD_VERSION_COUNT = 2
+const CARD_VERSION_COUNT = 1
 
 export const AppVersionNotesCard = () => {
   const { t } = useTranslation()
@@ -38,7 +38,7 @@ export const AppVersionNotesCard = () => {
           <Stack gap={3}>
             <Stack gap={2}>
               <HStack justify="space-between" align="center">
-                <Text fontWeight="bold" fontSize="lg">
+                <Text fontWeight="700" fontSize="xl">
                   {t("App Version Notes")}
                 </Text>
                 {versionHistory.length > CARD_VERSION_COUNT && (
@@ -64,7 +64,7 @@ export const AppVersionNotesCard = () => {
                 {displayedVersions.map((entry, index) => (
                   <Stack key={entry.version} gap={1}>
                     {index > 0 && <Separator my={3} />}
-                    <Text fontWeight="bold">
+                    <Text fontWeight="600" fontSize="md">
                       {t("Version Number")}
                       {": "}
                       {entry.version}

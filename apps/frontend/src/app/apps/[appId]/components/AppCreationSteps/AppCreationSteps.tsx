@@ -33,7 +33,9 @@ export const AppCreationSteps = () => {
           <VStack gap={8} align="flex-start">
             <HStack w="full">
               <HStack w="full" justify="start">
-                <Heading size="3xl">{t("Your App is almost ready!")}</Heading>
+                <Heading size="3xl" fontWeight="700">
+                  {t("Your App is almost ready!")}
+                </Heading>
               </HStack>
               <HStack w="full" justify="end" alignItems="center" display={{ base: "none", md: "flex" }}>
                 <Icon color="icon.default">

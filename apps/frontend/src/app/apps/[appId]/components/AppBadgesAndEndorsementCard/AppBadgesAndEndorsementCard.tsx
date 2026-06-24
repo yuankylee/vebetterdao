@@ -43,7 +43,9 @@ export const AppBadgesAndEndorsementCard = ({
           <Stack direction={["column", "column", "row"]} align="stretch" gap={0}>
             <Box flex={1} p={4}>
               <HStack justify="space-between" align="center" mb={4}>
-                <Heading size="xl">{t("App Badges")}</Heading>
+                <Heading fontWeight="700" fontSize="xl">
+                  {t("App Badges")}
+                </Heading>
                 <Link
                   textStyle="md"
                   fontWeight="normal"

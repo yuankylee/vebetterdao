@@ -76,7 +76,9 @@ export const AppBalanceCard = () => {
         borderColor={isPaused ? "status.negative.primary" : "border.primary"}>
         <Card.Header>
           <HStack justifyContent="space-between" alignItems="center" w="full">
-            <Heading size="xl">{t("App Funds")}</Heading>
+            <Heading fontWeight="700" fontSize="xl">
+              {t("App Funds")}
+            </Heading>
             <Link
               textStyle="md"
               fontWeight="normal"

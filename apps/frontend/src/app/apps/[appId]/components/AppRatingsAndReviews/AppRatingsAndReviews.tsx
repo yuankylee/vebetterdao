@@ -47,7 +47,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
   return (
     <Box bg="gray.50" borderRadius="xl" p={4}>
       <Stack gap={2}>
-        <Text fontWeight="bold" lineClamp={1}>
+        <Text fontWeight="600" fontSize="md" lineClamp={2}>
           {review.title}
         </Text>
         <Text color="gray.500" fontSize="sm" lineClamp={2}>
@@ -56,7 +56,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
         <HStack justify="space-between">
           <HStack gap={1.5}>
             <Box w={3} h={3} borderRadius="full" bg={"red"} flexShrink={0} />
-            <Text fontSize="xs" color="gray.600">
+            <Text fontSize="xs" color="gray.500">
               {truncateAddress(review.author)}
             </Text>
           </HStack>
@@ -68,15 +68,15 @@ const ReviewCard = ({ review }: { review: Review }) => {
           <HStack justify="center" gap={4}>
             <HStack gap={1} color="gray.500">
               <LuThumbsUp size={16} />
-              <Text fontSize="sm" fontWeight="semibold">{`${upPct}%`}</Text>
+              <Text fontSize="sm" color="gray.500" fontWeight="semibold">{`${upPct}%`}</Text>
             </HStack>
             <HStack gap={1} color="gray.500">
               <LuThumbsDown size={16} />
-              <Text fontSize="sm" fontWeight="semibold">{`${downPct}%`}</Text>
+              <Text fontSize="sm" color="gray.500" fontWeight="semibold">{`${downPct}%`}</Text>
             </HStack>
             <HStack gap={1} color="gray.500">
               <LuHand size={16} />
-              <Text fontSize="sm" fontWeight="semibold">{`${reportPct}%`}</Text>
+              <Text fontSize="sm" color="gray.500" fontWeight="semibold">{`${reportPct}%`}</Text>
             </HStack>
           </HStack>
         </HStack>
@@ -125,7 +125,7 @@ export const AppRatingsAndReviews = () => {
         <Card.Body p={0}>
           <Stack gap={4}>
             <HStack justify="space-between" align="center">
-              <Text fontWeight="bold" fontSize="lg">
+              <Text fontWeight="700" fontSize="xl">
                 {t("Ratings & Reviews")}
               </Text>
               <Link
@@ -143,7 +143,7 @@ export const AppRatingsAndReviews = () => {
               <Skeleton h="60px" borderRadius="md" />
             ) : (
               <HStack justify="space-between" align="center">
-                <Text fontWeight="black" fontSize="5xl" lineHeight={1}>
+                <Text fontSize="4xl" fontWeight="700" lineHeight={1}>
                   {ratingDisplay}
                 </Text>
                 <Stack align="flex-end" gap={1}>

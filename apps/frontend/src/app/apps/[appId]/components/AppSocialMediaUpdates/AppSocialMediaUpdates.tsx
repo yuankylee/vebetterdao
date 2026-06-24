@@ -55,7 +55,9 @@ export const AppSocialMediaUpdates = () => {
     <Card.Root w="full" variant="primary">
       <Card.Body>
         <Stack gap={4}>
-          <Heading size="xl">{t("Social Media Updates")}</Heading>
+          <Heading fontWeight="700" fontSize="xl">
+            {t("Social Media Updates")}
+          </Heading>
           <Box
             overflowX="auto"
             pb={2}

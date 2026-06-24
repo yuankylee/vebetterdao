@@ -73,8 +73,10 @@ export const EditAppWhitepaper = ({ form }: Props) => {
   return (
     <VStack align="stretch" gap={4}>
       <VStack align="flex-start" gap={1}>
-        <Heading size="sm">{t("Application Whitepaper")}</Heading>
-        <Text textStyle="xs" color="text.subtle">
+        <Heading textStyle="md" fontWeight="600">
+          {t("Application Whitepaper")}
+        </Heading>
+        <Text textStyle="xs" color="gray.500">
           {t("Only PDF files are supported (less than 100MB)")}
         </Text>
       </VStack>
@@ -86,7 +88,7 @@ export const EditAppWhitepaper = ({ form }: Props) => {
           <HStack gap={2}>
             {uploading ? <Spinner size="sm" /> : <UilFileAlt size="20px" />}
             {uploading ? (
-              <Text textStyle="sm" color="text.subtle">
+              <Text textStyle="sm" color="gray.500">
                 {t("Uploading…")}
               </Text>
             ) : (

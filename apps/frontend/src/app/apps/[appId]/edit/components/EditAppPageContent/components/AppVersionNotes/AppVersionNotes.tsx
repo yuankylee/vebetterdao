@@ -58,7 +58,7 @@ export const AppVersionNotes = ({ form }: Props) => {
         <Card.Body>
           <VStack align="stretch" gap={5}>
             <VStack align="stretch" gap={1}>
-              <Text textStyle="xl" fontWeight="bold">
+              <Text textStyle="md" fontWeight="600">
                 {t("App Version Notes")}
               </Text>
               <Text textStyle="sm" color="text.subtle">
@@ -69,7 +69,7 @@ export const AppVersionNotes = ({ form }: Props) => {
             </VStack>
 
             {displayedVersions.length > 0 ? (
-              <VStack align="stretch" gap={0}>
+              <VStack align="stretch" gap={0} h={"320px"} overflowX="auto">
                 {displayedVersions.map((entry, index) => {
                   const isLatest = index === 0
                   return (

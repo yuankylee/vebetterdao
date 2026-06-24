@@ -92,7 +92,9 @@ export const EditAppBadges = ({ form }: Props) => {
         <Card.Body>
           <VStack align="stretch" gap={4}>
             <VStack align="flex-start" gap={1}>
-              <Heading size="xl">{t("My Badges")}</Heading>
+              <Heading textStyle="md" fontWeight="600">
+                {t("My Badges")}
+              </Heading>
               <Text textStyle="sm" color="text.subtle">
                 {t(
                   "Enable public badges. When the dApp receives a badge, it will be automatically displayed to users publicly. (Only the badges obtained in the last round can be displayed.)",

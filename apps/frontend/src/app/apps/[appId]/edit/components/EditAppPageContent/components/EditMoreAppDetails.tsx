@@ -49,7 +49,9 @@ export const EditMoreAppDetails = ({ form }: Props) => {
 
   return (
     <VStack align="stretch" gap={4}>
-      <Heading size="xl">{t("More App Details")}</Heading>
+      <Heading textStyle="md" fontWeight="600">
+        {t("More App Details")}
+      </Heading>
       <Switch.Root
         checked={enabled}
         onCheckedChange={({ checked }) => form.setValue("moreDetailsEnabled", checked)}

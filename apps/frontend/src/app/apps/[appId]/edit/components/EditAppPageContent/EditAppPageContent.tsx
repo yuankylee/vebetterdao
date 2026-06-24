@@ -388,116 +388,116 @@ export const EditAppPageContent = () => {
         setActiveStep={() => {}}
         goToPrevious={() => {}}
       />
-      <Grid templateColumns="repeat(3, 1fr)" gap={[4, 4, 8]} w="full">
-        <GridItem colSpan={[3, 3, 2]} as="form" onSubmit={handleSubmit(onSubmit)}>
-          <Card.Root>
-            <Card.Header>
-              <Heading size="xl">{t("Edit the App")}</Heading>
-            </Card.Header>
-            <Card.Body>
-              <VStack gap={8} w="full" align="flex-start">
-                <SharedAppFormFields
-                  name={{
-                    register: register("name", {
-                      required: { value: true, message: t("Name required") },
-                      minLength: { value: 3, message: t("Name must be at least 3 characters") },
-                    }),
-                    error: errors.name?.message,
-                  }}
-                  description={{
-                    register: register("description", {
-                      required: { value: true, message: t("Description required") },
-                      minLength: { value: 20, message: t("Description must be at least 20 characters") },
-                    }),
-                    error: errors.description?.message,
-                  }}
-                  url={{
-                    register: register("external_url", {
-                      required: { value: true, message: t("Project url required") },
-                      pattern: {
-                        value: URL_REGEX,
-                        message: t("Invalid url"),
-                      },
-                    }),
-                    error: errors.external_url?.message,
-                  }}
-                  distribution={{
-                    register: register("distribution_strategy", {
-                      required: t("Distribution Strategy is required"),
-                      minLength: {
-                        value: 20,
-                        message: t("{{fieldName}} is too short", { fieldName: t("Distribution Strategy") }),
-                      },
-                    }),
-                    error: errors.distribution_strategy?.message,
-                  }}
-                />
+      <VStack align={"left"}>
+        <Heading size="2xl" mb={5}>
+          {t("Edit the App")}
+        </Heading>
+        <Grid templateColumns="repeat(3, 1fr)" gap={[4, 4, 8]} w="full">
+          <GridItem colSpan={[3, 3, 2]} as="form" onSubmit={handleSubmit(onSubmit)}>
+            <Card.Root>
+              <Card.Body>
+                <VStack gap={8} w="full" align="flex-start">
+                  <SharedAppFormFields
+                    name={{
+                      register: register("name", {
+                        required: { value: true, message: t("Name required") },
+                        minLength: { value: 3, message: t("Name must be at least 3 characters") },
+                      }),
+                      error: errors.name?.message,
+                    }}
+                    description={{
+                      register: register("description", {
+                        required: { value: true, message: t("Description required") },
+                        minLength: { value: 20, message: t("Description must be at least 20 characters") },
+                      }),
+                      error: errors.description?.message,
+                    }}
+                    url={{
+                      register: register("external_url", {
+                        required: { value: true, message: t("Project url required") },
+                        pattern: {
+                          value: URL_REGEX,
+                          message: t("Invalid url"),
+                        },
+                      }),
+                      error: errors.external_url?.message,
+                    }}
+                    distribution={{
+                      register: register("distribution_strategy", {
+                        required: t("Distribution Strategy is required"),
+                        minLength: {
+                          value: 20,
+                          message: t("{{fieldName}} is too short", { fieldName: t("Distribution Strategy") }),
+                        },
+                      }),
+                      error: errors.distribution_strategy?.message,
+                    }}
+                  />
 
-                {/* CategorySelector is generic and works with any RHF form type */}
-                <CategorySelector
-                  fieldName="categories"
-                  register={register}
-                  setValue={setValue}
-                  watch={watch}
-                  registerOptions={{
-                    required: { value: true, message: t("Categories are required") },
-                  }}
-                  error={errors.categories?.message}
-                />
+                  {/* CategorySelector is generic and works with any RHF form type */}
+                  <CategorySelector
+                    fieldName="categories"
+                    register={register}
+                    setValue={setValue}
+                    watch={watch}
+                    registerOptions={{
+                      required: { value: true, message: t("Categories are required") },
+                    }}
+                    error={errors.categories?.message}
+                  />
 
-                {/* Treasury and Admin address — contract enforces onlyRoleAndAppAdmin; inputs disabled for non-admins */}
-                <SharedWalletAddressFields
-                  treasury={{
-                    value: watch("treasuryWalletAddress"),
-                    onAddressResolved: address => setValue("treasuryWalletAddress", address ?? ""),
-                    disabled: !isAdmin,
-                  }}
-                  admin={{
-                    value: watch("adminAddress"),
-                    onAddressResolved: address => setValue("adminAddress", address ?? ""),
-                    disabled: !isAdmin,
-                  }}
-                />
+                  {/* Treasury and Admin address — contract enforces onlyRoleAndAppAdmin; inputs disabled for non-admins */}
+                  <SharedWalletAddressFields
+                    treasury={{
+                      value: watch("treasuryWalletAddress"),
+                      onAddressResolved: address => setValue("treasuryWalletAddress", address ?? ""),
+                      disabled: !isAdmin,
+                    }}
+                    admin={{
+                      value: watch("adminAddress"),
+                      onAddressResolved: address => setValue("adminAddress", address ?? ""),
+                      disabled: !isAdmin,
+                    }}
+                  />
 
-                <SimpleGrid columns={[1, 2]} gap={4} w="full">
-                  <EditAppLogo form={form} />
-                  <EditAppBanner form={form} />
-                </SimpleGrid>
+                  <SimpleGrid columns={[1, 2]} gap={4} w="full">
+                    <EditAppLogo form={form} />
+                    <EditAppBanner form={form} />
+                  </SimpleGrid>
 
-                <VStack align={"flex-start"} gap={4}>
-                  <EditVeWorldBanner form={form} />
-                  <EditVeWorldFeatureImage form={form} />
+                  <VStack align={"flex-start"} gap={4}>
+                    <EditVeWorldBanner form={form} />
+                    <EditVeWorldFeatureImage form={form} />
+                  </VStack>
+
+                  <Separator />
+                  <EditAppSocialUrls form={form} />
+                  <Separator />
+                  <EditAppWhitepaper form={form} />
+                  <Separator />
+                  <EditAppTutorial form={form} />
                 </VStack>
+              </Card.Body>
+            </Card.Root>
+            <Card.Root mt={4}>
+              <Card.Body>
+                <EditMoreAppDetails form={form} />
+              </Card.Body>
+            </Card.Root>
+            <Button mt={6} colorPalette="blue" type="submit" size="lg" disabled={!isFormChanged} borderRadius={"full"}>
+              {t("Submit")}
+            </Button>
+          </GridItem>
 
-                <Separator />
-                <EditAppSocialUrls form={form} />
-                <Separator />
-                <EditAppWhitepaper form={form} />
-                <Separator />
-                <EditAppTutorial form={form} />
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-          <Card.Root mt={4}>
-            <Card.Body>
-              <EditMoreAppDetails form={form} />
-            </Card.Body>
-            <Card.Footer display={"flex"} w="full" mt={10}>
-              <Button colorPalette="blue" type="submit" size="lg" disabled={!isFormChanged} borderRadius={"full"}>
-                {t("Submit")}
-              </Button>
-            </Card.Footer>
-          </Card.Root>
-        </GridItem>
-
-        <GridItem colSpan={[3, 3, 1]}>
-          <VStack gap={4} w="full" align={"flex-start"} position="sticky" top={100} right={0}>
-            <EditAppBadges form={form} />
-            <EditSocialMediaUpdates form={form} />
-            <AppVersionNotes form={form} />
-          </VStack>
-        </GridItem>
-      </Grid>
+          <GridItem colSpan={[3, 3, 1]}>
+            <VStack gap={4} w="full" align={"flex-start"}>
+              <EditAppBadges form={form} />
+              <EditSocialMediaUpdates form={form} />
+              <AppVersionNotes form={form} />
+            </VStack>
+          </GridItem>
+        </Grid>
+      </VStack>
     </>
   )
 }

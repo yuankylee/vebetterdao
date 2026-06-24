@@ -75,7 +75,7 @@ export const DistributionPerformanceTitleRow = () => {
 
   return (
     <HStack gap={2} align="center" flexWrap="wrap" minW={0}>
-      <Heading size="xl" mb={0}>
+      <Heading fontWeight="700" fontSize="xl" mb={0}>
         {t("Distribution Performance")}
       </Heading>
       <DistributionPerformanceInfoPopover />

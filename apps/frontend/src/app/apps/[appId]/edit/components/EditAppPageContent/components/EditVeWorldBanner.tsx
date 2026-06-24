@@ -55,7 +55,7 @@ export const EditVeWorldBanner = ({ form }: Props) => {
 
   return (
     <VStack gap={2} align={"start"} w="full">
-      <Heading size="sm">
+      <Heading textStyle="md" fontWeight="600">
         <Text css={{ color: "red", display: "inline" }}>{"*"}</Text> {t("Veworld Banner")}
       </Heading>
 
@@ -86,7 +86,7 @@ export const EditVeWorldBanner = ({ form }: Props) => {
             </IconButton>
           </Flex>
         </Flex>
-        <Text textStyle="sm" color={"gray"} pt={0}>
+        <Text textStyle="xs" color={"gray.500"} pt={0}>
           {t(VEWORLD_BANNER_UPLOAD_GUIDELINES)}
         </Text>
       </VStack>

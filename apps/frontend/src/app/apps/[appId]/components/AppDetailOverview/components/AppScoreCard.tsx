@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next"
 import { mapXAppPreviousRoundScore } from "@/api/indexer/xapps/mapXAppPreviousRoundScore"
 import { useXAppPreviousRoundScore } from "@/api/indexer/xapps/useXAppPreviousRoundScore"
 import { LightMode } from "@/components/ui/color-mode"
+const notDataImage = "/assets/images/image-not-data.png"
 
 import { APP_SCORE_ACCENT_HEX } from "./appScoreConstants"
 import { AppScoreDetailsModal } from "./AppScoreDetailsModal"
@@ -25,9 +26,12 @@ export const AppScoreCard = () => {
     <>
       <LightMode>
         <Card.Root
+          css={{
+            padding: 6,
+          }}
           variant="primary"
           position="relative"
-          h="full"
+          h="320px"
           overflow="hidden"
           bg="#E9FDF1"
           border="none"
@@ -56,28 +60,39 @@ export const AppScoreCard = () => {
               {t("More")}
               <UilArrowUpRight />
             </Link>
-            <Stack gap={0} mb={12}>
-              <Skeleton loading={isLoading}>
-                <Text textStyle="4xl" mb={1} fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
-                  {scoreData.scoreDisplay}
-                </Text>
-              </Skeleton>
-              <Text textStyle="sm" color="text.subtle">
-                {t("App Score")}
-              </Text>
-            </Stack>
-            <Stack>
-              <Stack gap={1} mb={6}>
-                <Skeleton loading={isLoading}>
-                  <Text textStyle="lg" fontWeight="bold" color="text.default">
-                    {"#"}
-                    {scoreData.rankDisplay}
+            {scoreData.scoreDisplay ? (
+              <Stack gap={0} mb={6} h={"200px"}>
+                <Stack gap={1} mb={12}>
+                  <Skeleton loading={isLoading}>
+                    <Text textStyle="4xl" mb={1} fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
+                      {scoreData.scoreDisplay}
+                    </Text>
+                  </Skeleton>
+                  <Text textStyle="sm" color="text.subtle">
+                    {t("App Score")}
                   </Text>
-                </Skeleton>
-                <Text textStyle="sm" color="text.subtle">
-                  {t("Ranking")}
+                </Stack>
+                <Stack gap={1}>
+                  <Skeleton loading={isLoading}>
+                    <Text textStyle="lg" fontWeight="bold" color="text.default">
+                      {"#"}
+                      {scoreData.rankDisplay}
+                    </Text>
+                  </Skeleton>
+                  <Text textStyle="sm" color="text.subtle">
+                    {t("Ranking")}
+                  </Text>
+                </Stack>
+              </Stack>
+            ) : (
+              <Stack h={"200px"}>
+                <Image w="48px" src={notDataImage} h={"56px"} my={2} />
+                <Text textStyle="md" color="gray.500">
+                  {t("No App Scores Yet")}
                 </Text>
               </Stack>
+            )}
+            <Stack>
               <Skeleton loading={isLoading}>
                 <Text textStyle="lg" fontWeight="semibold" color="text.default">
                   {t("{{date}} (Round #{{round}})", {

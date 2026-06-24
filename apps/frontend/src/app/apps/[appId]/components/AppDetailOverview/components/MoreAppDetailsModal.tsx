@@ -80,8 +80,8 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
           </Text>
         </Skeleton>
         <VStack align="stretch" gap={4} w="full">
-          <SectionPanel title={t("Ecosystem Partners")}>
-            {partners.length > 0 ? (
+          {partners.length > 0 && (
+            <SectionPanel title={t("Ecosystem Partners")}>
               <HStack gap={3} overflowX="auto" pb={1} align="stretch">
                 {partners.map((url, index) => (
                   <Image
@@ -98,15 +98,11 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
                   />
                 ))}
               </HStack>
-            ) : (
-              <Text textStyle="sm" color="text.subtle">
-                {t("No ecosystem partners to display")}
-              </Text>
-            )}
-          </SectionPanel>
+            </SectionPanel>
+          )}
 
-          <SectionPanel title={t("Team Background")}>
-            {teamToShow.length > 0 ? (
+          {teamToShow.length > 0 && (
+            <SectionPanel title={t("Team Background")}>
               <SimpleGrid columns={{ base: 1, md: 2 }} gap={4} w="full">
                 {teamToShow.map(member => {
                   const photoUrl = member.photo ? safeConvertUri(member.photo) : null
@@ -126,39 +122,32 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
                   )
                 })}
               </SimpleGrid>
-            ) : (
-              <Text textStyle="sm" color="text.subtle">
-                {t("No team background to display")}
-              </Text>
-            )}
-          </SectionPanel>
+            </SectionPanel>
+          )}
 
-          <SectionPanel title={t("App Roadmap")}>
-            {roadmap?.image || (roadmap?.description ?? "").trim() ? (
-              <VStack align="stretch" gap={4} w="full">
-                {roadmap?.image ? (
-                  <Image
-                    src={safeConvertUri(roadmap.image)}
-                    alt={t("App Roadmap")}
-                    w="full"
-                    maxH="420px"
-                    objectFit="contain"
-                    borderRadius="lg"
-                    bg="white"
-                  />
-                ) : null}
-                {(roadmap?.description ?? "").trim() ? (
-                  <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap">
-                    {roadmap?.description}
-                  </Text>
-                ) : null}
-              </VStack>
-            ) : (
-              <Text textStyle="sm" color="text.subtle">
-                {t("No app roadmap to display")}
-              </Text>
-            )}
-          </SectionPanel>
+          {roadmap?.image ||
+            ((roadmap?.description ?? "").trim() && (
+              <SectionPanel title={t("App Roadmap")}>
+                <VStack align="stretch" gap={4} w="full">
+                  {roadmap?.image ? (
+                    <Image
+                      src={safeConvertUri(roadmap.image)}
+                      alt={t("App Roadmap")}
+                      w="full"
+                      maxH="420px"
+                      objectFit="contain"
+                      borderRadius="lg"
+                      bg="white"
+                    />
+                  ) : null}
+                  {(roadmap?.description ?? "").trim() ? (
+                    <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap">
+                      {roadmap?.description}
+                    </Text>
+                  ) : null}
+                </VStack>
+              </SectionPanel>
+            ))}
         </VStack>
       </VStack>
     </BaseModal>

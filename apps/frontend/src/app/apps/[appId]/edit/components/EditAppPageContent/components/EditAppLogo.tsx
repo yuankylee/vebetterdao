@@ -61,7 +61,7 @@ export const EditAppLogo = ({ form }: Props) => {
 
   return (
     <VStack gap={2} align={"start"}>
-      <Text textStyle="sm" fontWeight="semibold">
+      <Text textStyle="md" fontWeight="600">
         <RequiredAsterisk />
         {t("Logo")}
       </Text>
@@ -97,7 +97,7 @@ export const EditAppLogo = ({ form }: Props) => {
           </Flex>
         </Box>
       </Flex>
-      <Text textStyle="sm" color={invalidFormat ? "red" : "gray"} pt={0}>
+      <Text textStyle="xs" color={invalidFormat ? "red" : "gray.500"} pt={0}>
         {invalidFormat ? invalidMessage : t(LOGO_UPLOAD_GUIDELINES)}
       </Text>
     </VStack>

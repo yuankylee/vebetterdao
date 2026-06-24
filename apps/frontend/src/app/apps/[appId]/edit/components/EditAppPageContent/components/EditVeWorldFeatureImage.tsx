@@ -73,7 +73,7 @@ export const EditVeWorldFeatureImage = ({ form }: Props) => {
 
   return (
     <VStack gap={2} align={"start"}>
-      <Heading size="sm">
+      <Heading textStyle="md" fontWeight="600">
         <Text css={{ color: "red", display: "inline" }}>{"*"}</Text> {t("VeWorld Featured Image")}
       </Heading>
       <VStack gap={2} w="full">
@@ -107,7 +107,7 @@ export const EditVeWorldFeatureImage = ({ form }: Props) => {
             </IconButton>
           </Flex>
         </Flex>
-        <Text textStyle="sm" color={invalidFormat ? "red" : "gray"} pt={0}>
+        <Text textStyle="xs" color={invalidFormat ? "red" : "gray.500"} pt={0}>
           {invalidFormat ? invalidMessage : <VeWorldFeaturedImageGuidelines />}
         </Text>
       </VStack>

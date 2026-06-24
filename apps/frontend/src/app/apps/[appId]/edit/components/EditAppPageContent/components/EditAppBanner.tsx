@@ -49,7 +49,7 @@ export const EditAppBanner = ({ form }: Props) => {
   )
   return (
     <VStack gap={2} align={"start"}>
-      <Text textStyle="sm" fontWeight="semibold">
+      <Text textStyle="md" fontWeight="600">
         <RequiredAsterisk />
         {t("Banner")}
       </Text>
@@ -79,7 +79,7 @@ export const EditAppBanner = ({ form }: Props) => {
           </IconButton>
         </Flex>
       </Flex>
-      <Text textStyle="sm" color={"gray"} pt={0}>
+      <Text textStyle="xs" color={"gray.500"} pt={0}>
         {t(BANNER_UPLOAD_GUIDELINES)}
       </Text>
     </VStack>

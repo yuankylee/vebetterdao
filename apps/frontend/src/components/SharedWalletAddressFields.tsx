@@ -22,7 +22,7 @@ export const SharedWalletAddressFields = ({ treasury, admin }: Props) => {
   return (
     <>
       <Field.Root invalid={!treasury.value}>
-        <Field.Label>
+        <Field.Label textStyle="md" fontWeight="600">
           <RequiredAsterisk />
           {t("Treasury address")}
         </Field.Label>
@@ -52,7 +52,7 @@ export const SharedWalletAddressFields = ({ treasury, admin }: Props) => {
       </Field.Root>
 
       <Field.Root invalid={!admin.value}>
-        <Field.Label>
+        <Field.Label textStyle="md" fontWeight="600">
           <RequiredAsterisk />
           {t("Admin address")}
         </Field.Label>

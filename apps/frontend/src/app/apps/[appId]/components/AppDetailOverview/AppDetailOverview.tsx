@@ -98,7 +98,7 @@ export const AppDetailOverview = ({
                         </Skeleton>
                         <Stack gap={1}>
                           <Skeleton loading={appMetadataLoading && !!appMetadata}>
-                            <Heading size="3xl">
+                            <Heading size="3xl" fontWeight="700">
                               {appMetadata?.name ?? appMetadataError?.message ?? "Error loading name"}
                             </Heading>
                           </Skeleton>
