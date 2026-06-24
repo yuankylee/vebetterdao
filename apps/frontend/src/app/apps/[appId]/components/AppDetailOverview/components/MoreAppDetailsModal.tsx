@@ -133,30 +133,28 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
             </SectionPanel>
           )}
 
-          {appMetadata.more_details_enabled &&
-            (roadmap?.image ||
-              ((roadmap?.description ?? "").trim() && (
-                <SectionPanel title={t("App Roadmap")}>
-                  <VStack align="stretch" gap={4} w="full">
-                    {roadmap?.image ? (
-                      <Image
-                        src={safeConvertUri(roadmap.image)}
-                        alt={t("App Roadmap")}
-                        w="full"
-                        maxH="420px"
-                        objectFit="contain"
-                        borderRadius="lg"
-                        bg="white"
-                      />
-                    ) : null}
-                    {(roadmap?.description ?? "").trim() ? (
-                      <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap" wordBreak="break-word">
-                        {roadmap?.description}
-                      </Text>
-                    ) : null}
-                  </VStack>
-                </SectionPanel>
-              )))}
+          {appMetadata.more_details_enabled && (roadmap?.image || (roadmap?.description ?? "").trim()) && (
+            <SectionPanel title={t("App Roadmap")}>
+              <VStack align="stretch" gap={4} w="full">
+                {roadmap?.image ? (
+                  <Image
+                    src={safeConvertUri(roadmap.image)}
+                    alt={t("App Roadmap")}
+                    w="full"
+                    maxH="420px"
+                    objectFit="contain"
+                    borderRadius="lg"
+                    bg="white"
+                  />
+                ) : null}
+                {(roadmap?.description ?? "").trim() ? (
+                  <Text textStyle="sm" color="text.subtle" whiteSpace="pre-wrap" wordBreak="break-word">
+                    {roadmap?.description}
+                  </Text>
+                ) : null}
+              </VStack>
+            </SectionPanel>
+          )}
         </VStack>
       </VStack>
     </BaseModal>
