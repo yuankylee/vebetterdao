@@ -222,9 +222,8 @@ export const EditAppPageContent = () => {
         },
         version_history: data.versionHistory.length > 0 ? data.versionHistory : undefined,
         tutorial_mode: data.tutorialMode,
-        tutorial_video: data.tutorialMode === "video" ? data.tutorialVideo || undefined : undefined,
-        tutorial_images:
-          data.tutorialMode === "image" && data.tutorialImages.length > 0 ? data.tutorialImages : undefined,
+        tutorial_video: data.tutorialVideo || undefined,
+        tutorial_images: data.tutorialImages.length > 0 ? data.tutorialImages : undefined,
         whitepaper: data.whitepaperFile || undefined,
         whitepaper_filename: data.whitepaperFileName || undefined,
         more_details_enabled: data.moreDetailsEnabled,
