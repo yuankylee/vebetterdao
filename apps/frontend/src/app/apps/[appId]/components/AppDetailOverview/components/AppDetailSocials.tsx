@@ -1,5 +1,5 @@
 import { HStack, Icon, IconButton, Link } from "@chakra-ui/react"
-import { FaDiscord, FaLinkedin, FaMedium, FaTelegram, FaYoutube } from "react-icons/fa6"
+import { FaDiscord, FaInstagram, FaLinkedin, FaMedium, FaTelegram, FaYoutube } from "react-icons/fa6"
 import { RiTwitterXFill } from "react-icons/ri"
 
 export type Social = {
@@ -13,6 +13,7 @@ const SocialIconMap = {
   Youtube: FaYoutube,
   Medium: FaMedium,
   Linkedin: FaLinkedin,
+  Instagram: FaInstagram,
 }
 const SocialIconColorMap = {
   Twitter: "social.twitter",
@@ -20,6 +21,7 @@ const SocialIconColorMap = {
   Telegram: "social.telegram",
   Youtube: "social.youtube",
   Medium: "social.medium",
+  Instagram: "social.instagram",
 }
 export const AppDetailSocials = ({ socialUrls }: { socialUrls: Social[] }) => {
   return (

@@ -3,6 +3,7 @@ import type { XAppPreviousRoundScore } from "./types"
 export type AppScoreBreakdownRow = {
   labelKey: "Distribution Efficiency" | "Activity" | "Community" | "Profile Completeness"
   value: number
+  max: number
 }
 
 export type AppScoreViewModel = {
@@ -21,10 +22,10 @@ export const mapXAppPreviousRoundScore = (data: XAppPreviousRoundScore | null | 
   const roundDisplay = data?.round != null ? String(data.round) : ""
 
   const breakdown: AppScoreBreakdownRow[] = [
-    { labelKey: "Distribution Efficiency", value: data?.distribution ?? 0 },
-    { labelKey: "Activity", value: data?.activity ?? 0 },
-    { labelKey: "Community", value: data?.community ?? 0 },
-    { labelKey: "Profile Completeness", value: data?.health ?? 0 },
+    { labelKey: "Distribution Efficiency", value: data?.distribution ?? 0, max: 30 },
+    { labelKey: "Activity", value: data?.activity ?? 0, max: 30 },
+    { labelKey: "Community", value: data?.community ?? 0, max: 30 },
+    { labelKey: "Profile Completeness", value: data?.health ?? 0, max: 10 },
   ]
 
   return { scoreDisplay, rankDisplay, roundDate, roundDisplay, breakdown }
