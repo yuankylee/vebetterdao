@@ -69,7 +69,7 @@ export const AppVersionNotes = ({ form }: Props) => {
             </VStack>
 
             {displayedVersions.length > 0 ? (
-              <VStack align="stretch" gap={0} h={"320px"} overflowX="auto">
+              <VStack align="stretch" gap={0} maxH={"320px"} overflowX="auto">
                 {displayedVersions.map((entry, index) => {
                   const isLatest = index === 0
                   return (

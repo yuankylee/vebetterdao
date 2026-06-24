@@ -69,7 +69,7 @@ export const AppBadgesAndEndorsementCard = ({
               </HStack>
             </Box>
 
-            <Box flex={1} p={4}>
+            <Box flex={1} px={4} pt={4}>
               <AppEndorsementInfoCard
                 noCard
                 endorsementScore={endorsementScore}

@@ -113,7 +113,13 @@ export const AppEndorsementInfoCard = ({
 
     if (shouldRenderEndorseButton) {
       buttonComponents.push(
-        <Button key="endorseButton" variant="primary" onClick={onOpenEndorsementModal} w="full">
+        <Button
+          key="endorseButton"
+          borderColor="blue"
+          variant="outline"
+          color={"blue"}
+          onClick={onOpenEndorsementModal}
+          w="full">
           {t("Endorse {{appName}}", { appName: app?.name ?? "" })}
         </Button>,
       )
@@ -143,10 +149,8 @@ export const AppEndorsementInfoCard = ({
           key="removeEndorsementButton"
           variant="link"
           rounded="xl"
-          mt="4"
+          color={"gray"}
           colorPalette="red"
-          textStyle="md"
-          fontWeight="semibold"
           onClick={onOpenUnendorsementModal}
           w="full">
           {t("Remove endorsement")}
@@ -180,12 +184,12 @@ export const AppEndorsementInfoCard = ({
   )
 
   const body = (
-    <Stack gap={6} w="full">
+    <Stack gap={2} w="full">
       <Skeleton loading={isEndorsementStatusLoading}>
         <EndorsementStatusCallout endorsementStatus={endorsementStatus} />
       </Skeleton>
 
-      <Stack direction="column" gap={4} w="full" justify="space-between" alignItems="center">
+      <Stack direction="column" gap={2} w="full" justify="space-between" alignItems="center">
         <EndorsementDetails
           appId={app?.id ?? ""}
           endorsementScore={endorsementScore}
@@ -203,7 +207,7 @@ export const AppEndorsementInfoCard = ({
   const footer =
     actionButtons.length > 0 ? (
       <Skeleton loading={isUserRolesDataLoading || isEndorsementStatusLoading || isUserNodesLoading} w="full">
-        <VStack gap={2} w={"full"}>
+        <VStack gap={1} w={"full"}>
           {actionButtons}
         </VStack>
       </Skeleton>
@@ -212,7 +216,7 @@ export const AppEndorsementInfoCard = ({
   return (
     <>
       {noCard ? (
-        <Stack gap={6} w="full" h="full">
+        <Stack gap={4} w="full" h="full">
           {header}
           {body}
           {footer}
