@@ -81,6 +81,7 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
   const { account } = useWallet()
   const { open: openWalletModal } = useWalletModal()
   const [selectedRating, setSelectedRating] = useState(0)
+  const [ratingError, setRatingError] = useState(false)
   const [lastRatingTxId, setLastRatingTxId] = useState<string>()
 
   const { data: ratingSummary, refetch: refetchRatingSummary } = useAppRatingSummary(appId, account?.address)
@@ -115,7 +116,10 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       openWalletModal()
       return
     }
-    if (selectedRating === 0) return
+    if (selectedRating === 0) {
+      setRatingError(true)
+      return
+    }
     const eligible = await checkEligibility(appId, account.address)
     if (!eligible) return
     submitRating.sendTransaction({ appId, rating: selectedRating })
@@ -127,7 +131,10 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
       return
     }
     const rating = selectedRating > 0 ? selectedRating : existingRating
-    if (rating === 0) return
+    if (rating === 0) {
+      setRatingError(true)
+      return
+    }
     updateRating.sendTransaction({ appId, rating })
   }
 
@@ -147,9 +154,15 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
                 </Text>
               </Stack>
               <Stack gap={1} w="full" align="center">
-                <InteractiveStars value={selectedRating} onChange={setSelectedRating} />
-                <Text textStyle="sm" fontWeight="semibold">
-                  {t("Tap to rate")}
+                <InteractiveStars
+                  value={selectedRating}
+                  onChange={v => {
+                    setSelectedRating(v)
+                    setRatingError(false)
+                  }}
+                />
+                <Text textStyle="sm" fontWeight="semibold" color={ratingError ? "red.500" : undefined}>
+                  {ratingError ? t("Please tap to rate") : t("Tap to rate")}
                 </Text>
               </Stack>
 
@@ -178,10 +191,13 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
                 <InteractiveStars
                   value={selectedRating}
                   displayRatingFromApi={existingRating}
-                  onChange={setSelectedRating}
+                  onChange={v => {
+                    setSelectedRating(v)
+                    setRatingError(false)
+                  }}
                 />
-                <Text textStyle="sm" fontWeight="semibold">
-                  {t("Tap to rate")}
+                <Text textStyle="sm" fontWeight="semibold" color={ratingError ? "red.500" : undefined}>
+                  {ratingError ? t("Please tap to rate") : t("Tap to rate")}
                 </Text>
               </Stack>
               <Button variant="primary" w="full" borderRadius="full" onClick={handleUpdateRating}>

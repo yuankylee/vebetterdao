@@ -39,6 +39,7 @@ const DistributorItem = ({ distributor }: { distributor: string }) => {
               {humanAddress(distributor, 10, 6)}
             </Text>
             <IconButton
+              outline="none"
               variant="ghost"
               size="2xs"
               color={isCopied ? "green" : "text.subtle"}

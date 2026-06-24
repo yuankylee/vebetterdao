@@ -34,7 +34,7 @@ export const AppTutorial = () => {
       </Card.Root>
     )
   }
-
+  const tutorialMode = appMetadata?.tutorial_mode
   const hasVideo = !!appMetadata?.tutorial_video
   const images: string[] = appMetadata?.tutorial_images ?? []
 
@@ -46,7 +46,7 @@ export const AppTutorial = () => {
         <Stack gap={4}>
           <Heading size="xl">{t("App Tutorial")}</Heading>
 
-          {hasVideo ? (
+          {tutorialMode == "video" && hasVideo ? (
             // eslint-disable-next-line jsx-a11y/media-has-caption
             <video
               src={safeUrl(appMetadata!.tutorial_video!)}

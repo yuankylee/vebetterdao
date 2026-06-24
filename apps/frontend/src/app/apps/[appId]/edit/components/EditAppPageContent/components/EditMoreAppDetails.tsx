@@ -15,14 +15,13 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react"
-import { UilDraggabledots, UilPlus, UilTimes, UilTrash, UilUpload } from "@iconscout/react-unicons"
+import { UilDraggabledots, UilPlus, UilTimes, UilTrash } from "@iconscout/react-unicons"
 import { Reorder, useDragControls } from "framer-motion"
 import { ChangeEvent, useCallback, useRef, useState } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { IoMdAdd } from "react-icons/io"
 
-const notFoundImage = "/assets/images/image-not-found.webp"
 import { toaster } from "@/components/ui/toaster"
 import { AVG_PHONE_WIDTH, VE_WOLRD_SCALING_FACTOR } from "@/constants/XAppsMedia"
 import { uploadBlobToIPFS } from "@/utils/ipfs"
@@ -108,7 +107,7 @@ const TeamBackgroundSection = ({ form }: Props) => {
               <Heading size="sm">{t("Team Background")}</Heading>
               <Text textStyle="xs" color="text.subtle">
                 {t(
-                  "Provide team and founder information so users can gain in-depth understanding of the stories and professional backgrounds behind the project, thereby building a deeper sense of trust. (Recommended size: 200*200px)",
+                  "Provide team and founder information so users can gain in-depth understanding of the stories and professional backgrounds behind the project, thereby building a deeper sense of trust. (Recommended size: 340x88)",
                 )}
               </Text>
             </VStack>
@@ -213,8 +212,8 @@ const TeamMemberCard = ({
       <IconButton
         zIndex={99}
         position="absolute"
-        right={1}
-        top={1}
+        right={0}
+        top={0}
         justifyContent="center"
         aria-label={t("Remove member")}
         variant="outline"
@@ -243,7 +242,7 @@ const TeamMemberCard = ({
                 <Image
                   src={displayUrl}
                   alt={`Member ${index + 1}`}
-                  style={{ height: 88, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+                  style={{ height: 100, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
                   objectFit="cover"
                 />
                 {member.photo && !uploading && (
@@ -371,12 +370,31 @@ const AppRoadmapSection = ({ form }: Props) => {
             </HStack>
           ) : (
             <HStack justify="center" style={{ position: "relative" }}>
-              <Image
-                src={displayUrl ?? notFoundImage}
-                alt={t("App Roadmap")}
-                style={{ height: 76, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
-                objectFit="cover"
-              />
+              {displayUrl ? (
+                <Image
+                  src={displayUrl}
+                  alt={t("App Roadmap")}
+                  style={{ height: 100, width: computedWidth, borderRadius: 12, overflow: "hidden" }}
+                  objectFit="cover"
+                />
+              ) : (
+                <VStack
+                  borderRadius="xl"
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  cursor={"pointer"}
+                  w="100px"
+                  h="100px"
+                  gap={1}
+                  justify={"center"}
+                  align="center"
+                  bg="gray.50"
+                  onClick={() => inputRef.current?.click()}
+                  loading={uploading}>
+                  <IoMdAdd />
+                  <Text textStyle="xs">{t("Upload")}</Text>
+                </VStack>
+              )}
               {roadmapImage && !uploading && (
                 <IconButton
                   position="absolute"
@@ -394,24 +412,6 @@ const AppRoadmapSection = ({ form }: Props) => {
               )}
             </HStack>
           )}
-
-          <HStack>
-            <Button
-              variant="tertiary"
-              rounded="full"
-              onClick={() => inputRef.current?.click()}
-              loading={uploading}
-              px={8}
-              css={{
-                _icon: {
-                  width: "4",
-                  height: "4",
-                },
-              }}>
-              <UilUpload />
-              {t("Upload")}
-            </Button>
-          </HStack>
 
           <Textarea
             placeholder={t("Description")}
@@ -484,7 +484,7 @@ const EcosystemPartnersSection = ({ form }: Props) => {
               <Heading size="sm">{t("Ecosystem Partners")}</Heading>
               <Text textStyle="xs" color="text.subtle">
                 {t(
-                  "Displaying partner information can effectively enhance users' sense of trust in the application. (Suggested size: 512×512 pixels, keep a 1:1 square image)",
+                  "Displaying partner information can effectively enhance users' sense of trust in the application. (Suggested size: 512x512, keep a 1:1 square image)",
                 )}
               </Text>
             </VStack>

@@ -74,7 +74,7 @@ export const EditAppWhitepaper = ({ form }: Props) => {
     <VStack align="stretch" gap={4}>
       <VStack align="flex-start" gap={1}>
         <Heading textStyle="md" fontWeight="600">
-          {t("Application Whitepaper")}
+          {t("App Whitepaper")}
         </Heading>
         <Text textStyle="xs" color="gray.500">
           {t("Only PDF files are supported (less than 100MB)")}

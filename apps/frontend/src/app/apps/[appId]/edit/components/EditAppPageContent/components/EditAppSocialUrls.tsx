@@ -1,4 +1,4 @@
-import { Field, Icon, Input, InputGroup, SimpleGrid, Text, VStack } from "@chakra-ui/react"
+import { Field, Icon, Input, InputGroup, SimpleGrid, Text, VStack, Heading } from "@chakra-ui/react"
 import { useMemo } from "react"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -91,15 +91,22 @@ export const EditAppSocialUrls = ({ form }: Props) => {
 
   return (
     <VStack align={"stretch"} gap={4} w="full">
-      <Text textStyle="md" fontWeight="600">
-        {t("Social media links")}
-      </Text>
+      <VStack align="flex-start" gap={1}>
+        <Heading textStyle="md" fontWeight="600">
+          {t("Support Channel")}
+        </Heading>
+        <Text textStyle="xs" color="gray.500">
+          {t(
+            "Add social media links so users can quickly establish a contact channel with you and provide feedback on App-related issues.",
+          )}
+        </Text>
+      </VStack>
       <SimpleGrid columns={[1, 2]} gap={4} w="full">
         {inputData.map(({ inputKey, url, error, placeholder, icon }) => (
           <Field.Root invalid={!!error} key={inputKey}>
             <InputGroup startElement={icon}>
               <Input
-                rounded="full"
+                rounded="xl"
                 textStyle="sm"
                 type="url"
                 placeholder={placeholder}
