@@ -50,7 +50,7 @@ export const AppVersionNotesModal = ({ isOpen, onClose, versions }: Props) => {
                   </Text>
                 )}
                 {entry.notes && (
-                  <Text color="gray.700" fontSize="sm" whiteSpace="pre-wrap">
+                  <Text color="gray.700" fontSize="sm" wordBreak="break-word" whiteSpace="pre-wrap">
                     {entry.notes}
                   </Text>
                 )}

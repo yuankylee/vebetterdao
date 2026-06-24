@@ -92,7 +92,7 @@ export const AppVersionNotes = ({ form }: Props) => {
                           {dayjs(Number(entry.timestamp)).format("MMM D, YYYY")}
                         </Text>
                       )}
-                      <Text textStyle="sm" color="text.default" mt={2} whiteSpace="pre-wrap">
+                      <Text textStyle="sm" color="text.default" mt={2} wordBreak="break-word" whiteSpace="pre-wrap">
                         {entry.notes}
                       </Text>
                     </VStack>
