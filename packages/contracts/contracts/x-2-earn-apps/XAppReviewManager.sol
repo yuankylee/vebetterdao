@@ -44,6 +44,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     uint256 public constant MAX_TITLE_LENGTH = 200;
     uint256 public constant MAX_CONTENT_LENGTH = 2000;
     uint256 public constant AUTO_HIDE_REPORT_THRESHOLD = 20;
+    uint256 public constant DEFAULT_COMMUNITY_SCORE_MIN_RATINGS = 20;
 
     // ---------------- Enums ----------------
     enum VoteType {
@@ -106,6 +107,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     event RatingSubmitted(bytes32 indexed appId, address indexed rater, uint8 rating);
     event RatingUpdated(bytes32 indexed appId, address indexed rater, uint8 rating);
     event VeBetterPassportUpdated(IVeBetterPassport indexed passport);
+    event CommunityScoreMinRatingsUpdated(uint256 indexed newMinRatings);
 
     // ---------------- Storage ----------------
     /// @custom:storage-location erc7201:b3tr.storage.XAppReviewManager
@@ -114,7 +116,8 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         mapping(uint256 => Review) reviews;
         mapping(bytes32 => uint256[]) appReviewIds;
         mapping(address => uint256[]) userReviewIds;
-        mapping(uint256 => mapping(address => VoteType)) reviewVotes;
+        // reviewId => voter => voteType => cast (a voter may hold up to one of each VoteType)
+        mapping(uint256 => mapping(address => mapping(VoteType => bool))) reviewVotes;
         mapping(uint256 => VoteEntry[]) voteHistory;
         mapping(bytes32 => uint256) appReviewCount;
         // appId => sum of all ratings * 100 (for precision, divide by count to get avg)
@@ -125,6 +128,9 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         mapping(bytes32 => uint256) appRatingCount;
         // VeBetterPassport used to verify a user has received rewards from an app
         IVeBetterPassport veBetterPassport;
+        // Minimum number of ratings for an app to be eligible for a non-zero Community Score.
+        // Governance-adjustable via setCommunityScoreMinRatings.
+        uint256 communityScoreMinRatings;
     }
 
     // keccak256(abi.encode(uint256(keccak256("b3tr.storage.XAppReviewManager")) - 1)) & ~bytes32(uint256(0xff))
@@ -159,6 +165,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
 
         XAppReviewManagerStorage storage $ = _getStorage();
         $.nextReviewId = 1;
+        $.communityScoreMinRatings = DEFAULT_COMMUNITY_SCORE_MIN_RATINGS;
     }
 
     // ---------------- Modifiers ----------------
@@ -175,7 +182,7 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) {}
 
     function version() public pure returns (string memory) {
-        return "3";
+        return "4";
     }
 
     /// @notice Reverts if the caller has not received a reward from the app.
@@ -294,7 +301,8 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
     // ---------------- External: Voting ----------------
 
     /// @notice Votes on a review (upvote, downvote, or report). Cannot vote on own review.
-    /// Changing a vote replaces the previous vote.
+    /// A voter may hold up to one of each VoteType on the same review (all three are independent).
+    /// Votes cannot be cancelled: casting a VoteType already held reverts with [AlreadyVoted].
     /// @param reviewId The ID of the review to vote on.
     /// @param voteType The type of vote (UPVOTE, DOWNVOTE, or REPORT).
     function voteOnReview(uint256 reviewId, VoteType voteType) external {
@@ -306,20 +314,13 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         if (review.hidden) revert ReviewIsHidden(reviewId);
         if (review.reviewer == msg.sender) revert CannotVoteOwnReview(reviewId);
 
-        VoteType existingVote = $.reviewVotes[reviewId][msg.sender];
-        if (existingVote == voteType) revert AlreadyVoted(reviewId, msg.sender, existingVote);
-
-        // Remove previous vote counts
-        if (existingVote == VoteType.UPVOTE) {
-            review.upvotes = review.upvotes > 0 ? review.upvotes - 1 : 0;
-        } else if (existingVote == VoteType.DOWNVOTE) {
-            review.downvotes = review.downvotes > 0 ? review.downvotes - 1 : 0;
-        } else if (existingVote == VoteType.REPORT) {
-            review.reports = review.reports > 0 ? review.reports - 1 : 0;
+        // Each VoteType is independent and can only be cast once per (review, voter).
+        if ($.reviewVotes[reviewId][msg.sender][voteType]) {
+            revert AlreadyVoted(reviewId, msg.sender, voteType);
         }
 
-        // Apply new vote
-        $.reviewVotes[reviewId][msg.sender] = voteType;
+        // Record the vote (no removal of other types — votes are not cancellable).
+        $.reviewVotes[reviewId][msg.sender][voteType] = true;
         $.voteHistory[reviewId].push(VoteEntry({
             voter: msg.sender,
             voteType: voteType,
@@ -373,6 +374,21 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         return _getStorage().veBetterPassport;
     }
 
+    /// @notice Sets the minimum number of ratings required for a non-zero Community Score.
+    /// @dev Governance-adjustable. Must be > 0. Defaults to 20 on fresh deploys; existing
+    /// deployments are seeded to 20 by the v4 upgrade script.
+    /// @param _minRatings The new minimum ratings threshold.
+    function setCommunityScoreMinRatings(uint256 _minRatings) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_minRatings > 0, "XAppReviewManager: minRatings must be positive");
+        _getStorage().communityScoreMinRatings = _minRatings;
+        emit CommunityScoreMinRatingsUpdated(_minRatings);
+    }
+
+    /// @notice Returns the minimum number of ratings required for a non-zero Community Score.
+    function communityScoreMinRatings() external view returns (uint256) {
+        return _getStorage().communityScoreMinRatings;
+    }
+
     // ---------------- Getters ----------------
 
     /// @notice Returns a single review by ID.
@@ -407,9 +423,21 @@ contract XAppReviewManager is AccessControlUpgradeable, UUPSUpgradeable {
         return $.voteHistory[reviewId];
     }
 
-    /// @notice Returns a user's vote on a specific review.
-    function getUserVote(uint256 reviewId, address user) external view returns (VoteType) {
-        return _getStorage().reviewVotes[reviewId][user];
+    /// @notice Returns which vote types a user has cast on a review.
+    /// @return upvoted True if the user has upvoted.
+    /// @return downvoted True if the user has downvoted.
+    /// @return reported True if the user has reported.
+    function getUserVotes(uint256 reviewId, address user)
+        external
+        view
+        returns (bool upvoted, bool downvoted, bool reported)
+    {
+        XAppReviewManagerStorage storage $ = _getStorage();
+        return (
+            $.reviewVotes[reviewId][user][VoteType.UPVOTE],
+            $.reviewVotes[reviewId][user][VoteType.DOWNVOTE],
+            $.reviewVotes[reviewId][user][VoteType.REPORT]
+        );
     }
 
     /// @notice Returns the total number of reviews created (the next review ID minus 1).
