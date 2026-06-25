@@ -36,12 +36,12 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
   const upPct = Math.round(review.upvotes.percentage)
   const downPct = Math.round(review.downvotes.percentage)
   const reportPct = Math.round(review.reports.percentage)
-  const myVote = review.myVoteType ?? 0
-  const hasVoted = myVote !== 0
+  const myVoteTypes = review.myVoteTypes ?? []
 
   const handleVotePress = (voteType: ReviewVoteType) => {
-    if (hasVoted) return
     if (!onVote) return
+    // Each vote type is independent — only block if THIS specific type was already cast
+    if (myVoteTypes.includes(voteType)) return
     if (!account?.address) {
       openWalletModal()
       return
@@ -58,7 +58,7 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
   }
 
   const voteButton = (voteType: ReviewVoteType, icon: ReactNode, label: string, pct: number, activeColor: string) => {
-    const isActive = myVote === voteType
+    const isActive = myVoteTypes.includes(voteType)
     const color = isActive ? activeColor : NEUTRAL_COLOR
     return (
       <Box
@@ -68,13 +68,13 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
         alignItems="center"
         gap={1}
         onClick={() => handleVotePress(voteType)}
-        cursor={hasVoted ? "default" : "pointer"}
+        cursor={isActive ? "default" : "pointer"}
         color={color}
         bg="transparent"
         border="none"
         p={1}
         borderRadius="md"
-        _hover={hasVoted ? undefined : { bg: "gray.100" }}
+        _hover={isActive ? undefined : { bg: "gray.100" }}
         aria-label={label}>
         {icon}
         <Text fontSize="sm" color="gray.500">{`${pct}%`}</Text>

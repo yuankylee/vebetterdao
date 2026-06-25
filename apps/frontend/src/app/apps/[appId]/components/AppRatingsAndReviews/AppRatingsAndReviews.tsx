@@ -8,10 +8,13 @@ import { useTranslation } from "react-i18next"
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa"
 import { LuHand, LuThumbsDown, LuThumbsUp } from "react-icons/lu"
 
+import { toaster } from "@/components/ui/toaster"
+
 import { Review } from "../../../../../api/reviews/types"
 import { useAppRatingSummary } from "../../../../../api/reviews/useAppRatingSummary"
 import { useAppReviews } from "../../../../../api/reviews/useAppReviews"
 import { useCheckAppReviewEligibility } from "../../../../../hooks/xApp/useCheckAppReviewEligibility"
+import { type ReviewVoteType, useVoteOnReview } from "../../../../../hooks/xApp/useVoteOnReview"
 import { displayRatingForStars } from "../../../../../utils/displayRatingForStars"
 import { useCurrentAppInfo } from "../../hooks/useCurrentAppInfo"
 
@@ -39,10 +42,69 @@ const StarRating = ({ average }: { average: number }) => {
   )
 }
 
-const ReviewCard = ({ review }: { review: Review }) => {
+const UP_COLOR = "#3DBA67"
+const DOWN_COLOR = "#C53030"
+const REPORT_COLOR = "#F2A54E"
+const NEUTRAL_COLOR = "gray.500"
+
+const ReviewCard = ({
+  review,
+  onVote,
+  isOwn,
+  onOpenWalletModal,
+}: {
+  review: Review
+  onVote: (reviewId: number, voteType: ReviewVoteType) => void
+  isOwn: boolean
+  onOpenWalletModal: () => void
+}) => {
+  const { t } = useTranslation()
+  const { account } = useWallet()
+  const myVoteTypes = review.myVoteTypes ?? []
   const upPct = Math.round(review.upvotes.percentage)
   const downPct = Math.round(review.downvotes.percentage)
   const reportPct = Math.round(review.reports.percentage)
+
+  const handleVote = (voteType: ReviewVoteType) => {
+    if (myVoteTypes.includes(voteType)) return
+    if (!account?.address) {
+      onOpenWalletModal()
+      return
+    }
+    if (isOwn) {
+      toaster.create({ title: t("You cannot vote on your own review."), type: "warning" })
+      return
+    }
+    if (review.isHidden) {
+      toaster.create({ title: t("You cannot vote on a hidden review."), type: "warning" })
+      return
+    }
+    onVote(review.reviewId, voteType)
+  }
+
+  const voteButton = (voteType: ReviewVoteType, icon: React.ReactNode, pct: number, activeColor: string) => {
+    const isActive = myVoteTypes.includes(voteType)
+    const color = isActive ? activeColor : NEUTRAL_COLOR
+    return (
+      <Box
+        as="button"
+        type="button"
+        display="flex"
+        alignItems="center"
+        gap={1}
+        onClick={() => handleVote(voteType)}
+        cursor={isActive ? "default" : "pointer"}
+        color={color}
+        bg="transparent"
+        border="none"
+        p={1}
+        borderRadius="md"
+        _hover={isActive ? undefined : { bg: "gray.100" }}>
+        {icon}
+        <Text fontSize="sm" color="gray.500">{`${pct}%`}</Text>
+      </Box>
+    )
+  }
 
   return (
     <Box bg="gray.50" borderRadius="xl" p={4}>
@@ -66,18 +128,9 @@ const ReviewCard = ({ review }: { review: Review }) => {
         </HStack>
         <HStack borderTopWidth={1} mt={2} borderColor="gray.200" pt={3} alignItems="center" justifyContent={"flex-end"}>
           <HStack justify="center" gap={4}>
-            <HStack gap={1} color="gray.500">
-              <LuThumbsUp size={16} />
-              <Text fontSize="sm" color="gray.500">{`${upPct}%`}</Text>
-            </HStack>
-            <HStack gap={1} color="gray.500">
-              <LuThumbsDown size={16} />
-              <Text fontSize="sm" color="gray.500">{`${downPct}%`}</Text>
-            </HStack>
-            <HStack gap={1} color="gray.500">
-              <LuHand size={16} />
-              <Text fontSize="sm" color="gray.500">{`${reportPct}%`}</Text>
-            </HStack>
+            {voteButton(1, <LuThumbsUp size={16} />, upPct, UP_COLOR)}
+            {voteButton(2, <LuThumbsDown size={16} />, downPct, DOWN_COLOR)}
+            {voteButton(3, <LuHand size={16} />, reportPct, REPORT_COLOR)}
           </HStack>
         </HStack>
       </Stack>
@@ -108,6 +161,11 @@ export const AppRatingsAndReviews = () => {
   const visibleReviews = (reviewsData?.data ?? []).filter(r => !r.isHidden).slice(0, 2)
   const isLoading = ratingSummaryPending || ratingSummaryFetching || reviewsLoading
   const { checkEligibility } = useCheckAppReviewEligibility()
+  const { sendTransaction: sendVoteOnReview } = useVoteOnReview({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["appReviews", appId] })
+    },
+  })
 
   const handleWriteReview = async () => {
     if (!account?.address) {
@@ -165,7 +223,17 @@ export const AppRatingsAndReviews = () => {
                 {t("No reviews yet")}
               </Text>
             ) : (
-              visibleReviews.map((review: Review) => <ReviewCard key={review.reviewId} review={review} />)
+              visibleReviews.map((review: Review) => (
+                <ReviewCard
+                  key={review.reviewId}
+                  review={review}
+                  isOwn={account?.address?.toLowerCase() === review.author.toLowerCase()}
+                  onOpenWalletModal={openWalletModal}
+                  onVote={(reviewId, voteType) => {
+                    void sendVoteOnReview({ reviewId, voteType })
+                  }}
+                />
+              ))
             )}
 
             <Button variant="primary" w="full" borderRadius="full" onClick={handleWriteReview}>

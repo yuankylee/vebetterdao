@@ -14,9 +14,11 @@ export type Review = {
   upvotes: VoteStats
   downvotes: VoteStats
   reports: VoteStats
-  myVoteType?: number // 0=none, 1=upvote, 2=downvote, 3=report; populated when wallet is passed
+  myVoteTypes?: number[] // 1=upvote, 2=downvote, 3=report; populated when wallet is passed
   isHidden: boolean
   blockTimestamp: number
+  createdAt?: number
+  updatedAt?: number
   documentId: string
 }
 
