@@ -183,7 +183,7 @@ export const AppDetailOverview = ({
                     </Stack>
                   </VStack>
                 </GridItem>
-                <GridItem colSpan={[1, 1, 1]}>
+                <GridItem colSpan={[1, 1, 1]} ml={3}>
                   <AppScoreCard />
                 </GridItem>
               </Grid>

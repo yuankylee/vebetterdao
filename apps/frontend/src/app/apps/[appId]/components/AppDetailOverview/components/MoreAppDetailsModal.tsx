@@ -56,7 +56,7 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
       isOpen={isOpen}
       onClose={onClose}
       isCloseable
-      modalContentProps={{ maxW: "821px" }}
+      modalContentProps={{ maxW: "821px", minH: "414px" }}
       modalBodyProps={{ p: 6 }}>
       <HStack justify="space-between" align="center">
         <Heading size="xl">{t("More App Details")}</Heading>
@@ -65,16 +65,16 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
         </Box>
       </HStack>
       <VStack gap={4} align="stretch" w="full" mt={6} maxH="80vh" overflowY="auto">
-        <HStack gap={4} align="flex-start" w="full">
-          <Skeleton loading={isLogoLoading} boxSize="48px" borderRadius="12px" flexShrink={0}>
-            <Image src={logoSrc} alt="" boxSize="48px" borderRadius="12px" objectFit="cover" />
+        <VStack gap={1} align="center" w="full">
+          <Skeleton loading={isLogoLoading} boxSize="64px" borderRadius="12px" flexShrink={0}>
+            <Image src={logoSrc} alt="" boxSize="64px" borderRadius="12px" objectFit="cover" />
           </Skeleton>
-          <VStack align="flex-start" gap={3} flex={1} minW={0}>
+          <VStack align="flex-start" gap={1} minW={0}>
             <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
-              <Heading size="3xl">{appMetadata?.name ?? ""}</Heading>
+              <Text textStyle="xl">{appMetadata?.name ?? ""}</Text>
             </Skeleton>
           </VStack>
-        </HStack>
+        </VStack>
         <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
           <Text textStyle="sm" as="span" wordBreak="break-word" whiteSpace="pre-wrap">
             {appMetadata?.description ?? ""}

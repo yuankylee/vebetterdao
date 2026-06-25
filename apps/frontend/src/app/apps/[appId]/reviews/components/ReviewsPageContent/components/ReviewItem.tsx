@@ -77,7 +77,7 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
         _hover={hasVoted ? undefined : { bg: "gray.100" }}
         aria-label={label}>
         {icon}
-        <Text fontSize="sm" fontWeight="semibold">{`${pct}%`}</Text>
+        <Text fontSize="sm" color="gray.500">{`${pct}%`}</Text>
       </Box>
     )
   }

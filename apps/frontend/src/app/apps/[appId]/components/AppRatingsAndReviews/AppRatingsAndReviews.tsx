@@ -68,15 +68,15 @@ const ReviewCard = ({ review }: { review: Review }) => {
           <HStack justify="center" gap={4}>
             <HStack gap={1} color="gray.500">
               <LuThumbsUp size={16} />
-              <Text fontSize="sm" color="gray.500" fontWeight="semibold">{`${upPct}%`}</Text>
+              <Text fontSize="sm" color="gray.500">{`${upPct}%`}</Text>
             </HStack>
             <HStack gap={1} color="gray.500">
               <LuThumbsDown size={16} />
-              <Text fontSize="sm" color="gray.500" fontWeight="semibold">{`${downPct}%`}</Text>
+              <Text fontSize="sm" color="gray.500">{`${downPct}%`}</Text>
             </HStack>
             <HStack gap={1} color="gray.500">
               <LuHand size={16} />
-              <Text fontSize="sm" color="gray.500" fontWeight="semibold">{`${reportPct}%`}</Text>
+              <Text fontSize="sm" color="gray.500">{`${reportPct}%`}</Text>
             </HStack>
           </HStack>
         </HStack>

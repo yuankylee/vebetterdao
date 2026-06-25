@@ -1,4 +1,4 @@
-import { Button, Card, Stack, Text } from "@chakra-ui/react"
+import { Button, Card, HStack, Stack, Text } from "@chakra-ui/react"
 import { useWallet, useWalletModal } from "@vechain/vechain-kit"
 import { Suspense, useEffect, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
@@ -16,6 +16,24 @@ import { displayRatingForStars } from "../../../../../../../utils/displayRatingF
 
 const STAR_COLOR = "#FFB566"
 const STAR_EMPTY_COLOR = "#D2D5D9"
+
+const formatCount = (n: number) => {
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}k`
+  return n.toString()
+}
+
+const StarRating = ({ average }: { average: number }) => {
+  const rating = displayRatingForStars(average)
+  return (
+    <HStack gap={0.5}>
+      {Array.from({ length: 5 }, (_, i) => {
+        if (i < Math.floor(rating)) return <FaStar key={i} color={STAR_COLOR} size={18} />
+        if (i < rating && rating % 1 >= 0.5) return <FaStarHalfAlt key={i} color={STAR_COLOR} size={18} />
+        return <FaRegStar key={i} color={STAR_COLOR} size={18} />
+      })}
+    </HStack>
+  )
+}
 
 const InteractiveStars = ({
   value,
@@ -86,6 +104,9 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
 
   const { data: ratingSummary, refetch: refetchRatingSummary } = useAppRatingSummary(appId, account?.address)
   const existingRating = ratingSummary?.userRating ?? 0
+  const average = ratingSummary?.average ?? 0
+  const count = ratingSummary?.count ?? 0
+  const ratingDisplay = average.toFixed(1)
 
   const {
     data: chainRating,
@@ -140,73 +161,55 @@ export const ReviewRatingsPanel = ({ appId }: Props) => {
 
   return (
     <Stack gap={4}>
-      {/* Leave a Rating panel — shown when user has not yet rated */}
-      {!ratingSummary?.hasRated && (
-        <Card.Root borderRadius="xl">
-          <Card.Body>
-            <Stack gap={11} align="center">
-              <Stack gap={1} w="full">
-                <Text fontWeight="bold" fontSize="lg">
+      <Card.Root borderRadius="xl">
+        <Card.Body>
+          <Stack gap={11} align="center">
+            <HStack justify="space-between" align="center" w="full">
+              <Stack align="flex-start" gap={1}>
+                <Text fontSize="3xl" fontWeight="700" lineHeight={1}>
+                  {ratingDisplay}
+                </Text>
+                <Text fontSize="sm" color="gray.500">
                   {t("Ratings")}
                 </Text>
-                <Text color="gray.500" fontSize="sm">
-                  {t("Please rate this App. Your feedback is the driving force behind its growth")}
-                </Text>
-              </Stack>
-              <Stack gap={1} w="full" align="center">
-                <InteractiveStars
-                  value={selectedRating}
-                  onChange={v => {
-                    setSelectedRating(v)
-                    setRatingError(false)
-                  }}
-                />
-                <Text textStyle="sm" fontWeight="semibold" color={ratingError ? "red.500" : undefined}>
-                  {ratingError ? t("Please tap to rate") : t("Tap to rate")}
-                </Text>
               </Stack>
 
-              <Button variant="primary" w="full" borderRadius="full" onClick={handleLeaveRating}>
-                {t("Leave a Rating")}
-              </Button>
-            </Stack>
-          </Card.Body>
-        </Card.Root>
-      )}
-
-      {/* Update Rating panel — shown when user already has a rating */}
-      {ratingSummary?.hasRated && (
-        <Card.Root borderRadius="xl">
-          <Card.Body>
-            <Stack gap={11} align="center">
-              <Stack gap={1} w="full">
-                <Text fontWeight="bold" fontSize="lg">
-                  {t("Ratings & Reviews")}
-                </Text>
+              <Stack align="flex-end" gap={1}>
+                <StarRating average={average} />
                 <Text color="gray.500" fontSize="sm">
-                  {t("Please rate this App. Your feedback is the driving force behind its growth")}
+                  {`${formatCount(count)} ${t("ratings")}`}
                 </Text>
               </Stack>
-              <Stack gap={1} w="full" align="center">
-                <InteractiveStars
-                  value={selectedRating}
-                  displayRatingFromApi={existingRating}
-                  onChange={v => {
-                    setSelectedRating(v)
-                    setRatingError(false)
-                  }}
-                />
-                <Text textStyle="sm" fontWeight="semibold" color={ratingError ? "red.500" : undefined}>
-                  {ratingError ? t("Please tap to rate") : t("Tap to rate")}
-                </Text>
-              </Stack>
-              <Button variant="primary" w="full" borderRadius="full" onClick={handleUpdateRating}>
-                {t("Update Rating")}
-              </Button>
+            </HStack>
+
+            <Stack gap={1} w="full" align="center">
+              <InteractiveStars
+                value={selectedRating}
+                displayRatingFromApi={ratingSummary?.hasRated ? existingRating : undefined}
+                onChange={v => {
+                  setSelectedRating(v)
+                  setRatingError(false)
+                }}
+              />
+              <Text textStyle="sm" fontWeight="semibold" color={ratingError ? "red.500" : undefined}>
+                {ratingError ? t("Please tap to rate") : t("Tap to rate")}
+              </Text>
             </Stack>
-          </Card.Body>
-        </Card.Root>
-      )}
+            <Stack gap={2}>
+              <Button
+                variant="primary"
+                w="full"
+                borderRadius="full"
+                onClick={ratingSummary?.hasRated ? handleUpdateRating : handleLeaveRating}>
+                {ratingSummary?.hasRated ? t("Update Rating") : t("Leave a Rating")}
+              </Button>
+              <Text color="gray.500" fontSize="sm">
+                {t("Please rate this App. Your feedback is the driving force behind its growth")}
+              </Text>
+            </Stack>
+          </Stack>
+        </Card.Body>
+      </Card.Root>
 
       <Suspense fallback={null}>
         <ReviewTxVerifier

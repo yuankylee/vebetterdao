@@ -14,8 +14,8 @@ type Props = {
 export const BadgeIcon = ({ badgeKey, earned, rank, onClick, size = "sm" }: Props) => {
   const config = BADGE_CONFIGS.find(b => b.key === badgeKey)!
   const boxSize = size === "md" ? "100px" : "64px"
-  const bottom = size === "md" ? "6px" : "4px"
-  const fontSize = size === "md" ? "14px" : "11px"
+  const bottom = size === "md" ? "8px" : "6px"
+  const fontSize = size === "md" ? "16px" : "12px"
 
   return (
     <Box
