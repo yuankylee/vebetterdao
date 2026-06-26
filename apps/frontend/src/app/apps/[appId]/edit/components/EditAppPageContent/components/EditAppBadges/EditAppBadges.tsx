@@ -80,10 +80,14 @@ type Props = { form: UseFormReturn<EditAppForm, any, EditAppForm> }
 export const EditAppBadges = ({ form }: Props) => {
   const { t } = useTranslation()
   const { appId } = useParams<{ appId: string }>()
-  const [openBadgeKey, setOpenBadgeKey] = useState<BadgeKey | null>(null)
+  const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false)
+  const [selectedBadge, setSelectedBadge] = useState<BadgeConfig>(BADGE_CONFIGS[0])
 
-  // Keep last selected badge in a stable ref so modal content doesn't disappear during close animation
-  const openBadge = BADGE_CONFIGS.find(b => b.key === openBadgeKey) ?? BADGE_CONFIGS[0]
+  const handleOpenBadge = (key: BadgeKey) => {
+    const badge = BADGE_CONFIGS.find(b => b.key === key)
+    if (badge) setSelectedBadge(badge)
+    setIsBadgeModalOpen(true)
+  }
 
   return (
     <>
@@ -103,7 +107,7 @@ export const EditAppBadges = ({ form }: Props) => {
 
             <VStack align="stretch" gap={3}>
               {BADGE_CONFIGS.map(badge => (
-                <BadgeRow key={badge.key} badge={badge} form={form} onClick={() => setOpenBadgeKey(badge.key)} />
+                <BadgeRow key={badge.key} badge={badge} form={form} onClick={() => handleOpenBadge(badge.key)} />
               ))}
             </VStack>
           </VStack>
@@ -111,9 +115,9 @@ export const EditAppBadges = ({ form }: Props) => {
       </Card.Root>
 
       <BadgeDetailModal
-        isOpen={!!openBadgeKey}
-        onClose={() => setOpenBadgeKey(null)}
-        badge={openBadge}
+        isOpen={isBadgeModalOpen}
+        onClose={() => setIsBadgeModalOpen(false)}
+        badge={selectedBadge}
         form={form}
         appId={appId}
       />

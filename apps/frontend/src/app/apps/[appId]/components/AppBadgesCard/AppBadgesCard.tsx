@@ -3,7 +3,7 @@ import { UilArrowUpRight } from "@iconscout/react-unicons"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { BADGE_CONFIGS } from "@/api/badges/badgeConfigs"
+import { BADGE_CONFIGS, BadgeConfig } from "@/api/badges/badgeConfigs"
 import { BadgeKey } from "@/api/badges/types"
 import { usePreviousRoundBadges } from "@/api/badges/usePreviousRoundBadges"
 
@@ -16,11 +16,16 @@ type Props = { appId: string }
 export const AppBadgesCard = ({ appId }: Props) => {
   const { t } = useTranslation()
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
-  const [openBadgeKey, setOpenBadgeKey] = useState<BadgeKey | null>(null)
+  const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false)
+  const [selectedBadge, setSelectedBadge] = useState<BadgeConfig>(BADGE_CONFIGS[0])
 
   const { badgesByKey, sortedKeys } = usePreviousRoundBadges(appId)
 
-  const openBadge = BADGE_CONFIGS.find(b => b.key === openBadgeKey) ?? BADGE_CONFIGS[0]
+  const handleOpenBadge = (key: BadgeKey) => {
+    const badge = BADGE_CONFIGS.find(b => b.key === key)
+    if (badge) setSelectedBadge(badge)
+    setIsBadgeModalOpen(true)
+  }
 
   return (
     <>
@@ -45,7 +50,7 @@ export const AppBadgesCard = ({ appId }: Props) => {
                 badgeKey={key}
                 earned={badgesByKey[key].earned}
                 rank={badgesByKey[key].rank}
-                onClick={() => setOpenBadgeKey(key)}
+                onClick={() => handleOpenBadge(key)}
               />
             ))}
           </HStack>
@@ -54,9 +59,9 @@ export const AppBadgesCard = ({ appId }: Props) => {
 
       <BadgeHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} appId={appId} />
       <AppBadgeDetailModal
-        isOpen={!!openBadgeKey}
-        onClose={() => setOpenBadgeKey(null)}
-        badge={openBadge}
+        isOpen={isBadgeModalOpen}
+        onClose={() => setIsBadgeModalOpen(false)}
+        badge={selectedBadge}
         appId={appId}
       />
     </>
