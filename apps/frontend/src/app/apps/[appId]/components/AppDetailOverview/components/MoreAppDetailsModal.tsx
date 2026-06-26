@@ -71,7 +71,9 @@ export const MoreAppDetailsModal = ({ isOpen, onClose }: MoreAppDetailsModalProp
           </Skeleton>
           <VStack align="flex-start" gap={1} minW={0}>
             <Skeleton loading={appMetadataLoading && !!appMetadata} w="full">
-              <Text textStyle="xl">{appMetadata?.name ?? ""}</Text>
+              <Text textStyle="xl" fontWeight="700">
+                {appMetadata?.name ?? ""}
+              </Text>
             </Skeleton>
           </VStack>
         </VStack>

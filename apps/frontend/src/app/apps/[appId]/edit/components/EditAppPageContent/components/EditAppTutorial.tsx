@@ -83,6 +83,7 @@ const TutorialVideo = ({ form }: Props) => {
 
       if (file.size > MAX_VIDEO_BYTES) {
         toaster.error({ title: t("Max file size: 500MB"), duration: 4000, closable: true })
+        if (inputRef.current) inputRef.current.value = ""
         return
       }
 
