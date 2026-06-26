@@ -1,4 +1,15 @@
-import { Button, Card, Grid, GridItem, Heading, Separator, SimpleGrid, VStack, useDisclosure } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Card,
+  Grid,
+  GridItem,
+  Heading,
+  Separator,
+  SimpleGrid,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react"
 import { getConfig } from "@repo/config"
 import { useQueryClient } from "@tanstack/react-query"
 import { X2EarnApps__factory } from "@vechain/vebetterdao-contracts/typechain-types"
@@ -483,9 +494,17 @@ export const EditAppPageContent = () => {
                 <EditMoreAppDetails form={form} />
               </Card.Body>
             </Card.Root>
-            <Button mt={6} colorPalette="blue" type="submit" size="lg" disabled={!isFormChanged} borderRadius={"full"}>
-              {t("Submit")}
-            </Button>
+            <Box display={{ base: "none", md: "block" }}>
+              <Button
+                mt={6}
+                colorPalette="blue"
+                type="submit"
+                size="lg"
+                disabled={!isFormChanged}
+                borderRadius={"full"}>
+                {t("Submit")}
+              </Button>
+            </Box>
           </GridItem>
 
           <GridItem colSpan={[3, 3, 1]}>
@@ -493,6 +512,17 @@ export const EditAppPageContent = () => {
               <EditAppBadges form={form} />
               <EditSocialMediaUpdates form={form} />
               <AppVersionNotes form={form} />
+              <Box display={{ base: "block", md: "none" }} w="full">
+                <Button
+                  colorPalette="blue"
+                  type="submit"
+                  size="lg"
+                  disabled={!isFormChanged}
+                  borderRadius={"full"}
+                  w="full">
+                  {t("Submit")}
+                </Button>
+              </Box>
             </VStack>
           </GridItem>
         </Grid>

@@ -1,4 +1,4 @@
-import { Grid, GridItem, Stack } from "@chakra-ui/react"
+import { Grid, GridItem, Stack, Box } from "@chakra-ui/react"
 import { compareAddresses } from "@repo/utils/AddressUtils"
 import { useWallet } from "@vechain/vechain-kit"
 import { useMemo } from "react"
@@ -73,6 +73,9 @@ export const AppDetailPageContent = () => {
           {shouldRenderCreationSteps ? <AppCreationSteps /> : null}
           <AppTutorial />
           <AppSocialMediaUpdates />
+          <Box display={{ base: "block", md: "none" }}>
+            <AppRatingsAndReviews />
+          </Box>
           <AppRewardStatsCard />
           {shouldRenderBalance && <AppBalanceCard />}
         </Stack>
@@ -81,7 +84,9 @@ export const AppDetailPageContent = () => {
       {/* Right panel (1/3) */}
       <GridItem w="full" colSpan={[1, 1, 1]}>
         <Stack direction="column" gap={4}>
-          <AppRatingsAndReviews />
+          <Box display={{ base: "none", md: "block" }}>
+            <AppRatingsAndReviews />
+          </Box>
           <AppVersionNotesCard />
         </Stack>
       </GridItem>

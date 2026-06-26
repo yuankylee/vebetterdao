@@ -106,11 +106,15 @@ export const ReviewsPageContent = () => {
           <GridItem>
             <Card.Root borderRadius="xl">
               <Stack gap={4}>
-                <HStack justify="space-between" align="center">
+                <Stack
+                  direction={{ base: "column", md: "row" }}
+                  justify="space-between"
+                  align={{ base: "stretch", md: "center" }}
+                  gap={2}>
                   <Text fontWeight="bold" fontSize="lg">
                     {`${t("Reviews")}(${totalReviews})`}
                   </Text>
-                  <NativeSelect.Root size="sm" w="240px">
+                  <NativeSelect.Root size="sm" w={{ base: "full", md: "240px" }}>
                     <NativeSelect.Field
                       borderRadius="12px"
                       value={sortBy}
@@ -123,7 +127,7 @@ export const ReviewsPageContent = () => {
                     </NativeSelect.Field>
                     <NativeSelect.Indicator />
                   </NativeSelect.Root>
-                </HStack>
+                </Stack>
 
                 {isLoading ? (
                   <Stack gap={3}>
