@@ -41,7 +41,7 @@ export const UserStatisticsInfoTip = () => {
       positioning={{ placement: "bottom-start" }}
       showArrow={false}
       contentProps={{
-        maxW: "sm",
+        maxW: "xs",
         p: 3,
         textAlign: "left",
         bg: "bg.primary",

@@ -44,7 +44,7 @@ export const DistributionPerformanceInfoPopover = () => {
       positioning={{ placement: "bottom-start" }}
       showArrow={false}
       contentProps={{
-        maxW: "sm",
+        maxW: "xs",
         p: 3,
         textAlign: "left",
         bg: "bg.primary",
@@ -62,8 +62,9 @@ export const DistributionPerformanceInfoPopover = () => {
         flexShrink={0}
         cursor="pointer"
         lineHeight={1}
+        position="relative"
         aria-label={t("Distribution performance chart help")}>
-        <Icon as={LuInfo} boxSize={5} />
+        <Icon as={LuInfo} boxSize={5} mt={{ base: -3, md: 0 }} ml={5} position="absolute" />
       </Box>
     </Tooltip>
   )
@@ -74,8 +75,8 @@ export const DistributionPerformanceTitleRow = () => {
   const { t } = useTranslation()
 
   return (
-    <HStack gap={2} align="center" flexWrap="wrap" minW={0}>
-      <Heading fontWeight="700" fontSize="xl" mb={0}>
+    <HStack gap={2} align={{ base: "baseline", md: "center" }} minW={0}>
+      <Heading fontWeight="700" w={{ base: "min-content", md: "auto" }} fontSize="xl" mb={0}>
         {t("Distribution Performance")}
       </Heading>
       <DistributionPerformanceInfoPopover />

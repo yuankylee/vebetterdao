@@ -48,7 +48,6 @@ const BadgeRow = ({ badge, form, onClick }: BadgeRowProps) => {
           textStyle="md"
           fontWeight="semibold"
           color={"#272A2E"}
-          truncate
           css={{
             marginBottom: "0.1rem",
           }}>

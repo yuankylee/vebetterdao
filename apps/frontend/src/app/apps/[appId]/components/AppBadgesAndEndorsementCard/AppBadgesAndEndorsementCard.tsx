@@ -55,7 +55,7 @@ export const AppBadgesAndEndorsementCard = ({
                   <UilArrowUpRight />
                 </Link>
               </HStack>
-              <HStack gap={3} justify="space-between" px={5}>
+              <HStack gap={{ base: 3, md: 5 }} justify="center">
                 {sortedKeys.map(key => (
                   <BadgeIcon
                     key={key}
