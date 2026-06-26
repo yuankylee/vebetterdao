@@ -118,7 +118,7 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
           <Box>
             {isOwn && (
               <Button
-                size="sm"
+                size={{ base: "2xs", md: "sm" }}
                 px={3}
                 colorPalette={"blue"}
                 variant="outline"
@@ -129,11 +129,11 @@ export const ReviewItem = ({ review, currentUserAddress, onEdit, onVote }: Props
                   backgroundColor: "#FFF",
                 }}>
                 <PiPencilSimpleLineBold />
-                {t("Edit")}
+                <Box display={{ base: "none", md: "block" }}>{t("Edit")}</Box>
               </Button>
             )}
           </Box>
-          <HStack gap={4}>
+          <HStack gap={{ base: 2, md: 4 }}>
             {voteButton(1, <LuThumbsUp size={16} />, t("Upvote"), upPct, UP_COLOR)}
             {voteButton(2, <LuThumbsDown size={16} />, t("Downvote"), downPct, DOWN_COLOR)}
             {voteButton(3, <LuHand size={16} />, t("Report content"), reportPct, REPORT_COLOR)}

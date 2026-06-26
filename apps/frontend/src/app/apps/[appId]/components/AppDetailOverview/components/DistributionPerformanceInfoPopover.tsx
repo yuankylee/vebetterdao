@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Heading, HStack, Icon, Text, VStack } from "@chakra-ui/react"
+import { Box, Heading, Icon, Text, VStack } from "@chakra-ui/react"
 import { useTranslation } from "react-i18next"
 import { LuInfo } from "react-icons/lu"
 
@@ -58,13 +58,15 @@ export const DistributionPerformanceInfoPopover = () => {
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
+        verticalAlign="middle"
+        position="relative"
+        top="-2px"
         color="text.subtle"
         flexShrink={0}
         cursor="pointer"
         lineHeight={1}
-        position="relative"
         aria-label={t("Distribution performance chart help")}>
-        <Icon as={LuInfo} boxSize={5} mt={{ base: -3, md: 0 }} ml={5} position="absolute" />
+        <Icon as={LuInfo} boxSize={5} />
       </Box>
     </Tooltip>
   )
@@ -75,11 +77,11 @@ export const DistributionPerformanceTitleRow = () => {
   const { t } = useTranslation()
 
   return (
-    <HStack gap={2} align={{ base: "baseline", md: "center" }} minW={0}>
-      <Heading fontWeight="700" w={{ base: "min-content", md: "auto" }} fontSize="xl" mb={0}>
+    <Box minW={0}>
+      <Heading fontWeight="700" fontSize="xl" mb={0} display="inline" mr={2}>
         {t("Distribution Performance")}
       </Heading>
       <DistributionPerformanceInfoPopover />
-    </HStack>
+    </Box>
   )
 }

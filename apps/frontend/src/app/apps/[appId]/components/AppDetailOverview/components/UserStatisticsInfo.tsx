@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Heading, HStack, Icon, Text, VStack } from "@chakra-ui/react"
+import { Box, Heading, Icon, Text, VStack } from "@chakra-ui/react"
 import { useTranslation } from "react-i18next"
 import { LuInfo } from "react-icons/lu"
 
@@ -55,6 +55,9 @@ export const UserStatisticsInfoTip = () => {
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
+        verticalAlign="middle"
+        position="relative"
+        top="-2px"
         color="text.subtle"
         flexShrink={0}
         cursor="pointer"
@@ -70,11 +73,11 @@ export const UserStatisticsTitleRow = () => {
   const { t } = useTranslation()
 
   return (
-    <HStack gap={2} align="center" flexWrap="wrap" minW={0}>
-      <Heading size="xl" mb={0}>
+    <Box minW={0}>
+      <Heading size="xl" mb={0} display="inline" mr={2}>
         {t("User Statistics")}
       </Heading>
       <UserStatisticsInfoTip />
-    </HStack>
+    </Box>
   )
 }
