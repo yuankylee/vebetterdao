@@ -225,36 +225,38 @@ export const ReviewResultsModal = ({ isOpen, onClose, review }: Props) => {
                 {t("No votes found")}
               </Text>
             ) : (
-              <Table.Root size="sm">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.ColumnHeader fontWeight="semibold">{t("Voters")}</Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold">{t("Voted Option")}</Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold" textAlign="right">
-                      {t("Voting Time")}
-                    </Table.ColumnHeader>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {votes.map((vote, idx) => (
-                    <Table.Row key={`${vote.voter}-${idx}`}>
-                      <Table.Cell>
-                        <Text fontSize="sm" color="blue.500" cursor="pointer">
-                          {truncateAddress(vote.voter)}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <VoteBadge voteType={vote.voteType as 1 | 2 | 3} />
-                      </Table.Cell>
-                      <Table.Cell textAlign="right">
-                        <Text fontSize="sm" color="gray.500">
-                          {timeAgo(vote.timestamp, t)}
-                        </Text>
-                      </Table.Cell>
+              <Box maxH={{ base: "", md: "30vh" }} overflowY="auto">
+                <Table.Root size="sm">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeader fontWeight="semibold">{t("Voters")}</Table.ColumnHeader>
+                      <Table.ColumnHeader fontWeight="semibold">{t("Voted Option")}</Table.ColumnHeader>
+                      <Table.ColumnHeader fontWeight="semibold" textAlign="right">
+                        {t("Voting Time")}
+                      </Table.ColumnHeader>
                     </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Root>
+                  </Table.Header>
+                  <Table.Body>
+                    {votes.map((vote, idx) => (
+                      <Table.Row key={`${vote.voter}-${idx}`}>
+                        <Table.Cell>
+                          <Text fontSize="sm" color="blue.500" cursor="pointer">
+                            {truncateAddress(vote.voter)}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <VoteBadge voteType={vote.voteType as 1 | 2 | 3} />
+                        </Table.Cell>
+                        <Table.Cell textAlign="right">
+                          <Text fontSize="sm" color="gray.500">
+                            {timeAgo(vote.timestamp, t)}
+                          </Text>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </Box>
             )}
           </Stack>
         </Box>
