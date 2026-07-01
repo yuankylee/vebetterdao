@@ -10,7 +10,7 @@ import { convertUriToUrl } from "@/utils/uri"
 
 import { EditAppForm } from "../EditAppPageContent"
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024 // 100 MB
+const MAX_FILE_BYTES = 5 * 1024 * 1024 // 5MB
 
 const safeConvertUri = (url: string): string => {
   try {
@@ -45,7 +45,7 @@ export const EditAppWhitepaper = ({ form }: Props) => {
       }
 
       if (file.size > MAX_FILE_BYTES) {
-        toaster.error({ title: t("Max file size: 100MB"), duration: 4000, closable: true })
+        toaster.error({ title: t("Max file size: 5MB"), duration: 4000, closable: true })
         if (inputRef.current) inputRef.current.value = ""
         return
       }
@@ -77,7 +77,7 @@ export const EditAppWhitepaper = ({ form }: Props) => {
           {t("App Whitepaper")}
         </Heading>
         <Text textStyle="xs" color="gray.500">
-          {t("Only PDF files are supported (less than 100MB)")}
+          {t("Only PDF files are supported (less than 5MB)")}
         </Text>
       </VStack>
 

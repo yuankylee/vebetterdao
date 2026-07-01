@@ -11,8 +11,7 @@ import { convertUriToUrl } from "@/utils/uri"
 
 import { EditAppForm } from "../EditAppPageContent"
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024 // 100 MB
-const MAX_VIDEO_BYTES = 500 * 1024 * 1024 // 500 MB
+const MAX_FILE_BYTES = 5 * 1024 * 1024 // 5MB
 const MAX_IMAGES = 5
 
 const safeConvertUri = (url: string): string => {
@@ -81,8 +80,8 @@ const TutorialVideo = ({ form }: Props) => {
       const file = e.target.files?.[0]
       if (!file) return
 
-      if (file.size > MAX_VIDEO_BYTES) {
-        toaster.error({ title: t("Max file size: 500MB"), duration: 4000, closable: true })
+      if (file.size > MAX_FILE_BYTES) {
+        toaster.error({ title: t("Max file size: 5MB"), duration: 4000, closable: true })
         if (inputRef.current) inputRef.current.value = ""
         return
       }
@@ -184,7 +183,7 @@ const TutorialImages = ({ form }: Props) => {
 
       for (const file of toUpload) {
         if (file.size > MAX_FILE_BYTES) {
-          toaster.error({ title: t("Max file size: 100MB"), duration: 4000, closable: true })
+          toaster.error({ title: t("Max file size: 5MB"), duration: 4000, closable: true })
           continue
         }
         const objectUrl = URL.createObjectURL(file)

@@ -29,7 +29,7 @@ import { convertUriToUrl } from "@/utils/uri"
 
 import { EditAppForm } from "../EditAppPageContent"
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024 // 100 MB
+const MAX_FILE_BYTES = 5 * 1024 * 1024 // 5MB
 const MAX_TEAM_MEMBERS = 10
 const MAX_PARTNERS = 10
 const computedWidth = Math.min(window.innerWidth, AVG_PHONE_WIDTH) / VE_WOLRD_SCALING_FACTOR
@@ -179,7 +179,7 @@ const TeamMemberCard = ({
       const file = e.target.files?.[0]
       if (!file) return
       if (file.size > MAX_FILE_BYTES) {
-        toaster.error({ title: t("Max file size: 100MB"), duration: 4000, closable: true })
+        toaster.error({ title: t("Max file size: 5MB"), duration: 4000, closable: true })
         if (inputRef.current) inputRef.current.value = ""
         return
       }
@@ -325,7 +325,7 @@ const AppRoadmapSection = ({ form }: Props) => {
       const file = e.target.files?.[0]
       if (!file) return
       if (file.size > MAX_FILE_BYTES) {
-        toaster.error({ title: t("Max file size: 100MB"), duration: 4000, closable: true })
+        toaster.error({ title: t("Max file size: 5MB"), duration: 4000, closable: true })
         if (inputRef.current) inputRef.current.value = ""
         return
       }
@@ -448,7 +448,7 @@ const EcosystemPartnersSection = ({ form }: Props) => {
       const toUpload = files.slice(0, MAX_PARTNERS - form.getValues("ecosystemPartners").length)
       for (const file of toUpload) {
         if (file.size > MAX_FILE_BYTES) {
-          toaster.error({ title: t("Max file size: 100MB"), duration: 4000, closable: true })
+          toaster.error({ title: t("Max file size: 5MB"), duration: 4000, closable: true })
           continue
         }
         try {
