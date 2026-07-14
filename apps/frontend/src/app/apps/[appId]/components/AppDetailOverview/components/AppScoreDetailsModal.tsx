@@ -27,9 +27,9 @@ const ScoreBreakdownRow = ({ label, value, max }: { label: string; value: number
         {value.toFixed(2)}
       </Text>
     </HStack>
-    <Progress.Root value={value} max={max} size="sm" w="full">
+    <Progress.Root value={value} max={max} size="xs" w="full">
       <Progress.Track rounded="full" bg="bg.muted">
-        <Progress.Range bg={APP_SCORE_ACCENT_HEX} rounded="full" />
+        <Progress.Range bg={"#80DFA9"} rounded="full" />
       </Progress.Track>
     </Progress.Root>
   </VStack>
@@ -37,7 +37,6 @@ const ScoreBreakdownRow = ({ label, value, max }: { label: string; value: number
 
 export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: AppScoreDetailsModalProps) => {
   const { t } = useTranslation()
-
   return (
     <BaseModal
       isOpen={isOpen}
@@ -52,12 +51,24 @@ export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: 
         </Box>
       </HStack>
       <VStack gap={6}>
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 8, md: 10 }} w="full" alignItems="start">
-          <VStack align="flex-start" gap={6}>
-            <Skeleton loading={isLoading}>
-              <Text textStyle="4xl" fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
-                {scoreData.scoreDisplay}
-              </Text>
+        <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 10, md: 14 }} w="full" alignItems="start">
+          <VStack align="flex-start" gap={4}>
+            <Skeleton loading={isLoading} w="full">
+              <VStack gap={0} align="flex-start" w="full">
+                <Text textStyle="4xl" fontWeight="bold" color={APP_SCORE_ACCENT_HEX}>
+                  {scoreData.scoreDisplay}
+                </Text>
+                <HStack justifyContent={"space-between"} alignItems={"center"} gap={2} w="full">
+                  <Progress.Root value={scoreData?.scoreNumber} max={100} size="md" w="full">
+                    <Progress.Track rounded="full" bg="bg.muted">
+                      <Progress.Range bg={APP_SCORE_ACCENT_HEX} rounded="full" />
+                    </Progress.Track>
+                  </Progress.Root>
+                  <Text textStyle="sm" fontWeight="semibold" color="text.default" flexShrink={0}>
+                    {`${scoreData?.scoreNumber} / 100`}
+                  </Text>
+                </HStack>
+              </VStack>
             </Skeleton>
             <VStack align="flex-start" gap={0}>
               <Skeleton loading={isLoading}>
@@ -81,7 +92,7 @@ export const AppScoreDetailsModal = ({ isOpen, onClose, scoreData, isLoading }: 
             </Skeleton>
           </VStack>
 
-          <VStack align="stretch" gap={3} w="full">
+          <VStack align="stretch" gap={4} w="full">
             {scoreData.breakdown.map(row => (
               <Skeleton key={row.labelKey} loading={isLoading}>
                 <ScoreBreakdownRow label={t(row.labelKey)} value={row.value} max={row.max} />
